@@ -1,4 +1,4 @@
-package user
+package user_activity
 
 import (
 	"activity-tracker/database"
@@ -12,6 +12,7 @@ var (
 	collection = database.GetCollection(tableName)
 )
 
+// UserActivity contains an user activity info
 type UserActivity struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
@@ -20,6 +21,7 @@ type UserActivity struct {
 	Message   string    `json:"message,omitempty"`
 }
 
+// Create an user activity in database
 func Create(userActivity UserActivity) error {
 	_, err := collection.InsertOne(context.Background(), userActivity)
 

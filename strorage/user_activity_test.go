@@ -21,7 +21,7 @@ func TestCreate(t *testing.T) {
 	err := Create(user)
 
 	if err != nil {
-		fmt.Println("Falla en crear")
+		fmt.Println("Falla en crear user activity")
 	} else {
 		fmt.Println("epa")
 	}
