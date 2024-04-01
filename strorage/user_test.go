@@ -12,7 +12,7 @@ func TestCreate(t *testing.T) {
 	c := require.New(t)
 
 	user := UserActivity{
-		ID:        "1234",
+		ID:        "123",
 		Name:      "br",
 		Activity:  "shit",
 		CreatedAt: time.Now(),
