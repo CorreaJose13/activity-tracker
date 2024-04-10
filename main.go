@@ -7,19 +7,21 @@ import (
 	"os"
 	"strings"
 
+	"activity-tracker/config"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	//"math/rand/v2"
 )
 
 var (
 	bot *tgbotapi.BotAPI
-
-// arr = [5]string{"el pepe", "viernes de borde interno", "es correpto", "sale pa la 20", "mi primer jatriki"}
 )
 
 func main() {
+
+	cfg := config.MustLoad()
+
 	var err error
-	bot, err = tgbotapi.NewBotAPI("7048395318:AAGUGeQM-wjZymlZujdBQEZZD0EEHj-qB64")
+	bot, err = tgbotapi.NewBotAPI(cfg.TgBotToken)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -97,11 +99,12 @@ func handleCommand(chatId int64, command string) error {
 	case "/holi":
 		msg := tgbotapi.NewMessage(chatId, "holi *w*")
 		_, err = bot.Send(msg)
-
 	case "/uwu":
 		msg := tgbotapi.NewMessage(chatId, "uwu")
 		_, err = bot.Send(msg)
-
+	default:
+		msg := tgbotapi.NewMessage(chatId, "quejesa monda papi, no c")
+		_, err = bot.Send(msg)
 	}
 
 	return err
