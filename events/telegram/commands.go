@@ -2,20 +2,67 @@ package telegram
 
 import (
 	"activity-tracker/api/telegram"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func doCommand(bot *tgbotapi.BotAPI, chatId int64, command string) (err error) {
+const (
+	hello    = "/hello"
+	help     = "/help"
+	commands = "/commands"
+	track    = "/trackprogress"
+	water    = "water"
+	tooth    = "toothbrush"
+	read     = "reading"
+	shower   = "shower"
+	sleep    = "sleep"
+	gym      = "gym"
+	poop     = "shit"
+	rep      = "report"
+	all      = "all"
+)
+
+func doCommand(bot *telegram.Bot, chatID int64, command string) (err error) {
 
 	switch command {
-	case "/holi":
-		err = telegram.SendMessage(bot, chatId, "q dicen los hijueputaaaaaaaas")
-	case "/uwu":
-		err = telegram.SendMessage(bot, chatId, "ee")
+	case hello:
+		return sendHello(bot, chatID)
+	case help:
+		return sendHelp(bot, chatID)
+	case commands:
+		return sendCommands(bot, chatID)
+	case track:
+		return sendTrackHelp(bot, chatID)
+	case track + " " + water:
+		return telegram.SendMessage(bot, chatID, "awa")
+	case track + " " + tooth:
+		return telegram.SendMessage(bot, chatID, "tooth")
+	case track + " " + read:
+		return telegram.SendMessage(bot, chatID, "read")
+	case track + " " + shower:
+		return telegram.SendMessage(bot, chatID, "Ya era hora")
+	case track + " " + sleep:
+		return telegram.SendMessage(bot, chatID, "A mimir")
+	case track + " " + gym:
+		return telegram.SendMessage(bot, chatID, "Higado al fallo")
+	case track + " " + poop:
+		return telegram.SendMessage(bot, chatID, "y la foto?")
 	default:
-		err = telegram.SendMessage(bot, chatId, "aa")
+		return telegram.SendMessage(bot, chatID, msgUnknownCommand)
 	}
 
-	return err
+}
+
+func sendHello(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, msgHello)
+}
+
+func sendHelp(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, msgHelp)
+}
+
+func sendCommands(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, msgCommands)
+}
+
+func sendTrackHelp(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, msgTrack)
 }

@@ -7,3 +7,7 @@ import (
 type Bot = tgbotapi.BotAPI
 
 type Channel = tgbotapi.UpdatesChannel
+
+type Update = tgbotapi.Update
+
+type Message = tgbotapi.Message
