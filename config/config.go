@@ -15,20 +15,14 @@ var (
 )
 
 func MustLoad() (*Config, error) {
-	botToken := Get("BOT_TOKEN", "")
-	mongoToken := Get("MONGO_TOKEN", "")
+	botToken := getValue("BOT_TOKEN", "")
+	mongoToken := getValue("MONGO_TOKEN", "")
 
 	if botToken == "" {
-		return &Config{
-			TgBotToken:           "",
-			MongoConnectionToken: mongoToken,
-		}, errMissingBotToken
+		return nil, errMissingBotToken
 	}
 	if mongoToken == "" {
-		return &Config{
-			TgBotToken:           botToken,
-			MongoConnectionToken: "",
-		}, errMissingMongoToken
+		return nil, errMissingMongoToken
 	}
 
 	return &Config{

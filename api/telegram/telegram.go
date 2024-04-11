@@ -7,6 +7,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+const (
+	timeOut = 60
+	offset  = 0
+)
+
 func New(token string) (*Bot, error) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
@@ -21,8 +26,8 @@ func New(token string) (*Bot, error) {
 
 func Updates(bot *Bot) Channel {
 	// Set up updates configuration.
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
+	u := tgbotapi.NewUpdate(offset)
+	u.Timeout = timeOut
 
 	// `updates` is a golang channel which receives telegram updates
 	updates := bot.GetUpdatesChan(u)
@@ -31,6 +36,17 @@ func Updates(bot *Bot) Channel {
 
 func SendMessage(bot *Bot, chatID int64, text string) error {
 	msg := tgbotapi.NewMessage(chatID, text)
+	_, err := bot.Send(msg)
+	if err != nil {
+		return fmt.Errorf("can't send message: %w", err)
+	}
+	log.Println("Message sent succesfully")
+	return nil
+}
+
+func SendPhoto(bot *Bot, chatID int64) error {
+
+	msg := tgbotapi.NewPhoto(chatID, tgbotapi.FileURL("https://external-preview.redd.it/jrtz49x5F1cjvDQoFzb0I4cv2dwhA5RDhqaEcBbiXIU.png?format=pjpg&auto=webp&s=3ef741c83f7927eca91cb8ac2d610fd6f010d5b0"))
 	_, err := bot.Send(msg)
 	if err != nil {
 		return fmt.Errorf("can't send message: %w", err)

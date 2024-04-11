@@ -14,7 +14,7 @@ func init() {
 	}
 }
 
-func Get(key, def string) string {
+func getValue(key, def string) string {
 	value, ok := os.LookupEnv(key)
 	if ok {
 		return value

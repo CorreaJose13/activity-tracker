@@ -46,6 +46,8 @@ func doCommand(bot *telegram.Bot, chatID int64, command string) (err error) {
 		return telegram.SendMessage(bot, chatID, "Higado al fallo")
 	case track + " " + poop:
 		return telegram.SendMessage(bot, chatID, "y la foto?")
+	case "/hatriki":
+		return telegram.SendPhoto(bot, chatID)
 	default:
 		return telegram.SendMessage(bot, chatID, msgUnknownCommand)
 	}
