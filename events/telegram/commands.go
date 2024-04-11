@@ -18,9 +18,11 @@ const (
 	poop     = "shit"
 	rep      = "report"
 	all      = "all"
+	hatriki  = "https://external-preview.redd.it/jrtz49x5F1cjvDQoFzb0I4cv2dwhA5RDhqaEcBbiXIU.png?format=pjpg&auto=webp&s=3ef741c83f7927eca91cb8ac2d610fd6f010d5b0"
+	jeje     = "https://static.wikia.nocookie.net/memes-pedia/images/5/5e/Quieres_Pene.jpg/revision/latest/scale-to-width-down/1200?cb=20230507024715&path-prefix=es"
 )
 
-func doCommand(bot *telegram.Bot, chatID int64, command string) (err error) {
+func doCommand(bot *telegram.Bot, chatID int64, command string) error {
 
 	switch command {
 	case hello:
@@ -47,7 +49,7 @@ func doCommand(bot *telegram.Bot, chatID int64, command string) (err error) {
 	case track + " " + poop:
 		return telegram.SendMessage(bot, chatID, "y la foto?")
 	case "/hatriki":
-		return telegram.SendPhoto(bot, chatID)
+		return telegram.SendPhoto(bot, chatID, hatriki)
 	default:
 		return telegram.SendMessage(bot, chatID, msgUnknownCommand)
 	}

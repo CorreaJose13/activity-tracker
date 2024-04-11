@@ -12,17 +12,18 @@ import (
 
 var errMissingUser = errors.New("user object it's empty")
 
-func Fetch(ctx context.Context, bot *telegram.Bot, updates telegram.Channel) error {
+func Fetch(ctx context.Context, bot *telegram.Bot, updates telegram.Channel) (err error) {
 	// `for {` means the loop is infinite until we manually stop it
 	for {
 		select {
 		// stop looping if ctx is cancelled
 		case <-ctx.Done():
-			return nil
+			//   resolver este inconveniente
+			return
 		// receive update from channel and then handle it
 		case update := <-updates:
 			if err := Process(bot, update); err != nil {
-				log.Println(err)
+				return fmt.Errorf("error while proccess: %w", err)
 			}
 		}
 	}
@@ -37,7 +38,7 @@ func Process(bot *telegram.Bot, update telegram.Update) error {
 	return nil
 }
 
-func processMessage(bot *telegram.Bot, message *telegram.Message) (err error) {
+func processMessage(bot *telegram.Bot, message *telegram.Message) error {
 	user := message.From
 	text := message.Text
 	date := time.Now()
@@ -49,10 +50,9 @@ func processMessage(bot *telegram.Bot, message *telegram.Message) (err error) {
 	if strings.HasPrefix(text, "/") {
 		// Print to console username,text and date
 		log.Printf("got new command '%s' from '%s at %s", text, user.UserName, date)
-		err = doCommand(bot, message.Chat.ID, text)
-	}
-	if err != nil {
-		return fmt.Errorf("an error ocurred: %w", err)
+		if err := doCommand(bot, message.Chat.ID, text); err != nil {
+			return fmt.Errorf("can't do command: %w", err)
+		}
 	}
 	return nil
 }

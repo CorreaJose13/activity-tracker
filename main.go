@@ -10,7 +10,6 @@ import (
 func main() {
 	cfg, err := config.MustLoad()
 	if err != nil {
-		log.Println(cfg)
 		log.Println(err)
 		return
 	}
@@ -20,5 +19,7 @@ func main() {
 		return
 	}
 	update := tgClient.Updates(bot)
-	eventConsumer.Processor(bot, update)
+	if err := eventConsumer.Processor(bot, update); err != nil {
+		log.Println(err)
+	}
 }
