@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"errors"
 )
 
 type Config struct {
@@ -9,19 +9,30 @@ type Config struct {
 	MongoConnectionToken string
 }
 
-func MustLoad() Config {
+var (
+	errMissingBotToken   = errors.New("missing bot token")
+	errMissingMongoToken = errors.New("missing mongo token")
+)
+
+func MustLoad() (*Config, error) {
 	botToken := Get("BOT_TOKEN", "")
 	mongoToken := Get("MONGO_TOKEN", "")
 
 	if botToken == "" {
-		log.Fatal("tg bot token is not specified")
+		return &Config{
+			TgBotToken:           "",
+			MongoConnectionToken: mongoToken,
+		}, errMissingBotToken
 	}
 	if mongoToken == "" {
-		log.Fatal("mongo connection string is not specified")
+		return &Config{
+			TgBotToken:           botToken,
+			MongoConnectionToken: "",
+		}, errMissingMongoToken
 	}
 
-	return Config{
+	return &Config{
 		TgBotToken:           botToken,
 		MongoConnectionToken: mongoToken,
-	}
+	}, nil
 }

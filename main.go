@@ -10,7 +10,11 @@ import (
 
 func main() {
 
-	cfg := config.MustLoad()
+	cfg, err := config.MustLoad()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	bot, err := tgClient.New(cfg.TgBotToken)
 	if err != nil {
