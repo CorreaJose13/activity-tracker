@@ -7,18 +7,17 @@ const msgCommands = `Here's a list of commands you can send me:
 /hello
 /help
 /commands
-/trackprogress
+/track
 /report`
 
-const msgTrack = `hint: use /trackprogress "task"
-Task:
--water
--toothbrush
--read
--shower
--sleep
--gym
--shit`
+const msgTrack = `hint: "
+-/track water
+-/track toothbrush
+-/track read
+-/track shower
+-/track sleep
+-/track gym
+-/track poop`
 
 const msgHello = "Hola precioso \n\n" + msgHelp
 
