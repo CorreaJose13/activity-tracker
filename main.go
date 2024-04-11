@@ -15,12 +15,11 @@ func main() {
 	bot, err := tgClient.New(cfg.TgBotToken)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
 	update := tgClient.Updates(bot)
 
-	if err := eventConsumer.Processor(bot, update); err != nil {
-		log.Println(err)
-	}
+	eventConsumer.Processor(bot, update)
 
 }

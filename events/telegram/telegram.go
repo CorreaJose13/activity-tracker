@@ -8,8 +8,6 @@ import (
 	"log"
 	"strings"
 	"time"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 var errMissingUser = errors.New("user object it's empty")
@@ -23,12 +21,14 @@ func Fetch(ctx context.Context, bot *telegram.Bot, updates telegram.Channel) err
 			return nil
 		// receive update from channel and then handle it
 		case update := <-updates:
-			return Process(bot, update)
+			if err := Process(bot, update); err != nil {
+				log.Println(err)
+			}
 		}
 	}
 }
 
-func Process(bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
+func Process(bot *telegram.Bot, update telegram.Update) error {
 	//update.UpdateID can be handy when using webhooks
 	if update.Message != nil {
 		return processMessage(bot, update.Message)
@@ -37,7 +37,7 @@ func Process(bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 	return nil
 }
 
-func processMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) (err error) {
+func processMessage(bot *telegram.Bot, message *telegram.Message) (err error) {
 	user := message.From
 	text := message.Text
 	date := time.Now()
@@ -46,10 +46,9 @@ func processMessage(bot *tgbotapi.BotAPI, message *tgbotapi.Message) (err error)
 		return errMissingUser
 	}
 
-	// Print to console username,text and date
-	log.Printf("%s wrote %s at %s", user.UserName, text, date)
-
 	if strings.HasPrefix(text, "/") {
+		// Print to console username,text and date
+		log.Printf("got new command '%s' from '%s at %s", text, user.UserName, date)
 		err = doCommand(bot, message.Chat.ID, text)
 	}
 	if err != nil {

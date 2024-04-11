@@ -31,6 +31,7 @@ func doCommand(bot *telegram.Bot, chatID int64, command string) (err error) {
 		return sendCommands(bot, chatID)
 	case track:
 		return sendTrackHelp(bot, chatID)
+	//line 35-48 will be replaced with a function that handles /trackprogress + suffix
 	case track + " " + water:
 		return telegram.SendMessage(bot, chatID, "awa")
 	case track + " " + tooth:

@@ -7,11 +7,11 @@ import (
 	"log"
 	"os"
 
-	tgClient "activity-tracker/api/telegram"
-	"activity-tracker/events/telegram"
+	"activity-tracker/api/telegram"
+	event "activity-tracker/events/telegram"
 )
 
-func Processor(bot *tgClient.Bot, updates tgClient.Channel) (err error) {
+func Processor(bot *telegram.Bot, updates telegram.Channel) (err error) {
 	// Create a new cancellable background context. Calling `cancel()` leads to the cancellation of the context
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
@@ -19,7 +19,7 @@ func Processor(bot *tgClient.Bot, updates tgClient.Channel) (err error) {
 	// Tell the user the bot is online
 	log.Println("Estamo activooooo papi, escribe cualquier mondá")
 
-	err = telegram.Fetch(ctx, bot, updates)
+	err = event.Fetch(ctx, bot, updates)
 	if err != nil {
 		fmt.Println(err)
 	}
