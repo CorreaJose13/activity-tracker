@@ -3,13 +3,14 @@ package main
 import (
 	tgClient "activity-tracker/api/telegram"
 	"activity-tracker/config"
-	eventConsumer "activity-tracker/consumer/event-consumer"
+	eventConsumer "activity-tracker/consumer/eventConsumer"
 	"log"
 )
 
 func main() {
 	cfg, err := config.MustLoad()
 	if err != nil {
+		log.Println(cfg)
 		log.Println(err)
 		return
 	}
