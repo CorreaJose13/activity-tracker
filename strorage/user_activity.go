@@ -1,4 +1,4 @@
-package user_activity
+package storage
 
 import (
 	"activity-tracker/database"
