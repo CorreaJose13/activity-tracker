@@ -1,6 +1,7 @@
 package database
 
 import (
+	"activity-tracker/config"
 	"context"
 	"fmt"
 	"log"
@@ -14,11 +15,16 @@ var mongoClient *mongo.Client
 
 const (
 	user         = "activitytracker"
-	pswd         = "activitytracker"
 	databaseName = "activitytracker"
 )
 
 func init() {
+	cfg, err := config.MustLoad()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	pswd := cfg.MongoConnectionToken
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s.2ykonih.mongodb.net/", user, pswd, databaseName))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

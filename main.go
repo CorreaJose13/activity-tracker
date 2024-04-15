@@ -3,7 +3,7 @@ package main
 import (
 	tgClient "activity-tracker/api/telegram"
 	"activity-tracker/config"
-	eventConsumer "activity-tracker/consumer/eventConsumer"
+	eventConsumer "activity-tracker/consumer/event_consumer"
 	"log"
 )
 
