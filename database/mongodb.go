@@ -24,6 +24,7 @@ func init() {
 		log.Println(err)
 		return
 	}
+
 	pswd := cfg.MongoConnectionToken
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s.2ykonih.mongodb.net/", user, pswd, databaseName))
 
