@@ -18,7 +18,7 @@ resource "aws_scheduler_schedule" "drink_water" {
     mode = "OFF"
   }
 
-  schedule_expression = "cron(30 22 * * ? *)"
+  schedule_expression = "cron(0 8-21 * * *)"
   schedule_expression_timezone = "America/Bogota"
 
   target {

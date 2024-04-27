@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"activity-tracker/api/telegram"
+	"activity-tracker/reports"
 	"activity-tracker/storage"
 	"fmt"
 	"strings"
@@ -27,6 +28,11 @@ var (
 		"/tengohambre": sendHambre,
 	}
 
+	suffixReportMap = map[string]func(bot *telegram.Bot, userName string, chatID int64) error{
+		"water": sendWaterReport,
+		// add the other report commands here when they are implemented
+	}
+
 	suffixTrackMap = map[string]func(bot *telegram.Bot, userName string, chatID int64) error{
 		"water":      sendTrackWater,
 		"toothbrush": sendTrackTooth,
@@ -48,6 +54,12 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 		suffix := strings.TrimPrefix(command, "/track ")
 		return handleTrack(bot, chatID, userName, suffix)
 	}
+
+	if strings.HasPrefix(command, "/report ") {
+		suffix := strings.TrimPrefix(command, "/report ")
+		return handleReport(bot, chatID, userName, suffix)
+	}
+
 	return sendUnknownCommand(bot, chatID)
 }
 
@@ -55,6 +67,15 @@ func handleTrack(bot *telegram.Bot, chatID int64, userName, suffix string) error
 	if fn, ok := suffixTrackMap[suffix]; ok {
 		return fn(bot, userName, chatID)
 	}
+
+	return sendUnknownCommand(bot, chatID)
+}
+
+func handleReport(bot *telegram.Bot, chatID int64, userName, suffix string) error {
+	if fn, ok := suffixReportMap[suffix]; ok {
+		return fn(bot, userName, chatID)
+	}
+
 	return sendUnknownCommand(bot, chatID)
 }
 
@@ -138,21 +159,19 @@ func sendTrackPoop(bot *telegram.Bot, userName string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "a ber?")
 }
 
+func sendWaterReport(bot *telegram.Bot, userName string, chatID int64) error {
+	wr, err := reports.GenerateWaterReport(bot, userName, chatID)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return telegram.SendMessage(bot, chatID, wr)
+}
+
 func sendReportHelp(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "reporthelp")
 }
-
-// modificar argumentos
-func sendReportTask(bot *telegram.Bot, chatID int64) error {
-	return telegram.SendMessage(bot, chatID, "")
-}
-
-// modificar argumentos
-func sendReportAll(bot *telegram.Bot, chatID int64) error {
-	return telegram.SendMessage(bot, chatID, "")
-}
-
-//eliminar luego
 
 func sendHatriki(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendPhoto(bot, chatID, hatriki)
