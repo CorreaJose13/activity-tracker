@@ -39,7 +39,7 @@ func handler(ctx context.Context, event Schedule) error {
 		panic(err)
 	}
 
-	err = telegram.SendMessage(bot, i, "Ya tomaste agua perro hpta?")
+	err = telegram.SendMessage(bot, i, "Tetas o culos mi fafá? no sé pero toma awita perro hpta")
 	if err != nil {
 		log.Println(err.Error())
 	}
