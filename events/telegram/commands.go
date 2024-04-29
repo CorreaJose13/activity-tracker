@@ -3,6 +3,7 @@ package telegram
 import (
 	"activity-tracker/api/telegram"
 	"activity-tracker/reports"
+	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
 	"strings"
@@ -16,7 +17,6 @@ const (
 
 var (
 	goalWaterConsume = 3
-	waterLabel       = "water"
 
 	commandMap = map[string]func(bot *telegram.Bot, chatID int64) error{
 		"/hello":       sendHello,
@@ -100,9 +100,9 @@ func sendTrackHelp(bot *telegram.Bot, chatID int64) error {
 }
 
 func isGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
-	currentDayWaterActivities, err := storage.GetCurrentDayActivities(userName, waterLabel)
+	currentDayWaterActivities, err := storage.GetCurrentDayActivities(userName, shared.Water)
 	if err != nil {
-		telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
+		_ = telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
 
 		return false
 	}
@@ -117,13 +117,11 @@ func sendTrackWater(bot *telegram.Bot, userName string, chatID int64) error {
 	}
 
 	now := time.Now()
-	formattedNow := now.Format("2006-01-02 15:04:05")
-	id := fmt.Sprintf("%s-%s-%s", formattedNow, userName, waterLabel)
 
 	userActivity := storage.UserActivity{
-		ID:        id,
+		ID:        storage.GenerateActivityItemID(now, userName, shared.Water),
 		Name:      userName,
-		Activity:  waterLabel,
+		Activity:  shared.Water,
 		CreatedAt: now,
 	}
 
@@ -136,7 +134,21 @@ func sendTrackWater(bot *telegram.Bot, userName string, chatID int64) error {
 }
 
 func sendTrackTooth(bot *telegram.Bot, userName string, chatID int64) error {
-	return telegram.SendMessage(bot, chatID, "diente")
+	now := time.Now()
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
+		Name:      userName,
+		Activity:  shared.ToothBrush,
+		CreatedAt: now,
+	}
+
+	err := storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	return telegram.SendMessage(bot, chatID, "menos mal, ya te olia a qlo la boca mi papacho 💩")
 }
 
 func sendTrackRead(bot *telegram.Bot, userName string, chatID int64) error {
