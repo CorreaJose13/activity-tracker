@@ -23,6 +23,7 @@ type UserActivity struct {
 	Activity     shared.Activity `bson:"activity"`
 	ExerciseType shared.Exercise `bson:"excercise_type,omitempty"`
 	CreatedAt    time.Time       `bson:"created_at"`
+	Content      string          `bson:"content,omitempty"`
 }
 
 // Create an user activity in database

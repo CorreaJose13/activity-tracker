@@ -4,12 +4,15 @@ type Activity string
 
 const (
 	Water      Activity = "water"
-	Wod        Activity = "wod"
+	Gym        Activity = "gym"
 	ToothBrush Activity = "toothbrush"
 	Food       Activity = "food"
 	Sleep      Activity = "sleep"
 	Shower     Activity = "shower"
 	Read       Activity = "read"
+	Run        Activity = "run"
+	Cycling    Activity = "cycling"
+	Poop       Activity = "poop"
 )
 
 type Exercise string
