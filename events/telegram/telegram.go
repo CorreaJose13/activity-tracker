@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"activity-tracker/api/telegram"
-	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -22,25 +21,15 @@ var (
 	}
 )
 
-func Fetch(ctx context.Context, bot *telegram.Bot, updates telegram.Channel) (err error) {
-	// `for {` means the loop is infinite until we manually stop it
-	for {
-		select {
-		// stop looping if ctx is cancelled
-		case <-ctx.Done():
-			//   resolver este inconveniente
-			return
-		// receive update from channel and then handle it
-		case update := <-updates:
-			if err := Process(bot, update); err != nil {
-				return fmt.Errorf("error while proccess: %w", err)
-			}
-		}
+func Fetch(bot *telegram.Bot, update telegram.Update) (err error) {
+	if err := Process(bot, update); err != nil {
+		return fmt.Errorf("error while proccess: %w", err)
 	}
+
+	return nil
 }
 
 func Process(bot *telegram.Bot, update telegram.Update) error {
-	//update.UpdateID can be handy when using webhooks
 	if update.Message != nil {
 		return processMessage(bot, update.Message)
 	}

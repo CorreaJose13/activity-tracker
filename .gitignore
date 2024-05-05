@@ -1,6 +1,13 @@
+# Compressed files
+*.zip
+
 # Environment variables
 *.env
+# Terraform
 **/.terraform/*
 **/terraform.tfstate
 **/terraform.tfstate.backup
 **/.terraform.lock.hcl
+
+#Golang build
+bootstrap

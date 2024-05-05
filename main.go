@@ -1,27 +1,65 @@
 package main
 
 import (
-	tgClient "activity-tracker/api/telegram"
-	"activity-tracker/config"
+	"activity-tracker/api/telegram"
 	eventConsumer "activity-tracker/consumer/event_consumer"
-	"log"
+	"context"
+	"encoding/json"
+	"net/http"
+	"os"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+var (
+	bot      *telegram.Bot
+	tokenbot = os.Getenv("BOT_TOKEN")
+)
+
+func init() {
+	var err error
+	bot, err = telegram.New(tokenbot)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
-	cfg, err := config.MustLoad()
+	lambda.Start(HandleRequest)
+}
+
+func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayProxyResponse, error) {
+	b, err := json.Marshal(event)
 	if err != nil {
-		log.Println(err)
-		return
+		response := events.APIGatewayProxyResponse{
+			StatusCode: http.StatusInternalServerError,
+			Body:       "json.Marshal method threw error",
+		}
+		return response, err
 	}
 
-	bot, err := tgClient.New(cfg.TgBotToken)
-	if err != nil {
-		log.Println(err)
-		return
+	var update tgbotapi.Update
+	if err := json.Unmarshal([]byte(b), &update); err != nil {
+		response := events.APIGatewayProxyResponse{
+			StatusCode: http.StatusInternalServerError,
+			Body:       "json.Unmarshal method threw error",
+		}
+		return response, err
 	}
 
-	update := tgClient.Updates(bot)
 	if err := eventConsumer.Processor(bot, update); err != nil {
-		log.Println(err)
+		response := events.APIGatewayProxyResponse{
+			StatusCode: http.StatusInternalServerError,
+			Body:       "failed processing message",
+		}
+		return response, err
 	}
+
+	response := events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Body:       "success",
+	}
+	return response, nil
 }

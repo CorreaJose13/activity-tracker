@@ -2,7 +2,6 @@ package main
 
 import (
 	"activity-tracker/api/telegram"
-	"activity-tracker/config"
 	"context"
 	"log"
 	"os"
@@ -12,17 +11,14 @@ import (
 )
 
 var (
-	bot    *telegram.Bot
-	chatID = os.Getenv("CHAT_ID")
+	bot      *telegram.Bot
+	botToken = os.Getenv("BOT_TOKEN")
+	chatID   = os.Getenv("CHAT_ID")
 )
 
 func init() {
-	cfg, err := config.MustLoad()
-	if err != nil {
-		panic(err)
-	}
-
-	bot, err = telegram.New(cfg.TgBotToken)
+	var err error
+	bot, err = telegram.New(botToken)
 	if err != nil {
 		panic(err)
 	}
