@@ -10,7 +10,8 @@ const msgCommands = `Here's a list of commands you can send me:
 /track
 /report`
 
-const msgTrack = `hint: "
+const msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa. 
+hint: 
 -/track water
 -/track toothbrush
 -/track read
