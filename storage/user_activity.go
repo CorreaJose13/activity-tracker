@@ -2,6 +2,7 @@ package storage
 
 import (
 	"activity-tracker/database"
+	"activity-tracker/shared"
 	"context"
 	"fmt"
 	"time"
@@ -12,26 +13,17 @@ import (
 const tableName = "user-activity"
 
 var (
-	Leg    Exercise = "leg"
-	Bicep  Exercise = "bicep"
-	Back   Exercise = "back"
-	Tricep Exercise = "tricep"
-	Abs    Exercise = "abs"
-	Cardio Exercise = "cardio"
-	Chest  Exercise = "chest"
-
 	collection = database.GetCollection(tableName)
 )
 
-type Exercise string
-
 // UserActivity contains an user activity info
 type UserActivity struct {
-	ID           string    `bson:"id"`
-	Name         string    `bson:"name"`
-	Activity     string    `bson:"activity"`
-	CreatedAt    time.Time `bson:"created_at"`
-	ExerciseType Exercise  `bson:"excercise_type,omitempty"`
+	ID           string          `bson:"id"`
+	Name         string          `bson:"name"`
+	Activity     shared.Activity `bson:"activity"`
+	ExerciseType shared.Exercise `bson:"excercise_type,omitempty"`
+	CreatedAt    time.Time       `bson:"created_at"`
+	Content      string          `bson:"content,omitempty"`
 }
 
 // Create an user activity in database
@@ -41,8 +33,15 @@ func Create(userActivity UserActivity) error {
 	return err
 }
 
+// GenerateActivityItemID generate the unique id of the activity item that will be saved in the activity database
+func GenerateActivityItemID(now time.Time, username string, activity shared.Activity) string {
+	formattedNow := now.Format("2006-01-02 15:04:05")
+
+	return fmt.Sprintf("%s-%s-%s", formattedNow, username, activity)
+}
+
 // GetCurrentDayActivities returns the current day activities from inputs
-func GetCurrentDayActivities(name, activity string) ([]*UserActivity, error) {
+func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActivity, error) {
 	now := time.Now()
 
 	startDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
@@ -92,7 +91,7 @@ func GetCurrentDayActivities(name, activity string) ([]*UserActivity, error) {
 }
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
-func GetLastWeekUserHistoryPerActivity(name, activity string) ([]*UserActivity, error) {
+func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*UserActivity, error) {
 	// We assume that only runs on sundays when the water scheduler is implemented
 	now := time.Now()
 	daysToMonday := 1 - int(now.Weekday())

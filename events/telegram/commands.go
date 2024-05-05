@@ -3,6 +3,7 @@ package telegram
 import (
 	"activity-tracker/api/telegram"
 	"activity-tracker/reports"
+	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
 	"strings"
@@ -16,7 +17,6 @@ const (
 
 var (
 	goalWaterConsume = 3
-	waterLabel       = "water"
 
 	commandMap = map[string]func(bot *telegram.Bot, chatID int64) error{
 		"/hello":       sendHello,
@@ -28,23 +28,32 @@ var (
 		"/tengohambre": sendHambre,
 	}
 
-	suffixReportMap = map[string]func(bot *telegram.Bot, userName string, chatID int64) error{
+	suffixReportMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
 		"water": sendWaterReport,
 		// add the other report commands here when they are implemented
 	}
 
-	suffixTrackMap = map[string]func(bot *telegram.Bot, userName string, chatID int64) error{
-		"water":      sendTrackWater,
-		"toothbrush": sendTrackTooth,
-		"read":       sendTrackRead,
-		"shower":     sendTrackShower,
-		"sleep":      sendTrackSleep,
-		"gym":        sendTrackGym,
-		"poop":       sendTrackPoop,
+	suffixTrackMap = map[shared.Activity]func(bot *telegram.Bot, userName, content string, chatID int64) error{
+		shared.Water:      sendTrackWater,
+		shared.ToothBrush: sendTrackTooth,
+		shared.Read:       sendTrackRead,
+		shared.Shower:     sendTrackShower,
+		shared.Sleep:      sendTrackSleep,
+		shared.Gym:        sendTrackGym,
+		shared.Poop:       sendTrackPoop,
+		shared.Run:        sendTrackRun,
 	}
 )
 
 func doCommand(bot *telegram.Bot, chatID int64, userName string, command string) error {
+	parts := strings.Split(command, " ")
+
+	before, _, found := strings.Cut(parts[0], "@")
+	if found {
+		parts[0] = before
+		command = strings.Join(parts, " ")
+	}
+
 	if fn, ok := commandMap[command]; ok {
 		return fn(bot, chatID)
 	}
@@ -64,16 +73,20 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 }
 
 func handleTrack(bot *telegram.Bot, chatID int64, userName, suffix string) error {
-	if fn, ok := suffixTrackMap[suffix]; ok {
-		return fn(bot, userName, chatID)
+	before, after, _ := strings.Cut(suffix, " ")
+
+	if fn, ok := suffixTrackMap[shared.Activity(before)]; ok {
+		return fn(bot, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(bot, chatID)
 }
 
 func handleReport(bot *telegram.Bot, chatID int64, userName, suffix string) error {
-	if fn, ok := suffixReportMap[suffix]; ok {
-		return fn(bot, userName, chatID)
+	before, after, _ := strings.Cut(suffix, " ")
+
+	if fn, ok := suffixReportMap[before]; ok {
+		return fn(bot, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(bot, chatID)
@@ -100,9 +113,9 @@ func sendTrackHelp(bot *telegram.Bot, chatID int64) error {
 }
 
 func isGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
-	currentDayWaterActivities, err := storage.GetCurrentDayActivities(userName, waterLabel)
+	currentDayWaterActivities, err := storage.GetCurrentDayActivities(userName, shared.Water)
 	if err != nil {
-		telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
+		_ = telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
 
 		return false
 	}
@@ -110,21 +123,20 @@ func isGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
 	return len(currentDayWaterActivities) >= goalWaterConsume
 }
 
-func sendTrackWater(bot *telegram.Bot, userName string, chatID int64) error {
+func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) error {
 	isGoalCompleted := isGoalCompleted(bot, userName, chatID)
 	if isGoalCompleted {
 		return telegram.SendMessage(bot, chatID, "ya te tomaste los 3L de awa mi papacho, aprende a tener límites")
 	}
 
 	now := time.Now()
-	formattedNow := now.Format("2006-01-02 15:04:05")
-	id := fmt.Sprintf("%s-%s-%s", formattedNow, userName, waterLabel)
 
 	userActivity := storage.UserActivity{
-		ID:        id,
+		ID:        storage.GenerateActivityItemID(now, userName, shared.Water),
 		Name:      userName,
-		Activity:  waterLabel,
+		Activity:  shared.Water,
 		CreatedAt: now,
+		Content:   content, // TODO: add logic to validate the content and use it in isGoalCompleted function
 	}
 
 	err := storage.Create(userActivity)
@@ -135,31 +147,69 @@ func sendTrackWater(bot *telegram.Bot, userName string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de awa golosito")
 }
 
-func sendTrackTooth(bot *telegram.Bot, userName string, chatID int64) error {
-	return telegram.SendMessage(bot, chatID, "diente")
+func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
+	now := time.Now()
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
+		Name:      userName,
+		Activity:  shared.ToothBrush,
+		CreatedAt: now,
+	}
+
+	err := storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	return telegram.SendMessage(bot, chatID, "menos mal, ya te olia a qlo la boca mi papacho 💩")
 }
 
-func sendTrackRead(bot *telegram.Bot, userName string, chatID int64) error {
+func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) error {
+	now := time.Now()
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
+		Name:      userName,
+		Activity:  shared.ToothBrush,
+		CreatedAt: now,
+		Content:   content,
+	}
+
+	err := storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	message := "mi papacho el más usain vol 🏃‍♂️"
+	if content != "" {
+		message = fmt.Sprintf("uy mi papacho corrió %s? lo iba robar un negro o qué manito. anwy congrats", content)
+	}
+
+	return telegram.SendMessage(bot, chatID, message)
+}
+
+func sendTrackRead(bot *telegram.Bot, userName, content string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "lectura")
 }
 
-func sendTrackShower(bot *telegram.Bot, userName string, chatID int64) error {
+func sendTrackShower(bot *telegram.Bot, userName, content string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "ya era hora olias a obo")
 }
 
-func sendTrackSleep(bot *telegram.Bot, userName string, chatID int64) error {
+func sendTrackSleep(bot *telegram.Bot, userName, content string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "zzzzz")
 }
 
-func sendTrackGym(bot *telegram.Bot, userName string, chatID int64) error {
+func sendTrackGym(bot *telegram.Bot, userName, content string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "higado al fallo")
 }
 
-func sendTrackPoop(bot *telegram.Bot, userName string, chatID int64) error {
+func sendTrackPoop(bot *telegram.Bot, userName, content string, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, "a ber?")
 }
 
-func sendWaterReport(bot *telegram.Bot, userName string, chatID int64) error {
+func sendWaterReport(bot *telegram.Bot, userName, content string, chatID int64) error {
 	wr, err := reports.GenerateWaterReport(bot, userName, chatID)
 	if err != nil {
 		fmt.Println(err)

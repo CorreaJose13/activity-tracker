@@ -19,5 +19,6 @@ func getValue(key, def string) string {
 	if ok {
 		return value
 	}
+
 	return def
 }
