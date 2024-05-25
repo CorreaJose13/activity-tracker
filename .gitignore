@@ -3,6 +3,7 @@
 
 # Environment variables
 *.env
+
 # Terraform
 **/.terraform/*
 **/terraform.tfstate
@@ -11,3 +12,7 @@
 
 #Golang build
 bootstrap
+
+#VS Code config
+*.editorconfig
+*.yml
