@@ -64,6 +64,7 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 		return handleTrack(bot, chatID, userName, suffix)
 	}
 
+	// Check if the command starts with "report"
 	if strings.HasPrefix(command, "/report ") {
 		suffix := strings.TrimPrefix(command, "/report ")
 		return handleReport(bot, chatID, userName, suffix)
