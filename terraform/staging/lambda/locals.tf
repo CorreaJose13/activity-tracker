@@ -1,6 +1,5 @@
 locals {
-  bucket_name   = "terraform-tg-lambda"
-  bucket_key    = "dev/terraform.tfstate"
+  bucket_name   = "terraform-tgbot-lambda"
   function_name = "tg_bot_lambda"
   src_path      = "${path.module}/../../../lambda/"
 
