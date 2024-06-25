@@ -14,7 +14,7 @@ data "archive_file" "function_archive" {
 
 resource "aws_lambda_function" "lambda_function" {
   filename         = local.archive_path
-  function_name    = "my_lambda_function"
+  function_name    = local.function_name
   role             = aws_iam_role.lambda_exec.arn
   runtime          = "provided.al2023"
   handler          = "main"
@@ -27,12 +27,3 @@ resource "aws_lambda_function" "lambda_function" {
     }
   }
 }
-
-resource "aws_lambda_permission" "apigw_lambda" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_function.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*"
-}
-
