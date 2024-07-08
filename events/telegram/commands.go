@@ -5,6 +5,7 @@ import (
 	"activity-tracker/reports"
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"flag"
 	"fmt"
 	"strings"
 	"time"
@@ -202,7 +203,37 @@ func sendTrackSleep(bot *telegram.Bot, userName, content string, chatID int64) e
 }
 
 func sendTrackGym(bot *telegram.Bot, userName, content string, chatID int64) error {
-	return telegram.SendMessage(bot, chatID, "higado al fallo")
+	now := time.Now()
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.Gym),
+		Name:      userName,
+		Activity:  shared.Gym,
+		CreatedAt: now,
+		Content:   content,
+	}
+
+	var time string
+	var muscle string
+
+	flag.StringVar(&time, "time", "", "time you were exercising")
+	flag.StringVar(&muscle, "muscle", "", "muscles you exercised splitted by comma [bicep,back,shoulder]")
+	flag.Parse()
+
+	if time == "" {
+		return telegram.SendMessage(bot, chatID, "eh pero cuánto tiempo te ejercitaste sapa inmunda, mandame el -time")
+	}
+
+	if muscle == "" {
+		return telegram.SendMessage(bot, chatID, "chisme al fallo o q? mandame el -muscle sapa: ej: -muscle bicep,pecho,jeta")
+	}
+
+	err := storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	return telegram.SendMessage(bot, chatID, "isss mi papacho el próximo cbum ve")
 }
 
 func sendTrackPoop(bot *telegram.Bot, userName, content string, chatID int64) error {
