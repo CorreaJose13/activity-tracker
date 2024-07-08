@@ -65,6 +65,7 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 		return handleTrack(bot, chatID, userName, suffix)
 	}
 
+	// Check if the command starts with "report"
 	if strings.HasPrefix(command, "/report ") {
 		suffix := strings.TrimPrefix(command, "/report ")
 		return handleReport(bot, chatID, userName, suffix)
@@ -225,7 +226,7 @@ func sendTrackGym(bot *telegram.Bot, userName, content string, chatID int64) err
 	}
 
 	if muscle == "" {
-		return telegram.SendMessage(bot, chatID, "chisme al fallo o q? mandame el -muscle sapa: ej: -muscle bicep,pecho,jeta")
+		return telegram.SendMessage(bot, chatID, "eh pero hiciste chisme al fallo o q 🐸? mandame el -muscle sapa. Ej: -muscle bicep,pecho,jeta")
 	}
 
 	err := storage.Create(userActivity)
