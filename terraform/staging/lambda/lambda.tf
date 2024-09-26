@@ -20,10 +20,11 @@ resource "aws_lambda_function" "lambda_function" {
   handler          = "main"
   architectures    = ["x86_64"]
   source_code_hash = data.archive_file.function_archive.output_base64sha256
+
   environment {
     variables = {
-      BOT_TOKEN   = data.aws_secretsmanager_secret_version.bot_token_version.secret_string
-      MONGO_TOKEN = data.aws_secretsmanager_secret_version.mongo_token_version.secret_string
+      BOT_TOKEN   = "${local.bot_key}"
+      MONGO_TOKEN = "${local.db_key}"
     }
   }
 }
