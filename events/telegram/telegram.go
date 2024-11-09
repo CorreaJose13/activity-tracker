@@ -18,6 +18,7 @@ var (
 		"mcortazar":     true,
 		"JohanFlorez":   true,
 		"jCorreaM":      true,
+		"xxx":           true,
 	}
 )
 
@@ -57,5 +58,6 @@ func processMessage(bot *telegram.Bot, message *telegram.Message) error {
 			return fmt.Errorf("can't do command: %w", err)
 		}
 	}
+
 	return nil
 }

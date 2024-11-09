@@ -16,7 +16,8 @@ const (
 )
 
 var (
-	goalWaterConsume = 3
+	goalWaterConsume    = 3
+	goalKeratineConsume = 1
 
 	commandMap = map[string]func(bot *telegram.Bot, chatID int64) error{
 		"/hello":       sendHello,
@@ -42,6 +43,7 @@ var (
 		shared.Gym:        sendTrackGym,
 		shared.Poop:       sendTrackPoop,
 		shared.Run:        sendTrackRun,
+		shared.Keratine:   sendTrackKeratine,
 	}
 )
 
@@ -124,6 +126,17 @@ func isGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
 	return len(currentDayWaterActivities) >= goalWaterConsume
 }
 
+func isKeratineGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
+	currentDayKeratineActivities, err := storage.GetCurrentDayActivities(userName, shared.Keratine)
+	if err != nil {
+		_ = telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
+
+		return false
+	}
+
+	return len(currentDayKeratineActivities) == goalKeratineConsume
+}
+
 func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) error {
 	isGoalCompleted := isGoalCompleted(bot, userName, chatID)
 	if isGoalCompleted {
@@ -146,6 +159,30 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 	}
 
 	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de awa golosito")
+}
+
+func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64) error {
+	isGoalCompleted := isKeratineGoalCompleted(bot, userName, chatID)
+	if isGoalCompleted {
+		return telegram.SendMessage(bot, chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
+	}
+
+	now := time.Now()
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.Keratine),
+		Name:      userName,
+		Activity:  shared.Keratine,
+		CreatedAt: now,
+		Content:   content,
+	}
+
+	err := storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de keratina >:)")
 }
 
 func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
