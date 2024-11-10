@@ -18,11 +18,11 @@ var (
 		"mcortazar":     true,
 		"JohanFlorez":   true,
 		"jCorreaM":      true,
-		"xxx":           true,
+		"ValeryMolinaB": true,
 	}
 )
 
-func Fetch(bot *telegram.Bot, update telegram.Update) (err error) {
+func Fetch(bot *telegram.Bot, update telegram.Update) error {
 	if err := Process(bot, update); err != nil {
 		return fmt.Errorf("error while proccess: %w", err)
 	}
@@ -47,14 +47,17 @@ func processMessage(bot *telegram.Bot, message *telegram.Message) error {
 		return errMissingUser
 	}
 
-	if _, ok := allowedUsers[user.UserName]; !ok {
+	_, ok := allowedUsers[user.UserName]
+	if !ok {
 		return errInvalidUser
 	}
 
 	if strings.HasPrefix(text, "/") {
 		// Print to console username,text and date
 		log.Printf("got new command '%s' from '%s at %s", text, user.UserName, date)
-		if err := doCommand(bot, message.Chat.ID, user.UserName, text); err != nil {
+
+		err := doCommand(bot, message.Chat.ID, user.UserName, text)
+		if err != nil {
 			return fmt.Errorf("can't do command: %w", err)
 		}
 	}

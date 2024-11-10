@@ -13,6 +13,7 @@ import (
 const (
 	hatriki = "https://external-preview.redd.it/jrtz49x5F1cjvDQoFzb0I4cv2dwhA5RDhqaEcBbiXIU.png?format=pjpg&auto=webp&s=3ef741c83f7927eca91cb8ac2d610fd6f010d5b0"
 	jeje    = "https://static.wikia.nocookie.net/memes-pedia/images/5/5e/Quieres_Pene.jpg/revision/latest/scale-to-width-down/1200?cb=20230507024715&path-prefix=es"
+	pinki   = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.facebook.com%2Fphoto.php%3Ffbid%3D848452543981873%26id%3D100064514057480%26set%3Dp.848452543981873&psig=AOvVaw0FMvi1oHHoy8O-Cy04qnAb&ust=1731361516204000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDHkrXe0okDFQAAAAAdAAAAABAE"
 )
 
 var (
@@ -27,6 +28,7 @@ var (
 		"/report":      sendReportHelp,
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
+		"/pinkipiensa": sendPinki,
 	}
 
 	suffixReportMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
@@ -57,7 +59,8 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 		command = strings.Join(parts, " ")
 	}
 
-	if fn, ok := commandMap[command]; ok {
+	fn, ok := commandMap[command]
+	if ok {
 		return fn(bot, chatID)
 	}
 
@@ -167,6 +170,8 @@ func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64
 	if isGoalCompleted {
 		return telegram.SendMessage(bot, chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
 	}
+
+	// loc, _ := time.LoadLocation("")
 
 	now := time.Now()
 
@@ -278,4 +283,8 @@ func sendHatriki(bot *telegram.Bot, chatID int64) error {
 
 func sendHambre(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendPhoto(bot, chatID, jeje)
+}
+
+func sendPinki(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendPhoto(bot, chatID, pinki)
 }

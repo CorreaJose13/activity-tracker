@@ -11,7 +11,8 @@ import (
 func Processor(bot *telegram.Bot, update telegram.Update) error {
 	log.Println("Bot is running")
 
-	if err := event.Fetch(bot, update); err != nil {
+	err := event.Fetch(bot, update)
+	if err != nil {
 		//a este punto pueden llegar 2 tipos de errores según el trace que llevo: error que arroja el bot.Send
 		//del tgbotapi, y errMissingUser
 		fmt.Println(err)
