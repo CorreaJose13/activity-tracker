@@ -31,9 +31,7 @@ var (
 func GenerateKeratineReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
 	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Keratine)
 	if err != nil {
-		telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
-
-		return "", err
+		return "", telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
 	}
 
 	labelBoolDefault := "nonas"
