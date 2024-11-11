@@ -34,6 +34,7 @@ var (
 	suffixReportMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
 		"water":    sendWaterReport,
 		"keratine": sendKeratineReport,
+		"pipi":     sendPipiReport,
 		// add the other report commands here when they are implemented
 	}
 
@@ -306,6 +307,15 @@ func sendWaterReport(bot *telegram.Bot, userName, content string, chatID int64) 
 	}
 
 	return telegram.SendMessage(bot, chatID, wr)
+}
+
+func sendPipiReport(bot *telegram.Bot, userName, content string, chatID int64) error {
+	pr, err := reports.GeneratePipiReport(bot, userName, chatID)
+	if err != nil {
+		return err
+	}
+
+	return telegram.SendMessage(bot, chatID, pr)
 }
 
 func sendKeratineReport(bot *telegram.Bot, userName, content string, chatID int64) error {
