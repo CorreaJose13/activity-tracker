@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"activity-tracker/api/telegram"
+	"activity-tracker/shared"
 	"errors"
 	"fmt"
 	"log"
@@ -14,11 +15,11 @@ var (
 	errInvalidUser = errors.New("user not allowed to use JH Bot")
 
 	allowedUsers = map[string]bool{
-		"BrayanEscobar": true,
-		"mcortazar":     true,
-		"JohanFlorez":   true,
-		"jCorreaM":      true,
-		"ValeryMolinaB": true,
+		shared.Brayan: true,
+		shared.Mauro:  true,
+		shared.Johan:  true,
+		shared.Jose:   true,
+		shared.Valery: true,
 	}
 )
 
@@ -41,7 +42,13 @@ func Process(bot *telegram.Bot, update telegram.Update) error {
 func processMessage(bot *telegram.Bot, message *telegram.Message) error {
 	user := message.From
 	text := message.Text
-	date := time.Now()
+
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return err
+	}
+
+	date := time.Now().In(location)
 
 	if user == nil {
 		return errMissingUser

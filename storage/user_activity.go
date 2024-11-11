@@ -42,7 +42,12 @@ func GenerateActivityItemID(now time.Time, username string, activity shared.Acti
 
 // GetCurrentDayActivities returns the current day activities from inputs
 func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActivity, error) {
-	now := time.Now()
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now().In(location)
 
 	startDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	endDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location())
@@ -92,7 +97,12 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
 func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*UserActivity, error) {
-	now := time.Now()
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now().In(location)
 
 	// Calculate the days until the last monday
 	daysUntilLastMonday := int(now.Weekday())
