@@ -13,10 +13,12 @@ import (
 const (
 	hatriki = "https://external-preview.redd.it/jrtz49x5F1cjvDQoFzb0I4cv2dwhA5RDhqaEcBbiXIU.png?format=pjpg&auto=webp&s=3ef741c83f7927eca91cb8ac2d610fd6f010d5b0"
 	jeje    = "https://static.wikia.nocookie.net/memes-pedia/images/5/5e/Quieres_Pene.jpg/revision/latest/scale-to-width-down/1200?cb=20230507024715&path-prefix=es"
+	pinki   = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.facebook.com%2Fphoto.php%3Ffbid%3D848452543981873%26id%3D100064514057480%26set%3Dp.848452543981873&psig=AOvVaw0FMvi1oHHoy8O-Cy04qnAb&ust=1731361516204000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKDHkrXe0okDFQAAAAAdAAAAABAE"
 )
 
 var (
-	goalWaterConsume = 3
+	goalWaterConsume    = 3
+	goalKeratineConsume = 1
 
 	commandMap = map[string]func(bot *telegram.Bot, chatID int64) error{
 		"/hello":       sendHello,
@@ -26,10 +28,12 @@ var (
 		"/report":      sendReportHelp,
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
+		"/pinkipiensa": sendPinki,
 	}
 
 	suffixReportMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
-		"water": sendWaterReport,
+		"water":    sendWaterReport,
+		"keratine": sendKeratineReport,
 		// add the other report commands here when they are implemented
 	}
 
@@ -42,6 +46,8 @@ var (
 		shared.Gym:        sendTrackGym,
 		shared.Poop:       sendTrackPoop,
 		shared.Run:        sendTrackRun,
+		shared.Keratine:   sendTrackKeratine,
+		shared.Pipi:       sendTrackPipi,
 	}
 )
 
@@ -54,7 +60,8 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 		command = strings.Join(parts, " ")
 	}
 
-	if fn, ok := commandMap[command]; ok {
+	fn, ok := commandMap[command]
+	if ok {
 		return fn(bot, chatID)
 	}
 
@@ -113,7 +120,7 @@ func sendTrackHelp(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, msgTrack)
 }
 
-func isGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
+func isWaterGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
 	currentDayWaterActivities, err := storage.GetCurrentDayActivities(userName, shared.Water)
 	if err != nil {
 		_ = telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
@@ -124,13 +131,29 @@ func isGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
 	return len(currentDayWaterActivities) >= goalWaterConsume
 }
 
+func isKeratineGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
+	currentDayKeratineActivities, err := storage.GetCurrentDayActivities(userName, shared.Keratine)
+	if err != nil {
+		_ = telegram.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
+
+		return false
+	}
+
+	return len(currentDayKeratineActivities) == goalKeratineConsume
+}
+
 func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) error {
-	isGoalCompleted := isGoalCompleted(bot, userName, chatID)
+	isGoalCompleted := isWaterGoalCompleted(bot, userName, chatID)
 	if isGoalCompleted {
 		return telegram.SendMessage(bot, chatID, "ya te tomaste los 3L de awa mi papacho, aprende a tener límites")
 	}
 
-	now := time.Now()
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
+	}
+
+	now := time.Now().In(location)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Water),
@@ -140,7 +163,7 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 		Content:   content, // TODO: add logic to validate the content and use it in isGoalCompleted function
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
 	}
@@ -148,8 +171,69 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de awa golosito")
 }
 
+func sendTrackPipi(bot *telegram.Bot, userName, content string, chatID int64) error {
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
+	}
+
+	now := time.Now().In(location)
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.Pipi),
+		Name:      userName,
+		Activity:  shared.Pipi,
+		CreatedAt: now,
+	}
+
+	err = storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	if userName == shared.Valery {
+		return telegram.SendMessage(bot, chatID, "Epa, buena esa mionsita 😎")
+	}
+
+	return telegram.SendMessage(bot, chatID, "Epa, buena esa mionsito 😎")
+}
+
+func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64) error {
+	isGoalCompleted := isKeratineGoalCompleted(bot, userName, chatID)
+	if isGoalCompleted {
+		return telegram.SendMessage(bot, chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
+	}
+
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
+	}
+
+	now := time.Now().In(location)
+
+	userActivity := storage.UserActivity{
+		ID:        storage.GenerateActivityItemID(now, userName, shared.Keratine),
+		Name:      userName,
+		Activity:  shared.Keratine,
+		CreatedAt: now,
+		Content:   content,
+	}
+
+	err = storage.Create(userActivity)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+	}
+
+	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de keratina >:)")
+}
+
 func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
-	now := time.Now()
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
+	}
+
+	now := time.Now().In(location)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
@@ -158,7 +242,7 @@ func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
 		CreatedAt: now,
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
 	}
@@ -167,7 +251,12 @@ func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
 }
 
 func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) error {
-	now := time.Now()
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
+	}
+
+	now := time.Now().In(location)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
@@ -177,7 +266,7 @@ func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) err
 		Content:   content,
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
 	}
@@ -213,11 +302,19 @@ func sendTrackPoop(bot *telegram.Bot, userName, content string, chatID int64) er
 func sendWaterReport(bot *telegram.Bot, userName, content string, chatID int64) error {
 	wr, err := reports.GenerateWaterReport(bot, userName, chatID)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
 	return telegram.SendMessage(bot, chatID, wr)
+}
+
+func sendKeratineReport(bot *telegram.Bot, userName, content string, chatID int64) error {
+	kr, err := reports.GenerateKeratineReport(bot, userName, chatID)
+	if err != nil {
+		return err
+	}
+
+	return telegram.SendMessage(bot, chatID, kr)
 }
 
 func sendReportHelp(bot *telegram.Bot, chatID int64) error {
@@ -230,4 +327,13 @@ func sendHatriki(bot *telegram.Bot, chatID int64) error {
 
 func sendHambre(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendPhoto(bot, chatID, jeje)
+}
+
+func sendPinki(bot *telegram.Bot, chatID int64) error {
+	err := telegram.SendPhoto(bot, chatID, pinki)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, "vamos pinki piensa")
+	}
+
+	return nil
 }

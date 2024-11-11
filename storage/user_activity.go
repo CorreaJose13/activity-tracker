@@ -42,7 +42,12 @@ func GenerateActivityItemID(now time.Time, username string, activity shared.Acti
 
 // GetCurrentDayActivities returns the current day activities from inputs
 func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActivity, error) {
-	now := time.Now()
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now().In(location)
 
 	startDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	endDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location())
@@ -92,17 +97,29 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
 func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*UserActivity, error) {
-	// We assume that only runs on sundays when the water scheduler is implemented
-	now := time.Now()
-	daysToMonday := 1 - int(now.Weekday())
-	monday := now.AddDate(0, 0, daysToMonday)
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now().In(location)
+
+	// Calculate the days until the last monday
+	daysUntilLastMonday := int(now.Weekday())
+	if daysUntilLastMonday == 0 { // it's sunday
+		daysUntilLastMonday = 7
+	}
+
+	// Go back to the last monday at 00:00:00
+	startDate := now.AddDate(0, 0, -daysUntilLastMonday)
+	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
 
 	filter := bson.M{}
 
 	filter["name"] = name
 	filter["activity"] = activity
 	filter["created_at"] = bson.M{
-		"$gte": monday,
+		"$gte": startDate,
 		"$lt":  now,
 	}
 

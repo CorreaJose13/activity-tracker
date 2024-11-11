@@ -61,5 +61,6 @@ func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayPro
 		StatusCode: 200,
 		Body:       "success",
 	}
+
 	return response, nil
 }

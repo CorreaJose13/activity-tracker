@@ -28,9 +28,7 @@ var (
 func GenerateWaterReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
 	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "water")
 	if err != nil {
-		telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
-
-		return "", err
+		return "", telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
 	}
 
 	waterPerDay := map[time.Weekday]int{

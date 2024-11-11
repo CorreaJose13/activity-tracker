@@ -13,6 +13,8 @@ const (
 	Run        Activity = "run"
 	Cycling    Activity = "cycling"
 	Poop       Activity = "poop"
+	Keratine   Activity = "keratine"
+	Pipi       Activity = "pipi"
 )
 
 type Exercise string

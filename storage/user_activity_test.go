@@ -11,14 +11,21 @@ import (
 func TestCreate(t *testing.T) {
 	c := require.New(t)
 
+	location, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	now := time.Now().In(location)
+
 	user := UserActivity{
 		ID:        "123",
 		Name:      "br",
 		Activity:  "shit",
-		CreatedAt: time.Now(),
+		CreatedAt: now,
 	}
 
-	err := Create(user)
+	err = Create(user)
 
 	if err != nil {
 		fmt.Println("Falla en crear user activity")
