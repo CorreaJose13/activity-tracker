@@ -45,7 +45,10 @@ func processMessage(bot *telegram.Bot, message *telegram.Message) error {
 	}
 
 	text := message.Text
-	date := shared.GetNow()
+	date, err := shared.GetNow()
+	if err != nil {
+		return err
+	}
 
 	_, ok := allowedUsers[user.UserName]
 	if !ok {

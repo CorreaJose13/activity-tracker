@@ -12,16 +12,23 @@ import (
 func TestCreate(t *testing.T) {
 	c := require.New(t)
 
-	now := shared.GetNow().Format(time.RFC3339)
+	now, err := shared.GetNow()
+	if err != nil {
+		fmt.Println("Failed get now")
+
+		c.Equal("a", "b")
+	}
+
+	nowStr := now.Format(time.RFC3339)
 
 	user := UserActivity{
 		ID:        "123",
 		Name:      "br",
 		Activity:  "shit",
-		CreatedAt: now,
+		CreatedAt: nowStr,
 	}
 
-	err := Create(user)
+	err = Create(user)
 
 	if err != nil {
 		fmt.Println("Falla en crear user activity")

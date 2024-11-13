@@ -1,6 +1,9 @@
 package shared
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Activity string
 
@@ -32,11 +35,11 @@ const (
 )
 
 // GetNow returns the current time in Colombia
-func GetNow() time.Time {
+func GetNow() (time.Time, error) {
 	colombiaLocation, err := time.LoadLocation("America/Bogota")
 	if err != nil {
-		panic("failed to load Colombia timezone: " + err.Error())
+		return time.Now(), fmt.Errorf(ErrGetNow, err.Error())
 	}
 
-	return time.Now().In(colombiaLocation)
+	return time.Now().In(colombiaLocation), nil
 }

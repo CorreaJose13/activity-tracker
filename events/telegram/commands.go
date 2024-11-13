@@ -149,8 +149,12 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 		return telegram.SendMessage(bot, chatID, "ya te tomaste los 3L de awa mi papacho, aprende a tener límites")
 	}
 
-	now := shared.GetNow()
-	nowStr := shared.GetNow().Format(time.RFC3339)
+	now, err := shared.GetNow()
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, err.Error())
+	}
+
+	nowStr := now.Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Water),
@@ -160,7 +164,7 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 		Content:   content, // TODO: add logic to validate the content and use it in isGoalCompleted function
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -169,8 +173,12 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 }
 
 func sendTrackPipi(bot *telegram.Bot, userName, content string, chatID int64) error {
-	now := shared.GetNow()
-	nowStr := shared.GetNow().Format(time.RFC3339)
+	now, err := shared.GetNow()
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, err.Error())
+	}
+
+	nowStr := now.Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Pipi),
@@ -179,7 +187,7 @@ func sendTrackPipi(bot *telegram.Bot, userName, content string, chatID int64) er
 		CreatedAt: nowStr,
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -197,8 +205,12 @@ func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64
 		return telegram.SendMessage(bot, chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
 	}
 
-	now := shared.GetNow()
-	nowStr := shared.GetNow().Format(time.RFC3339)
+	now, err := shared.GetNow()
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, err.Error())
+	}
+
+	nowStr := now.Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Keratine),
@@ -208,7 +220,7 @@ func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64
 		Content:   content,
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -217,8 +229,12 @@ func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64
 }
 
 func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
-	now := shared.GetNow()
-	nowStr := shared.GetNow().Format(time.RFC3339)
+	now, err := shared.GetNow()
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, err.Error())
+	}
+
+	nowStr := now.Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
@@ -227,7 +243,7 @@ func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
 		CreatedAt: nowStr,
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -236,8 +252,12 @@ func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
 }
 
 func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) error {
-	now := shared.GetNow()
-	nowStr := shared.GetNow().Format(time.RFC3339)
+	now, err := shared.GetNow()
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, err.Error())
+	}
+
+	nowStr := now.Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
@@ -247,7 +267,7 @@ func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) err
 		Content:   content,
 	}
 
-	err := storage.Create(userActivity)
+	err = storage.Create(userActivity)
 	if err != nil {
 		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
