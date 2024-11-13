@@ -149,47 +149,39 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 		return telegram.SendMessage(bot, chatID, "ya te tomaste los 3L de awa mi papacho, aprende a tener límites")
 	}
 
-	location, err := time.LoadLocation("America/Bogota")
-	if err != nil {
-		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
-	}
-
-	now := time.Now().In(location)
+	now := shared.GetNow()
+	nowStr := shared.GetNow().Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Water),
 		Name:      userName,
 		Activity:  shared.Water,
-		CreatedAt: now,
+		CreatedAt: nowStr,
 		Content:   content, // TODO: add logic to validate the content and use it in isGoalCompleted function
 	}
 
-	err = storage.Create(userActivity)
+	err := storage.Create(userActivity)
 	if err != nil {
-		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de awa golosito")
 }
 
 func sendTrackPipi(bot *telegram.Bot, userName, content string, chatID int64) error {
-	location, err := time.LoadLocation("America/Bogota")
-	if err != nil {
-		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
-	}
-
-	now := time.Now().In(location)
+	now := shared.GetNow()
+	nowStr := shared.GetNow().Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Pipi),
 		Name:      userName,
 		Activity:  shared.Pipi,
-		CreatedAt: now,
+		CreatedAt: nowStr,
 	}
 
-	err = storage.Create(userActivity)
+	err := storage.Create(userActivity)
 	if err != nil {
-		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	if userName == shared.Valery {
@@ -205,71 +197,59 @@ func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64
 		return telegram.SendMessage(bot, chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
 	}
 
-	location, err := time.LoadLocation("America/Bogota")
-	if err != nil {
-		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
-	}
-
-	now := time.Now().In(location)
+	now := shared.GetNow()
+	nowStr := shared.GetNow().Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.Keratine),
 		Name:      userName,
 		Activity:  shared.Keratine,
-		CreatedAt: now,
+		CreatedAt: nowStr,
 		Content:   content,
 	}
 
-	err = storage.Create(userActivity)
+	err := storage.Create(userActivity)
 	if err != nil {
-		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	return telegram.SendMessage(bot, chatID, "se wardó tu tomadita de keratina >:)")
 }
 
 func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
-	location, err := time.LoadLocation("America/Bogota")
-	if err != nil {
-		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
-	}
-
-	now := time.Now().In(location)
+	now := shared.GetNow()
+	nowStr := shared.GetNow().Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
 		Name:      userName,
 		Activity:  shared.ToothBrush,
-		CreatedAt: now,
+		CreatedAt: nowStr,
 	}
 
-	err = storage.Create(userActivity)
+	err := storage.Create(userActivity)
 	if err != nil {
-		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	return telegram.SendMessage(bot, chatID, "menos mal, ya te olia a qlo la boca mi papacho 💩")
 }
 
 func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) error {
-	location, err := time.LoadLocation("America/Bogota")
-	if err != nil {
-		return telegram.SendMessage(bot, chatID, "nos jodimos pablito trayendo la hora de colombia")
-	}
-
-	now := time.Now().In(location)
+	now := shared.GetNow()
+	nowStr := shared.GetNow().Format(time.RFC3339)
 
 	userActivity := storage.UserActivity{
 		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
 		Name:      userName,
 		Activity:  shared.ToothBrush,
-		CreatedAt: now,
+		CreatedAt: nowStr,
 		Content:   content,
 	}
 
-	err = storage.Create(userActivity)
+	err := storage.Create(userActivity)
 	if err != nil {
-		return telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	message := "mi papacho el más usain vol 🏃‍♂️"

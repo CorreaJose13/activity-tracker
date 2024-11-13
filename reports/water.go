@@ -2,6 +2,7 @@ package reports
 
 import (
 	"activity-tracker/api/telegram"
+	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
 	"time"
@@ -28,7 +29,7 @@ var (
 func GenerateWaterReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
 	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "water")
 	if err != nil {
-		return "", telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	waterPerDay := map[time.Weekday]int{
@@ -42,7 +43,13 @@ func GenerateWaterReport(bot *telegram.Bot, userName string, chatID int64) (stri
 	}
 
 	for _, activity := range waterActivities {
-		day := activity.CreatedAt.Weekday()
+		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
+		if err != nil {
+			return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		}
+
+		day := createdAt.Weekday()
+
 		waterPerDay[day]++
 	}
 

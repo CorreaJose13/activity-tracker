@@ -29,7 +29,7 @@ var (
 func GeneratePipiReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
 	pipiActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Pipi)
 	if err != nil {
-		return "", telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	pipiPerDay := map[time.Weekday]int{
@@ -43,7 +43,13 @@ func GeneratePipiReport(bot *telegram.Bot, userName string, chatID int64) (strin
 	}
 
 	for _, activity := range pipiActivities {
-		day := activity.CreatedAt.Weekday()
+		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
+		if err != nil {
+			return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		}
+
+		day := createdAt.Weekday()
+
 		pipiPerDay[day]++
 	}
 
