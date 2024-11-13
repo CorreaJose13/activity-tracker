@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 )
 
 var (
@@ -41,17 +40,14 @@ func Process(bot *telegram.Bot, update telegram.Update) error {
 
 func processMessage(bot *telegram.Bot, message *telegram.Message) error {
 	user := message.From
-	text := message.Text
-
-	location, err := time.LoadLocation("America/Bogota")
-	if err != nil {
-		return err
-	}
-
-	date := time.Now().In(location)
-
 	if user == nil {
 		return errMissingUser
+	}
+
+	text := message.Text
+	date, err := shared.GetNow()
+	if err != nil {
+		return err
 	}
 
 	_, ok := allowedUsers[user.UserName]

@@ -22,7 +22,7 @@ type UserActivity struct {
 	Name         string          `bson:"name"`
 	Activity     shared.Activity `bson:"activity"`
 	ExerciseType shared.Exercise `bson:"excercise_type,omitempty"`
-	CreatedAt    time.Time       `bson:"created_at"`
+	CreatedAt    string          `bson:"created_at"`
 	Content      string          `bson:"content,omitempty"`
 }
 
@@ -35,30 +35,31 @@ func Create(userActivity UserActivity) error {
 
 // GenerateActivityItemID generate the unique id of the activity item that will be saved in the activity database
 func GenerateActivityItemID(now time.Time, username string, activity shared.Activity) string {
-	formattedNow := now.Format("2006-01-02 15:04:05")
+	formattedNow := now.Format(time.RFC3339)
 
 	return fmt.Sprintf("%s-%s-%s", formattedNow, username, activity)
 }
 
 // GetCurrentDayActivities returns the current day activities from inputs
 func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActivity, error) {
-	location, err := time.LoadLocation("America/Bogota")
+	now, err := shared.GetNow()
 	if err != nil {
 		return nil, err
 	}
 
-	now := time.Now().In(location)
-
 	startDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	endDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location())
+
+	startDayStr := startDay.Format(time.RFC3339)
+	endDayStr := endDay.Format(time.RFC3339)
 
 	filter := bson.M{}
 
 	filter["name"] = name
 	filter["activity"] = activity
 	filter["created_at"] = bson.M{
-		"$gte": startDay,
-		"$lt":  endDay,
+		"$gte": startDayStr,
+		"$lt":  endDayStr,
 	}
 
 	ctx := context.Background()
@@ -97,12 +98,12 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
 func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*UserActivity, error) {
-	location, err := time.LoadLocation("America/Bogota")
+	now, err := shared.GetNow()
 	if err != nil {
 		return nil, err
 	}
 
-	now := time.Now().In(location)
+	nowStr := now.Format(time.RFC3339)
 
 	// Calculate the days until the last monday
 	daysUntilLastMonday := int(now.Weekday())
@@ -114,13 +115,15 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 	startDate := now.AddDate(0, 0, -daysUntilLastMonday)
 	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
 
+	startDateStr := startDate.Format(time.RFC3339)
+
 	filter := bson.M{}
 
 	filter["name"] = name
 	filter["activity"] = activity
 	filter["created_at"] = bson.M{
-		"$gte": startDate,
-		"$lt":  now,
+		"$gte": startDateStr,
+		"$lt":  nowStr,
 	}
 
 	ctx := context.Background()

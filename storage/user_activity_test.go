@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"activity-tracker/shared"
 	"fmt"
 	"testing"
 	"time"
@@ -11,18 +12,20 @@ import (
 func TestCreate(t *testing.T) {
 	c := require.New(t)
 
-	location, err := time.LoadLocation("America/Bogota")
+	now, err := shared.GetNow()
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println("Failed get now")
+
+		c.Equal("a", "b")
 	}
 
-	now := time.Now().In(location)
+	nowStr := now.Format(time.RFC3339)
 
 	user := UserActivity{
 		ID:        "123",
 		Name:      "br",
 		Activity:  "shit",
-		CreatedAt: now,
+		CreatedAt: nowStr,
 	}
 
 	err = Create(user)

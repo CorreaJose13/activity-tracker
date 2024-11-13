@@ -31,7 +31,7 @@ var (
 func GenerateKeratineReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
 	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Keratine)
 	if err != nil {
-		return "", telegram.SendMessage(bot, chatID, "algo falló mi fafá: "+err.Error())
+		return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	labelBoolDefault := "nonas"
@@ -47,7 +47,12 @@ func GenerateKeratineReport(bot *telegram.Bot, userName string, chatID int64) (s
 	}
 
 	for _, activity := range keratineActivities {
-		day := activity.CreatedAt.Weekday()
+		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
+		if err != nil {
+			return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		}
+
+		day := createdAt.Weekday()
 
 		tookKeratine[day] = labelTookKeratine
 	}

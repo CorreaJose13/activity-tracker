@@ -1,5 +1,10 @@
 package shared
 
+import (
+	"fmt"
+	"time"
+)
+
 type Activity string
 
 const (
@@ -28,3 +33,13 @@ const (
 	Cardio Exercise = "cardio"
 	Chest  Exercise = "chest"
 )
+
+// GetNow returns the current time in Colombia
+func GetNow() (time.Time, error) {
+	colombiaLocation, err := time.LoadLocation("America/Bogota")
+	if err != nil {
+		return time.Now(), fmt.Errorf(ErrGetNow, err.Error())
+	}
+
+	return time.Now().In(colombiaLocation), nil
+}
