@@ -1,4 +1,7 @@
 resource "null_resource" "function_binary" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
   provisioner "local-exec" {
     command = "GOOS=linux GOARCH=amd64 go build -o ${local.binary_path} ${local.src_path}"
   }
