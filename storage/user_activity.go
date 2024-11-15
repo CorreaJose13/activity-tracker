@@ -16,32 +16,15 @@ var (
 	collection = database.GetCollection(tableName)
 )
 
-// UserActivity contains an user activity info
-type UserActivity struct {
-	ID           string          `bson:"id"`
-	Name         string          `bson:"name"`
-	Activity     shared.Activity `bson:"activity"`
-	ExerciseType shared.Exercise `bson:"excercise_type,omitempty"`
-	CreatedAt    string          `bson:"created_at"`
-	Content      string          `bson:"content,omitempty"`
-}
-
 // Create an user activity in database
-func Create(userActivity UserActivity) error {
+func Create(userActivity shared.UserActivity) error {
 	_, err := collection.InsertOne(context.Background(), userActivity)
 
 	return err
 }
 
-// GenerateActivityItemID generate the unique id of the activity item that will be saved in the activity database
-func GenerateActivityItemID(now time.Time, username string, activity shared.Activity) string {
-	formattedNow := now.Format(time.RFC3339)
-
-	return fmt.Sprintf("%s-%s-%s", formattedNow, username, activity)
-}
-
 // GetCurrentDayActivities returns the current day activities from inputs
-func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActivity, error) {
+func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	now, err := shared.GetNow()
 	if err != nil {
 		return nil, err
@@ -71,7 +54,7 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 
 	defer items.Close(ctx)
 
-	var activities []*UserActivity
+	var activities []*shared.UserActivity
 
 	for items.Next(ctx) {
 		var bs bson.M
@@ -81,7 +64,7 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 			return nil, fmt.Errorf("decode bson failed")
 		}
 
-		var activity UserActivity
+		var activity shared.UserActivity
 
 		bsBytes, _ := bson.Marshal(bs)
 
@@ -97,7 +80,7 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 }
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
-func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*UserActivity, error) {
+func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	now, err := shared.GetNow()
 	if err != nil {
 		return nil, err
@@ -135,7 +118,7 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 
 	defer items.Close(ctx)
 
-	var activities []*UserActivity
+	var activities []*shared.UserActivity
 
 	for items.Next(ctx) {
 		var bs bson.M
@@ -145,7 +128,7 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 			return nil, fmt.Errorf("decode bson failed")
 		}
 
-		var activity UserActivity
+		var activity shared.UserActivity
 
 		bsBytes, _ := bson.Marshal(bs)
 
