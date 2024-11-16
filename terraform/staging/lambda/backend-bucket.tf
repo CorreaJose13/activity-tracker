@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "backend_bucket" {
-  bucket = local.bucket_name
+  bucket = var.s3_bucket_name
 }
 
 resource "aws_s3_bucket_public_access_block" "backend_bucket" {
