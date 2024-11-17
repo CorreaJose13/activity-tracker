@@ -1,5 +1,5 @@
-resource "aws_iam_role" "lambda_exec_role" {
-  name        = var.lambda_exec_role_name
+resource "aws_iam_role" "lambda_execution_role" {
+  name        = var.lambda_execution_role_name
   description = "IAM Role for Lambda function execution"
 
   assume_role_policy = jsonencode({
@@ -54,11 +54,11 @@ resource "aws_iam_policy" "restrict_lambda_modifications" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
-  role       = aws_iam_role.lambda_exec_role.name
+  role       = aws_iam_role.lambda_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_modifications_policy_attachment" {
-  role       = aws_iam_role.lambda_exec_role.name
+  role       = aws_iam_role.lambda_execution_role.name
   policy_arn = aws_iam_policy.restrict_lambda_modifications.arn
 }

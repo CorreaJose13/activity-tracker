@@ -1,7 +1,7 @@
-variable "lambda_exec_role_name" {
+variable "lambda_execution_role_name" {
   description = "Name for the Lambda execution IAM role"
   type        = string
-  default     = "lambda_exec_role"
+  default     = "lambda_execution_role"
 }
 
 variable "organizations_access_policy_name" {
