@@ -31,3 +31,10 @@ resource "aws_lambda_function" "lambda_function" {
     }
   }
 }
+
+resource "aws_lambda_permission" "invoke_permission" {
+  statement_id  = "AllowAllInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_function.function_name
+  principal     = "*"
+}
