@@ -33,3 +33,15 @@ variable "region" {
   type        = string
   default     = "us-east-1"
 }
+
+variable "bot_api_token" {
+  description = "Telegram bot key"
+  type        = string
+  sensitive   = true
+}
+
+variable "mongo_token" {
+  description = "MongoDB connection token"
+  type        = string
+  sensitive   = true
+}
