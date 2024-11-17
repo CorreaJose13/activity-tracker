@@ -26,8 +26,8 @@ resource "aws_lambda_function" "lambda_function" {
 
   environment {
     variables = {
-      BOT_TOKEN   = "${local.bot_key}"
-      MONGO_TOKEN = "${local.db_key}"
+      BOT_TOKEN   = var.bot_api_token
+      MONGO_TOKEN = var.mongo_token
     }
   }
 }
