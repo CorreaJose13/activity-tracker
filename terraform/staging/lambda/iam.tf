@@ -14,22 +14,40 @@ resource "aws_iam_role" "lambda_exec_role" {
   })
 }
 
-resource "aws_iam_policy" "organizations_access_policy" {
-  name        = var.organizations_access_policy_name
-  description = "Policy to allow Lambda to access AWS Organizations"
+resource "aws_iam_policy" "restrict_lambda_modifications" {
+  name        = "RestrictLambdaModifications"
+  description = "Restrict updates to Lambda function to the organization"
 
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
+        Sid    = "AllowOrgToModifyLambda",
         Effect = "Allow",
         Action = [
-          "organizations:DescribeOrganization",
-          "organizations:ListAccounts",
-          "organizations:ListOrganizationalUnitsForParent",
-          "organizations:ListChildren"
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration",
+          "lambda:AddPermission",
+          "lambda:RemovePermission"
         ],
-        Resource = "*"
+        Resource = aws_lambda_function.lambda_function.arn,
+        Condition = {
+          StringEquals = {
+            "aws:PrincipalOrgID" = "o-dsvxwengs8"
+          }
+        }
+      },
+      {
+        Sid    = "DenyAllOthersFromModifyingLambda",
+        Effect = "Deny",
+        Action = [
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration",
+          "lambda:AddPermission",
+          "lambda:RemovePermission"
+        ],
+        Resource  = aws_lambda_function.lambda_function.arn,
+        Principal = "*"
       }
     ]
   })
@@ -40,7 +58,7 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_org_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "lambda_modifications_policy_attachment" {
   role       = aws_iam_role.lambda_exec_role.name
-  policy_arn = aws_iam_policy.organizations_access_policy.arn
+  policy_arn = aws_iam_policy.restrict_lambda_modifications.arn
 }
