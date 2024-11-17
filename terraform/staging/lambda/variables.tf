@@ -27,3 +27,9 @@ variable "binary_name" {
   type        = string
   default     = "bootstrap"
 }
+
+variable "region" {
+  description = "The AWS region"
+  type        = string
+  default     = "us-east-1"
+}
