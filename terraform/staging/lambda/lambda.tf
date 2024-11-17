@@ -17,8 +17,8 @@ data "archive_file" "function_archive" {
 
 resource "aws_lambda_function" "lambda_function" {
   filename         = local.archive_path
-  function_name    = local.function_name
-  role             = aws_iam_role.lambda_exec.arn
+  function_name    = var.lambda_function_name
+  role             = aws_iam_role.lambda_execution_role.arn
   runtime          = "provided.al2023"
   handler          = "main"
   architectures    = ["x86_64"]
