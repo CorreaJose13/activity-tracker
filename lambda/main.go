@@ -1,10 +1,11 @@
 package main
 
 import (
-	"activity-tracker/api/telegram"
-	eventConsumer "activity-tracker/consumer/event_consumer"
+	"activity-tracker/shared"
+	tg "activity-tracker/telegram"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 
@@ -14,20 +15,27 @@ import (
 )
 
 var (
-	bot      *telegram.Bot
+	bot      *shared.Bot
 	tokenbot = os.Getenv("BOT_TOKEN")
 )
 
 func init() {
 	var err error
-	bot, err = telegram.New(tokenbot)
+	bot, err = shared.New(tokenbot)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func main() {
-	lambda.Start(HandleRequest)
+func processor(bot *shared.Bot, update shared.Update) error {
+	log.Println("Bot is running")
+
+	err := tg.Fetch(bot, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayProxyResponse, error) {
@@ -41,7 +49,9 @@ func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayPro
 	}
 
 	var update tgbotapi.Update
-	if err := json.Unmarshal([]byte(b), &update); err != nil {
+
+	err = json.Unmarshal([]byte(b), &update)
+	if err != nil {
 		response := events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "json.Unmarshal method threw error",
@@ -49,7 +59,8 @@ func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayPro
 		return response, err
 	}
 
-	if err := eventConsumer.Processor(bot, update); err != nil {
+	err = processor(bot, update)
+	if err != nil {
 		response := events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "failed processing message",
@@ -63,4 +74,8 @@ func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayPro
 	}
 
 	return response, nil
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }

@@ -20,6 +20,7 @@ const (
 	Poop       Activity = "poop"
 	Keratine   Activity = "keratine"
 	Pipi       Activity = "pipi"
+	Wishlist   Activity = "wishlist"
 )
 
 type Exercise string

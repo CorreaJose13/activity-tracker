@@ -4,6 +4,7 @@ import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -14,6 +15,8 @@ const tableName = "user-activity"
 
 var (
 	collection = database.GetCollection(tableName)
+
+	ErrNoActivitiesFound = errors.New("no activities found")
 )
 
 // UserActivity contains an user activity info
@@ -155,6 +158,50 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 		}
 
 		activities = append(activities, &activity)
+	}
+
+	return activities, nil
+}
+
+func GetActivityHistory(name string, activity shared.Activity) ([]*UserActivity, error) {
+	filter := bson.M{}
+
+	filter["name"] = name
+	filter["activity"] = activity
+
+	ctx := context.Background()
+
+	items, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer items.Close(ctx)
+
+	var activities []*UserActivity
+
+	for items.Next(ctx) {
+		var bs bson.M
+
+		err := items.Decode(&bs)
+		if err != nil {
+			return nil, fmt.Errorf("decode bson failed")
+		}
+
+		var activity UserActivity
+
+		bsBytes, _ := bson.Marshal(bs)
+
+		err = bson.Unmarshal(bsBytes, &activity)
+		if err != nil {
+			return nil, fmt.Errorf("decode activity failed")
+		}
+
+		activities = append(activities, &activity)
+	}
+
+	if len(activities) == 0 {
+		return nil, ErrNoActivitiesFound
 	}
 
 	return activities, nil
