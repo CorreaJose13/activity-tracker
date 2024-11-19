@@ -84,8 +84,8 @@ terraform apply
 
 If you changed your AWS CLI profile, switch it back to your default settings as needed.
 
-## Authors
+## Contributors
 
-<div align="center">
-    <img src="authors.svg" width="400" height="400" alt="css-in-readme">
-</div>
+<a href="https://github.com/CorreaJose13/activity-tracker/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=CorreaJose13/activity-tracker" />
+</a>
