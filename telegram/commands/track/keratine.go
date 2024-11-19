@@ -23,8 +23,8 @@ func SendTrackKeratine(bot *shared.Bot, userName, content string, chatID int64) 
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.Keratine),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Keratine),
 		Name:      userName,
 		Activity:  shared.Keratine,
 		CreatedAt: nowStr,

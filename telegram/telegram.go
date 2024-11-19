@@ -52,7 +52,7 @@ func processMessage(bot *shared.Bot, message *shared.Message) error {
 	}
 
 	if !strings.HasPrefix(text, "/") {
-		return shared.SendMessage(bot, message.Chat.ID, "ponele un slash perezos@ 😒")
+		return nil
 	}
 
 	err := commands.DoCommand(bot, message.Chat.ID, user.UserName, text)

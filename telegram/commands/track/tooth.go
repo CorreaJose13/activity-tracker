@@ -16,8 +16,8 @@ func SendTrackTooth(bot *shared.Bot, userName, _ string, chatID int64) error {
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.ToothBrush),
 		Name:      userName,
 		Activity:  shared.ToothBrush,
 		CreatedAt: nowStr,

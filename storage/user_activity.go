@@ -146,7 +146,7 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 	return activities, nil
 }
 
-func GetActivityHistory(name string, activity shared.Activity) ([]*UserActivity, error) {
+func GetActivityHistory(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	filter := bson.M{}
 
 	filter["name"] = name
@@ -161,7 +161,7 @@ func GetActivityHistory(name string, activity shared.Activity) ([]*UserActivity,
 
 	defer items.Close(ctx)
 
-	var activities []*UserActivity
+	var activities []*shared.UserActivity
 
 	for items.Next(ctx) {
 		var bs bson.M
@@ -171,7 +171,7 @@ func GetActivityHistory(name string, activity shared.Activity) ([]*UserActivity,
 			return nil, fmt.Errorf("decode bson failed")
 		}
 
-		var activity UserActivity
+		var activity shared.UserActivity
 
 		bsBytes, _ := bson.Marshal(bs)
 

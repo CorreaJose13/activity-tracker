@@ -16,8 +16,8 @@ func SendTrackPipi(bot *shared.Bot, userName, content string, chatID int64) erro
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.Pipi),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Pipi),
 		Name:      userName,
 		Activity:  shared.Pipi,
 		CreatedAt: nowStr,

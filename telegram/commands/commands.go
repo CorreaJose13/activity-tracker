@@ -47,7 +47,7 @@ var (
 		shared.Wishlist:   track.SendTrackWishlist,
 	}
 
-	suffixGoalMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
+	suffixGoalMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
 		"create": goals.SendCreateGoal,
 		"delete": goals.SendDeleteGoal,
 		"update": goals.SendUpdateGoal,
@@ -132,7 +132,7 @@ func handleReport(bot *shared.Bot, chatID int64, userName, suffix string) error 
 	return sendUnknownCommand(bot, chatID)
 }
 
-func handleGoal(bot *telegram.Bot, chatID int64, userName, suffix string) error {
+func handleGoal(bot *shared.Bot, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixGoalMap[before]; ok {
