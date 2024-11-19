@@ -35,7 +35,7 @@ func handler(ctx context.Context, event Schedule) error {
 		panic(err)
 	}
 
-	err = shared.SendMessage(bot, i, "Tetas o culos mi fafá? no sé pero toma awita perro hpta")
+	err = shared.SendMessage(bot, i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
 	if err != nil {
 		log.Println(err.Error())
 	}

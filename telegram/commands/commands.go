@@ -2,6 +2,7 @@ package commands
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
 	"activity-tracker/telegram/commands/track"
 	"strings"
@@ -20,6 +21,7 @@ var (
 		"/commands":    sendCommands,
 		"/track":       sendTrackHelp,
 		"/report":      sendReportHelp,
+		"/goal":        sendGoalHelp,
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
 		"/pinkipiensa": sendPinki,
@@ -43,6 +45,13 @@ var (
 		shared.Keratine:   track.SendTrackKeratine,
 		shared.Pipi:       track.SendTrackPipi,
 		shared.Wishlist:   track.SendTrackWishlist,
+	}
+
+	suffixGoalMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
+		"create": goals.SendCreateGoal,
+		"delete": goals.SendDeleteGoal,
+		"update": goals.SendUpdateGoal,
+		"all":    goals.SendAllGoals,
 	}
 
 	msgHelp = `Quieres pene?`
@@ -85,16 +94,19 @@ func DoCommand(bot *shared.Bot, chatID int64, userName string, command string) e
 		return fn(bot, chatID)
 	}
 
-	// Check if the command starts with "track"
 	if strings.HasPrefix(command, "/track ") {
 		suffix := strings.TrimPrefix(command, "/track ")
 		return handleTrack(bot, chatID, userName, suffix)
 	}
 
-	// Check if the command starts with "report"
 	if strings.HasPrefix(command, "/report ") {
 		suffix := strings.TrimPrefix(command, "/report ")
 		return handleReport(bot, chatID, userName, suffix)
+	}
+
+	if strings.HasPrefix(command, "/goal ") {
+		suffix := strings.TrimPrefix(command, "/goal ")
+		return handleGoal(bot, chatID, userName, suffix)
 	}
 
 	return sendUnknownCommand(bot, chatID)
@@ -120,6 +132,16 @@ func handleReport(bot *shared.Bot, chatID int64, userName, suffix string) error 
 	return sendUnknownCommand(bot, chatID)
 }
 
+func handleGoal(bot *telegram.Bot, chatID int64, userName, suffix string) error {
+	before, after, _ := strings.Cut(suffix, " ")
+
+	if fn, ok := suffixGoalMap[before]; ok {
+		return fn(bot, userName, after, chatID)
+	}
+
+	return sendUnknownCommand(bot, chatID)
+}
+
 func sendUnknownCommand(bot *shared.Bot, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgUnknownCommand)
 }
@@ -130,6 +152,10 @@ func sendHello(bot *shared.Bot, chatID int64) error {
 
 func sendHelp(bot *shared.Bot, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgHelp)
+}
+
+func sendGoalHelp(bot *shared.Bot, chatID int64) error {
+	return shared.SendMessage(bot, chatID, msgGoal)
 }
 
 func sendCommands(bot *shared.Bot, chatID int64) error {
