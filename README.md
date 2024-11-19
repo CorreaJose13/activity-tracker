@@ -1,29 +1,85 @@
-# README #
+# Deployment Instructions
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## Prerequisites
 
-### What is this repository for? ###
+To deploy changes to the bot, ensure you have the following:
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+- **AWS CLI** installed and configured.
+- **Terraform** installed.
+- **IAM** user credentials provided by the team.
 
-### How do I get set up? ###
+## Steps to Deploy
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### 1. Configure Your AWS CLI Profile
 
-### Contribution guidelines ###
+- Create a new AWS CLI profile using the command:
 
-* Writing tests
-* Code review
-* Other guidelines
+```bash
+aws configure --profile my-profile
+```
 
-### Who do I talk to? ###
+Replace <code>my-profile</code> with your preferred profile name.
 
-* Repo owner or admin
-* Other community or team contact
+- Enter the required details:
+
+  - AWS Access Key ID and AWS Secret Access Key (available in the Security Credentials section of your AWS account by creating an access key).
+  - Default Region Name: Use <code>us-east-1</code>.
+
+### 2. Set AWS CLI Profile (If Needed)
+
+- To switch to your configured profile, execute (in Linux/macOS):
+
+```bash
+export AWS_PROFILE=my-profile
+```
+
+### 3. Prepare for Deployment
+
+- Navigate to the lambda terraform directory:
+
+```bash
+cd terraform/staging/lambda
+```
+
+- Initialize Terraform:
+
+```bash
+terraform init
+```
+
+### 4. Set Sensitive Values
+
+To protect the project sensitive values (e.g., Telegram bot API token and MongoDB token) you can choose one of two methods:
+
+a. Using a <code>.tfvars</code> file
+
+- Create a file named <code>secrets.tfvars</code> in the lambda directory:
+
+```bash
+bot_api_token = "BOT-TOKEN"
+mongo_token = "MONGO-TOKEN"
+```
+
+- Deploy using the command:
+
+```bash
+terraform apply -var-file="secrets.tfvars"
+```
+
+b. Using Environment Variables
+
+- Set environment variables with the command:
+
+```bash
+export TF_VAR_bot_api_token=BOT-TOKEN TF_VAR_mongo_token=MONGO-TOKEN
+```
+
+- Deploy using:
+
+```bash
+terraform apply
+```
+
+### 5. Revert AWS CLI Profile (If Needed)
+
+If you changed your AWS CLI profile, switch it back to your default settings as needed.
