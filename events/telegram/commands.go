@@ -5,6 +5,7 @@ import (
 	"activity-tracker/reports"
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -25,6 +26,7 @@ var (
 		"/help":        sendHelp,
 		"/commands":    sendCommands,
 		"/track":       sendTrackHelp,
+		"/goal":        sendGoalHelp,
 		"/report":      sendReportHelp,
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
@@ -49,6 +51,13 @@ var (
 		shared.Run:        sendTrackRun,
 		shared.Keratine:   sendTrackKeratine,
 		shared.Pipi:       sendTrackPipi,
+	}
+
+	suffixGoalMap = map[string]func(bot *telegram.Bot, userName, content string, chatID int64) error{
+		"create": sendCreateGoal,
+		"delete": sendDeleteGoal,
+		"update": sendUpdateGoal,
+		"all":    sendAllGoals,
 	}
 )
 
@@ -78,6 +87,11 @@ func doCommand(bot *telegram.Bot, chatID int64, userName string, command string)
 		return handleReport(bot, chatID, userName, suffix)
 	}
 
+	if strings.HasPrefix(command, "/goal ") {
+		suffix := strings.TrimPrefix(command, "/goal ")
+		return handleGoal(bot, chatID, userName, suffix)
+	}
+
 	return sendUnknownCommand(bot, chatID)
 }
 
@@ -95,6 +109,16 @@ func handleReport(bot *telegram.Bot, chatID int64, userName, suffix string) erro
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixReportMap[before]; ok {
+		return fn(bot, userName, after, chatID)
+	}
+
+	return sendUnknownCommand(bot, chatID)
+}
+
+func handleGoal(bot *telegram.Bot, chatID int64, userName, suffix string) error {
+	before, after, _ := strings.Cut(suffix, " ")
+
+	if fn, ok := suffixGoalMap[before]; ok {
 		return fn(bot, userName, after, chatID)
 	}
 
@@ -119,6 +143,14 @@ func sendCommands(bot *telegram.Bot, chatID int64) error {
 
 func sendTrackHelp(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendMessage(bot, chatID, msgTrack)
+}
+
+func sendGoalHelp(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, msgGoal)
+}
+
+func sendReportHelp(bot *telegram.Bot, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, "reporthelp")
 }
 
 func isWaterGoalCompleted(bot *telegram.Bot, userName string, chatID int64) bool {
@@ -156,8 +188,8 @@ func sendTrackWater(bot *telegram.Bot, userName, content string, chatID int64) e
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.Water),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Water),
 		Name:      userName,
 		Activity:  shared.Water,
 		CreatedAt: nowStr,
@@ -180,8 +212,8 @@ func sendTrackPipi(bot *telegram.Bot, userName, content string, chatID int64) er
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.Pipi),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Pipi),
 		Name:      userName,
 		Activity:  shared.Pipi,
 		CreatedAt: nowStr,
@@ -212,8 +244,8 @@ func sendTrackKeratine(bot *telegram.Bot, userName, content string, chatID int64
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.Keratine),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Keratine),
 		Name:      userName,
 		Activity:  shared.Keratine,
 		CreatedAt: nowStr,
@@ -236,8 +268,8 @@ func sendTrackTooth(bot *telegram.Bot, userName, _ string, chatID int64) error {
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.ToothBrush),
 		Name:      userName,
 		Activity:  shared.ToothBrush,
 		CreatedAt: nowStr,
@@ -259,8 +291,8 @@ func sendTrackRun(bot *telegram.Bot, userName, content string, chatID int64) err
 
 	nowStr := now.Format(time.RFC3339)
 
-	userActivity := storage.UserActivity{
-		ID:        storage.GenerateActivityItemID(now, userName, shared.ToothBrush),
+	userActivity := shared.UserActivity{
+		ID:        shared.GenerateActivityItemID(now, userName, shared.ToothBrush),
 		Name:      userName,
 		Activity:  shared.ToothBrush,
 		CreatedAt: nowStr,
@@ -327,10 +359,6 @@ func sendKeratineReport(bot *telegram.Bot, userName, content string, chatID int6
 	return telegram.SendMessage(bot, chatID, kr)
 }
 
-func sendReportHelp(bot *telegram.Bot, chatID int64) error {
-	return telegram.SendMessage(bot, chatID, "reporthelp")
-}
-
 func sendHatriki(bot *telegram.Bot, chatID int64) error {
 	return telegram.SendPhoto(bot, chatID, hatriki)
 }
@@ -346,4 +374,47 @@ func sendPinki(bot *telegram.Bot, chatID int64) error {
 	}
 
 	return nil
+}
+
+func sendCreateGoal(bot *telegram.Bot, userName, content string, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, "goal created fake")
+}
+
+func sendDeleteGoal(bot *telegram.Bot, userName, content string, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, "goal deleted fake")
+}
+
+func sendUpdateGoal(bot *telegram.Bot, userName, content string, chatID int64) error {
+	return telegram.SendMessage(bot, chatID, "goal updated fake")
+}
+
+func parseGoalsToString(bot *telegram.Bot, chatID int64, goals []*shared.PersonalGoal) string {
+	var result strings.Builder
+	for _, goal := range goals {
+		goalConfigJSON, err := json.Marshal(goal.GoalConfig)
+		if err != nil {
+			_ = telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+
+			continue
+		}
+
+		result.WriteString(fmt.Sprintf("- %s: %s\n", goal.Activity, string(goalConfigJSON)))
+	}
+
+	return result.String()
+}
+
+func sendAllGoals(bot *telegram.Bot, userName, content string, chatID int64) error {
+	goals, err := storage.GetAllPersonalGoals(userName)
+	if err != nil {
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+	}
+
+	if len(goals) == 0 {
+		return telegram.SendMessage(bot, chatID, fmt.Sprintf("carecemos de objetivos bb, animate a crear uno y redimes un besucio de @%s", shared.GetRandomUserName()))
+	}
+
+	msg := parseGoalsToString(bot, chatID, goals)
+
+	return telegram.SendMessage(bot, chatID, fmt.Sprintf(msgAllGoals, msg))
 }
