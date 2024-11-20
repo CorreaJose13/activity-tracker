@@ -1,7 +1,7 @@
 package report
 
 import (
-	"activity-tracker/api/telegram"
+	"activity-tracker/shared"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,7 +10,7 @@ import (
 func TestPipiReport(t *testing.T) {
 	c := require.New(t)
 
-	pr, err := generatePipiReport(&telegram.Bot{}, "test", 1)
+	pr, err := generatePipiReport(&shared.Bot{}, "test", 1)
 	c.NoError(err)
 
 	// It is set to fail to check the trace code in pipi.go

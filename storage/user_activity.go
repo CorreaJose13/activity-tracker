@@ -16,6 +16,7 @@ const tableName = "user-activity"
 var (
 	collection = database.GetCollection(tableName)
 
+	// ErrNoActivitiesFound is returned when no activities are found
 	ErrNoActivitiesFound = errors.New("no activities found")
 )
 
@@ -146,6 +147,7 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 	return activities, nil
 }
 
+// GetActivityHistory returns the activities by username and activity
 func GetActivityHistory(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	filter := bson.M{}
 

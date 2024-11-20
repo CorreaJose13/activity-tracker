@@ -2,7 +2,6 @@ package shared
 
 import (
 	"fmt"
-	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -29,8 +28,6 @@ func New(token string) (*Bot, error) {
 
 // SendMessage sends a message to the chat
 func SendMessage(bot *Bot, chatID int64, text string) error {
-	log.Println(chatID)
-
 	msg := tgbotapi.NewMessage(chatID, text)
 
 	_, err := bot.Send(msg)

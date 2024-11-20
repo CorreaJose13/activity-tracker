@@ -6,5 +6,5 @@ import "net/url"
 func IsValidURL(link string) bool {
 	parsedURL, err := url.Parse(link)
 
-	return err == nil && parsedURL.Scheme != "" && parsedURL.Host != ""
+	return err == nil && parsedURL != nil && parsedURL.Scheme != "" && parsedURL.Host != ""
 }

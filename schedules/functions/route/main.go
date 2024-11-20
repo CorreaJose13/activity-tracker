@@ -3,7 +3,6 @@ package main
 import (
 	"activity-tracker/shared"
 	"context"
-	"log"
 	"os"
 	"strconv"
 
@@ -35,12 +34,7 @@ func handler(ctx context.Context, event Schedule) error {
 		panic(err)
 	}
 
-	err = shared.SendMessage(bot, i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	return nil
+	return shared.SendMessage(bot, i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
 }
 
 func main() {
