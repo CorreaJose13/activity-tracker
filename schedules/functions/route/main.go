@@ -1,9 +1,8 @@
 package main
 
 import (
-	"activity-tracker/api/telegram"
+	"activity-tracker/shared"
 	"context"
-	"log"
 	"os"
 	"strconv"
 
@@ -11,14 +10,14 @@ import (
 )
 
 var (
-	bot      *telegram.Bot
+	bot      *shared.Bot
 	botToken = os.Getenv("BOT_TOKEN")
 	chatID   = os.Getenv("CHAT_ID")
 )
 
 func init() {
 	var err error
-	bot, err = telegram.New(botToken)
+	bot, err = shared.New(botToken)
 	if err != nil {
 		panic(err)
 	}
@@ -35,12 +34,7 @@ func handler(ctx context.Context, event Schedule) error {
 		panic(err)
 	}
 
-	err = telegram.SendMessage(bot, i, "Tetas o culos mi fafá? no sé pero toma awita perro hpta")
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	return nil
+	return shared.SendMessage(bot, i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
 }
 
 func main() {

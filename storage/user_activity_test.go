@@ -21,7 +21,7 @@ func TestCreate(t *testing.T) {
 
 	nowStr := now.Format(time.RFC3339)
 
-	user := UserActivity{
+	user := shared.UserActivity{
 		ID:        "123",
 		Name:      "br",
 		Activity:  "shit",

@@ -1,7 +1,6 @@
-package reports
+package report
 
 import (
-	"activity-tracker/api/telegram"
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
@@ -25,11 +24,20 @@ var (
 	`
 )
 
-// GeneratePipiReport generates a weekly pipi report
-func GeneratePipiReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
+// SendPipiReport sends the pipi report
+func SendPipiReport(bot *shared.Bot, userName, content string, chatID int64) error {
+	pr, err := generatePipiReport(bot, userName, chatID)
+	if err != nil {
+		return err
+	}
+
+	return shared.SendMessage(bot, chatID, pr)
+}
+
+func generatePipiReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	pipiActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Pipi)
 	if err != nil {
-		return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	pipiPerDay := map[time.Weekday]int{
@@ -45,7 +53,7 @@ func GeneratePipiReport(bot *telegram.Bot, userName string, chatID int64) (strin
 	for _, activity := range pipiActivities {
 		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
 		if err != nil {
-			return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 		}
 
 		day := createdAt.Weekday()

@@ -1,7 +1,6 @@
-package reports
+package report
 
 import (
-	"activity-tracker/api/telegram"
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
@@ -27,11 +26,20 @@ var (
 	labelTookKeratine = "sisas"
 )
 
-// GenerateKeratineReport generates a weekly keratine report
-func GenerateKeratineReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
+// SendKeratineReport sends the keratine report
+func SendKeratineReport(bot *shared.Bot, userName, content string, chatID int64) error {
+	kr, err := generateKeratineReport(bot, userName, chatID)
+	if err != nil {
+		return err
+	}
+
+	return shared.SendMessage(bot, chatID, kr)
+}
+
+func generateKeratineReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Keratine)
 	if err != nil {
-		return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	labelBoolDefault := "nonas"
@@ -49,7 +57,7 @@ func GenerateKeratineReport(bot *telegram.Bot, userName string, chatID int64) (s
 	for _, activity := range keratineActivities {
 		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
 		if err != nil {
-			return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 		}
 
 		day := createdAt.Weekday()

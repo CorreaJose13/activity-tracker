@@ -1,7 +1,6 @@
-package reports
+package report
 
 import (
-	"activity-tracker/api/telegram"
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
@@ -25,11 +24,20 @@ var (
 	`
 )
 
-// GenerateWaterReport generates a weekly water report
-func GenerateWaterReport(bot *telegram.Bot, userName string, chatID int64) (string, error) {
+// SendWaterReport sends the water report
+func SendWaterReport(bot *shared.Bot, userName, content string, chatID int64) error {
+	wr, err := generateWaterReport(bot, userName, chatID)
+	if err != nil {
+		return err
+	}
+
+	return shared.SendMessage(bot, chatID, wr)
+}
+
+func generateWaterReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "water")
 	if err != nil {
-		return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	waterPerDay := map[time.Weekday]int{
@@ -45,7 +53,7 @@ func GenerateWaterReport(bot *telegram.Bot, userName string, chatID int64) (stri
 	for _, activity := range waterActivities {
 		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
 		if err != nil {
-			return "", telegram.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 		}
 
 		day := createdAt.Weekday()
