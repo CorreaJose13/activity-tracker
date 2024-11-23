@@ -5,7 +5,9 @@ import (
 	"activity-tracker/reports"
 	"activity-tracker/shared"
 	"activity-tracker/storage"
-	"flag"
+
+	flag "github.com/spf13/pflag"
+
 	"fmt"
 	"strings"
 	"time"
@@ -217,8 +219,8 @@ func sendTrackGym(bot *telegram.Bot, userName, content string, chatID int64) err
 	var time string
 	var muscle string
 
-	flag.StringVar(&time, "time", "", "time you were exercising")
-	flag.StringVar(&muscle, "muscle", "", "muscles you exercised splitted by comma [bicep,back,shoulder]")
+	flag.StringVarP(&time, "time", "t", "", "time you were exercising")
+	flag.StringVarP(&muscle, "muscle", "p", "", "muscles you exercised splitted by comma [bicep,back,shoulder]")
 	flag.Parse()
 
 	if time == "" {
