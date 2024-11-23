@@ -1,14 +1,14 @@
 resource "aws_iam_role" "schedules_lambda" {
-  name               = "schedules-lambda"
+  name = "schedules-lambda"
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17",
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect    = "Allow",
+        Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com"
         },
-        Action    = "sts:AssumeRole"
+        Action = "sts:AssumeRole"
       }
     ]
   })
@@ -21,11 +21,11 @@ resource "aws_iam_policy_attachment" "lambda_basic_logs" {
 }
 
 resource "aws_lambda_function" "schedules_route" {
-  filename      = "example.zip"
-  function_name = "schedules-route"
-  role          = aws_iam_role.schedules_lambda.arn
-  runtime       = "provided.al2"
-  handler       = "main"
-  architectures = ["arm64"]
+  filename         = "example.zip"
+  function_name    = "schedules-route"
+  role             = aws_iam_role.schedules_lambda.arn
+  runtime          = "provided.al2"
+  handler          = "main"
+  architectures    = ["arm64"]
   source_code_hash = filebase64sha256("example.zip")
 }

@@ -4,6 +4,7 @@ import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -14,46 +15,38 @@ const tableName = "user-activity"
 
 var (
 	collection = database.GetCollection(tableName)
+
+	// ErrNoActivitiesFound is returned when no activities are found
+	ErrNoActivitiesFound = errors.New("no activities found")
 )
 
-// UserActivity contains an user activity info
-type UserActivity struct {
-	ID           string          `bson:"id"`
-	Name         string          `bson:"name"`
-	Activity     shared.Activity `bson:"activity"`
-	ExerciseType shared.Exercise `bson:"excercise_type,omitempty"`
-	CreatedAt    time.Time       `bson:"created_at"`
-	Content      string          `bson:"content,omitempty"`
-}
-
 // Create an user activity in database
-func Create(userActivity UserActivity) error {
+func Create(userActivity shared.UserActivity) error {
 	_, err := collection.InsertOne(context.Background(), userActivity)
 
 	return err
 }
 
-// GenerateActivityItemID generate the unique id of the activity item that will be saved in the activity database
-func GenerateActivityItemID(now time.Time, username string, activity shared.Activity) string {
-	formattedNow := now.Format("2006-01-02 15:04:05")
-
-	return fmt.Sprintf("%s-%s-%s", formattedNow, username, activity)
-}
-
 // GetCurrentDayActivities returns the current day activities from inputs
-func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActivity, error) {
-	now := time.Now()
+func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	now, err := shared.GetNow()
+	if err != nil {
+		return nil, err
+	}
 
 	startDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	endDay := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, now.Location())
+
+	startDayStr := startDay.Format(time.RFC3339)
+	endDayStr := endDay.Format(time.RFC3339)
 
 	filter := bson.M{}
 
 	filter["name"] = name
 	filter["activity"] = activity
 	filter["created_at"] = bson.M{
-		"$gte": startDay,
-		"$lt":  endDay,
+		"$gte": startDayStr,
+		"$lt":  endDayStr,
 	}
 
 	ctx := context.Background()
@@ -65,7 +58,7 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 
 	defer items.Close(ctx)
 
-	var activities []*UserActivity
+	var activities []*shared.UserActivity
 
 	for items.Next(ctx) {
 		var bs bson.M
@@ -75,7 +68,7 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 			return nil, fmt.Errorf("decode bson failed")
 		}
 
-		var activity UserActivity
+		var activity shared.UserActivity
 
 		bsBytes, _ := bson.Marshal(bs)
 
@@ -91,19 +84,33 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*UserActi
 }
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
-func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*UserActivity, error) {
-	// We assume that only runs on sundays when the water scheduler is implemented
-	now := time.Now()
-	daysToMonday := 1 - int(now.Weekday())
-	monday := now.AddDate(0, 0, daysToMonday)
+func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	now, err := shared.GetNow()
+	if err != nil {
+		return nil, err
+	}
+
+	nowStr := now.Format(time.RFC3339)
+
+	// Calculate the days until the last monday
+	daysUntilLastMonday := int(now.Weekday())
+	if daysUntilLastMonday == 0 { // it's sunday
+		daysUntilLastMonday = 7
+	}
+
+	// Go back to the last monday at 00:00:00
+	startDate := now.AddDate(0, 0, -daysUntilLastMonday)
+	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
+
+	startDateStr := startDate.Format(time.RFC3339)
 
 	filter := bson.M{}
 
 	filter["name"] = name
 	filter["activity"] = activity
 	filter["created_at"] = bson.M{
-		"$gte": monday,
-		"$lt":  now,
+		"$gte": startDateStr,
+		"$lt":  nowStr,
 	}
 
 	ctx := context.Background()
@@ -115,7 +122,7 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 
 	defer items.Close(ctx)
 
-	var activities []*UserActivity
+	var activities []*shared.UserActivity
 
 	for items.Next(ctx) {
 		var bs bson.M
@@ -125,7 +132,7 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 			return nil, fmt.Errorf("decode bson failed")
 		}
 
-		var activity UserActivity
+		var activity shared.UserActivity
 
 		bsBytes, _ := bson.Marshal(bs)
 
@@ -135,6 +142,51 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 		}
 
 		activities = append(activities, &activity)
+	}
+
+	return activities, nil
+}
+
+// GetActivityHistory returns the activities by username and activity
+func GetActivityHistory(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	filter := bson.M{}
+
+	filter["name"] = name
+	filter["activity"] = activity
+
+	ctx := context.Background()
+
+	items, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer items.Close(ctx)
+
+	var activities []*shared.UserActivity
+
+	for items.Next(ctx) {
+		var bs bson.M
+
+		err := items.Decode(&bs)
+		if err != nil {
+			return nil, fmt.Errorf("decode bson failed")
+		}
+
+		var activity shared.UserActivity
+
+		bsBytes, _ := bson.Marshal(bs)
+
+		err = bson.Unmarshal(bsBytes, &activity)
+		if err != nil {
+			return nil, fmt.Errorf("decode activity failed")
+		}
+
+		activities = append(activities, &activity)
+	}
+
+	if len(activities) == 0 {
+		return nil, ErrNoActivitiesFound
 	}
 
 	return activities, nil

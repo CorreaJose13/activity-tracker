@@ -1,8 +1,8 @@
 package main
 
 import (
-	"activity-tracker/api/telegram"
-	eventConsumer "activity-tracker/consumer/event_consumer"
+	"activity-tracker/shared"
+	tg "activity-tracker/telegram"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -14,52 +14,60 @@ import (
 )
 
 var (
-	bot      *telegram.Bot
+	bot      *shared.Bot
 	tokenbot = os.Getenv("BOT_TOKEN")
 )
 
 func init() {
 	var err error
-	bot, err = telegram.New(tokenbot)
+	bot, err = shared.New(tokenbot)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func main() {
-	lambda.Start(HandleRequest)
+func processor(bot *shared.Bot, update shared.Update) error {
+	err := tg.Fetch(bot, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayProxyResponse, error) {
 	b, err := json.Marshal(event)
 	if err != nil {
-		response := events.APIGatewayProxyResponse{
+		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "json.Marshal method threw error",
-		}
-		return response, err
+		}, err
 	}
 
 	var update tgbotapi.Update
-	if err := json.Unmarshal([]byte(b), &update); err != nil {
-		response := events.APIGatewayProxyResponse{
+
+	err = json.Unmarshal([]byte(b), &update)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "json.Unmarshal method threw error",
-		}
-		return response, err
+		}, err
 	}
 
-	if err := eventConsumer.Processor(bot, update); err != nil {
-		response := events.APIGatewayProxyResponse{
+	err = processor(bot, update)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "failed processing message",
-		}
-		return response, err
+		}, err
 	}
 
-	response := events.APIGatewayProxyResponse{
+	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
 		Body:       "success",
-	}
-	return response, nil
+	}, nil
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }
