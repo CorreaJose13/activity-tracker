@@ -26,6 +26,7 @@ const (
 	Shower     Activity = "shower"
 	Read       Activity = "read"
 	Run        Activity = "run"
+	Swimming   Activity = "swimming"
 	Cycling    Activity = "cycling"
 	Poop       Activity = "poop"
 	Keratine   Activity = "keratine"
