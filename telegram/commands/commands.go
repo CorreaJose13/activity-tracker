@@ -41,11 +41,12 @@ var (
 		shared.Read:       track.SendTrackRead,
 		shared.Shower:     track.SendTrackShower,
 		shared.Sleep:      track.SendTrackSleep,
-		shared.Gym:        sendTrackGym,
+		shared.Gym:        track.SendTrackGym,
 		shared.Poop:       track.SendTrackPoop,
 		shared.Run:        track.SendTrackRun,
 		shared.Keratine:   track.SendTrackKeratine,
 		shared.Pipi:       track.SendTrackPipi,
+		shared.Swimming:   track.SendTrackSwimming,
 	}
 
 	suffixGoalMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
@@ -171,11 +172,7 @@ func sendTrackHelp(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgTrack)
 }
 
-func sendTrackGym(bot *shared.Bot, userName, content string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, "higado al fallo")
-}
-
-func sendReportHelp(bot *shared.Bot, userName string, chatID int64) error {
+func sendReportHelp(bot *shared.Bot, username string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, "reporthelp")
 }
 
