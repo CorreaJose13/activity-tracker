@@ -49,3 +49,4 @@ bootstrap
 #VS Code config
 *.editorconfig
 *.yml
+project.auto.tfvars
