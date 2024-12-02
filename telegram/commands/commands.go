@@ -5,6 +5,7 @@ import (
 	"activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
 	"activity-tracker/telegram/commands/track"
+	"activity-tracker/telegram/commands/wishlist"
 	"strings"
 )
 
@@ -15,13 +16,14 @@ const (
 )
 
 var (
-	commandMap = map[string]func(bot *shared.Bot, chatID int64) error{
+	commandMap = map[string]func(bot *shared.Bot, userName string, chatID int64) error{
 		"/hello":       sendHello,
 		"/help":        sendHelp,
 		"/commands":    sendCommands,
 		"/track":       sendTrackHelp,
 		"/report":      sendReportHelp,
 		"/goal":        sendGoalHelp,
+		"/wishlist":    sendWishlist,
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
 		"/pinkipiensa": sendPinki,
@@ -45,7 +47,6 @@ var (
 		shared.Keratine:   track.SendTrackKeratine,
 		shared.Pipi:       track.SendTrackPipi,
 		shared.Swimming:   track.SendTrackSwimming,
-		shared.Wishlist:   track.SendTrackWishlist,
 	}
 
 	suffixGoalMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
@@ -53,6 +54,13 @@ var (
 		"delete": goals.SendDeleteGoal,
 		"update": goals.SendUpdateGoal,
 		"all":    goals.SendAllGoals,
+	}
+
+	prefixHandlers = map[string]func(bot *shared.Bot, chatID int64, userName, content string) error{
+		"/track":    handleTrack,
+		"/report":   handleReport,
+		"/goal":     handleGoal,
+		"/wishlist": wishlist.HandleWishlist,
 	}
 
 	msgHelp = `Quieres pene?`
@@ -92,22 +100,15 @@ func DoCommand(bot *shared.Bot, chatID int64, userName string, command string) e
 
 	fn, ok := commandMap[command]
 	if ok {
-		return fn(bot, chatID)
+		return fn(bot, userName, chatID)
 	}
 
-	if strings.HasPrefix(command, "/track ") {
-		suffix := strings.TrimPrefix(command, "/track ")
-		return handleTrack(bot, chatID, userName, suffix)
-	}
+	for prefix, handler := range prefixHandlers {
+		if strings.HasPrefix(command, prefix+" ") {
+			content := strings.TrimPrefix(command, prefix+" ")
 
-	if strings.HasPrefix(command, "/report ") {
-		suffix := strings.TrimPrefix(command, "/report ")
-		return handleReport(bot, chatID, userName, suffix)
-	}
-
-	if strings.HasPrefix(command, "/goal ") {
-		suffix := strings.TrimPrefix(command, "/goal ")
-		return handleGoal(bot, chatID, userName, suffix)
+			return handler(bot, chatID, userName, content)
+		}
 	}
 
 	return sendUnknownCommand(bot, chatID)
@@ -147,39 +148,43 @@ func sendUnknownCommand(bot *shared.Bot, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgUnknownCommand)
 }
 
-func sendHello(bot *shared.Bot, chatID int64) error {
+func sendHello(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgHello)
 }
 
-func sendHelp(bot *shared.Bot, chatID int64) error {
+func sendHelp(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgHelp)
 }
 
-func sendGoalHelp(bot *shared.Bot, chatID int64) error {
+func sendGoalHelp(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgGoal)
 }
 
-func sendCommands(bot *shared.Bot, chatID int64) error {
+func sendWishlist(bot *shared.Bot, userName string, chatID int64) error {
+	return wishlist.GetWishlist(bot, userName, chatID)
+}
+
+func sendCommands(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgCommands)
 }
 
-func sendTrackHelp(bot *shared.Bot, chatID int64) error {
+func sendTrackHelp(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, msgTrack)
 }
 
-func sendReportHelp(bot *shared.Bot, chatID int64) error {
+func sendReportHelp(bot *shared.Bot, username string, chatID int64) error {
 	return shared.SendMessage(bot, chatID, "reporthelp")
 }
 
-func sendHatriki(bot *shared.Bot, chatID int64) error {
+func sendHatriki(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendPhoto(bot, chatID, hatriki)
 }
 
-func sendHambre(bot *shared.Bot, chatID int64) error {
+func sendHambre(bot *shared.Bot, userName string, chatID int64) error {
 	return shared.SendPhoto(bot, chatID, jeje)
 }
 
-func sendPinki(bot *shared.Bot, chatID int64) error {
+func sendPinki(bot *shared.Bot, userName string, chatID int64) error {
 	err := shared.SendPhoto(bot, chatID, pinki)
 	if err != nil {
 		return shared.SendMessage(bot, chatID, "vamos pinki piensa")

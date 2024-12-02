@@ -1,4 +1,4 @@
-package track
+package wishlist
 
 import (
 	"activity-tracker/shared"
@@ -10,36 +10,36 @@ import (
 )
 
 var (
-	expectedWishlistContentParts  = 2
-	invalidURLMessage             = `mandame un link válido bob@ hp, le estoy hablando claro 😡😡😡`
-	invalidWishlistCommandMessage = `no entiendo tu wishlist, usa el formato correcto bob@ hp --> /track wishlist <item> <link>`
+	expectedWishlistContentParts = 2
+	errInvalidURL                = errors.New(`mandame un link válido bob@ hp, le estoy hablando claro 😡😡😡`)
+	errInvalidWishlistCommand    = errors.New(`no entiendo tu wishlist, usa el formato correcto bob@ hp --> /wishlist <item> <link>`)
+
+	emptyWishlistMessage            = `no tienes nada en tu wishlist, es momento de dejarse llevar por la fiebre del billete 🤑🥵\n\nusate /wishlist <item> <link>`
+	successWishlistItemAddedMessage = `Se agregó '%s' a la wishlist correctamente 🤑`
+	wishlistFinalMessage            = `Weno mi fafá, tu wishlist es la siguiente: \n\n`
 )
 
-// SendTrackWishlist tracks the wishlist activity
-func SendTrackWishlist(bot *shared.Bot, userName, content string, chatID int64) error {
-	if content == "" {
-		return getWishlist(bot, userName, chatID)
-	}
-
+// HandleWishlist handles the user wishlist command
+func HandleWishlist(bot *shared.Bot, chatID int64, userName, content string) error {
 	contentParts := strings.Split(content, " ")
 	if len(contentParts) != expectedWishlistContentParts {
-		return shared.SendMessage(bot, chatID, invalidWishlistCommandMessage)
+		return errInvalidWishlistCommand
 	}
 
 	wishlistItem := contentParts[0]
 	wishlistLink := contentParts[1]
 
 	if wishlistItem == "" || wishlistLink == "" {
-		return shared.SendMessage(bot, chatID, invalidWishlistCommandMessage)
+		return errInvalidWishlistCommand
 	}
 
 	if !shared.IsValidURL(wishlistLink) {
-		return shared.SendMessage(bot, chatID, invalidURLMessage)
+		return errInvalidURL
 	}
 
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return err
 	}
 
 	nowStr := now.Format(time.RFC3339)
@@ -57,22 +57,23 @@ func SendTrackWishlist(bot *shared.Bot, userName, content string, chatID int64) 
 		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	msg := fmt.Sprintf("Tu %s se agregó a la wishlist correctamente 🤑", wishlistItem)
+	msg := fmt.Sprintf(successWishlistItemAddedMessage, wishlistItem)
 
 	return shared.SendMessage(bot, chatID, msg)
 }
 
-func getWishlist(bot *shared.Bot, userName string, chatID int64) error {
+// GetWishlist returns the user wishlist
+func GetWishlist(bot *shared.Bot, userName string, chatID int64) error {
 	wishlistItems, err := storage.GetActivityHistory(userName, shared.Wishlist)
 	if errors.Is(err, storage.ErrNoActivitiesFound) {
-		return shared.SendMessage(bot, chatID, "no tienes nada en tu wishlist, es momento de dejarse llevar por la fiebre del billete 🤑🥵\n\nusate /track wishlist <item> <link>")
+		return shared.SendMessage(bot, chatID, emptyWishlistMessage)
 	}
 
 	if err != nil {
 		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	wishlist := "Weno mi fafá, tu wishlist es la siguiente: \n\n"
+	wishlist := wishlistFinalMessage
 
 	for _, item := range wishlistItems {
 		wishlist += fmt.Sprintf("- %s 🤑\n", item.Content)
