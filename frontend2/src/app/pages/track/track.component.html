@@ -1,0 +1,15 @@
+<p>track works!</p>
+<ul>
+  <li *ngFor="let activity of activities">
+    {{ activity }}
+  </li>
+</ul>
+<hr />
+<img [src]="person.avatar" alt="">
+<input type="number" [value]="person.age">
+<button [disabled]="disabled"> Click </button>
+<p> person: {{ person.name }}</p>
+
+<button (click)="btnHandler()">pepe</button>
+<button (dbclick)="btnHandler()">doble</button>
+<p> (Change) </p>
