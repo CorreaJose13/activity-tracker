@@ -20,6 +20,10 @@ const (
 
 func init() {
 	pswd := os.Getenv("MONGO_TOKEN")
+	if pswd == "" {
+		panic("failed to get mongo token env var value")
+	}
+
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s.2ykonih.mongodb.net/", user, pswd, databaseName))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
