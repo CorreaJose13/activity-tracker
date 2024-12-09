@@ -8,21 +8,15 @@ import { Component } from '@angular/core';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  activities = [
-    'Track',
-    'Report',
-    'Wishlist',
-    'Goals'
-  ];
-  disabled = true
-  name = 'b'
-  person = {
-    name: 'besc',
-    age: 1,
-    avatar: "https://w3schools.com/howto/img_avatar.png",
-  };
+  trackHandler() {
+    window.location.pathname = '/track';
+  }
 
-  btnHandler() {
-    alert("pepe")
+  reportHandler() {
+    window.location.pathname = '/report';
+  }
+
+  wishlistHandler() {
+    window.location.pathname = '/wishlist';
   }
 }
