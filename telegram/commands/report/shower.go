@@ -2,12 +2,13 @@ package report
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/storage"
 	"fmt"
 	"time"
 )
 
 var (
-	reportShowerMessage = `Pillá pues cómo son las vueltas precios@ %s 🍆
+	reportShowerMessage = `Después de ir a echarle un ojo al baño me encontré este resumen precios@ %s 🛀🏻
 
 Reporte semanal:
 Lunes: %s
@@ -20,99 +21,112 @@ Domingo: %s
 
 Última racha:
 Bañándose: %d %s 🚿
-Sin bañarse: %d %s 🤢`
+Sin bañarse: %d %s 🤢
 
-	textSisasStreak = "días"
-	textNonasStreak = "días"
+Andá bañate pa' que estos números mejoren, cochin@ de 💩💩`
+
+	oneDayLabel        = "día"
+	textSisasStreak    = "días"
+	textNonasStreak    = "días"
+	labelTookShower    = "sisas"
+	labelNotTookShower = "nonas"
+	oneDayStreak       = 1
 )
 
 func SendShowerReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	a, b, c, d, err := generateShowerReport(bot, userName, chatID)
+	reportMessage, err := generateShowerReport(bot, userName, chatID)
 	if err != nil {
 		return err
 	}
-	fmt.Println(a, b, c, d)
 
-	return shared.SendMessage(bot, chatID, "reportMessage")
+	return shared.SendMessage(bot, chatID, reportMessage)
 }
 
-func generateShowerReport(bot *shared.Bot, userName string, chatID int64) (int, int, int, int, error) {
-	// showerActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Shower)
-	// if err != nil {
-	// 	return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
-	// }
-	labelTookShower := "sisas"
-	labelNotTookShower := "nonas"
+func generateShowerReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+	showerActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Shower)
+	if err != nil {
+		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+	}
 
 	tookShower := map[time.Weekday]string{
 		time.Monday:    labelNotTookShower,
-		time.Tuesday:   labelTookShower,
-		time.Wednesday: labelTookShower,
+		time.Tuesday:   labelNotTookShower,
+		time.Wednesday: labelNotTookShower,
 		time.Thursday:  labelNotTookShower,
 		time.Friday:    labelNotTookShower,
-		time.Saturday:  labelTookShower,
+		time.Saturday:  labelNotTookShower,
 		time.Sunday:    labelNotTookShower,
 	}
 
-	// for _, activity := range showerActivities {
-	// 	createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
-	// 	if err != nil {
-	// 		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
-	// 	}
-	// 	tookShower[createdAt.Weekday()] = labelTookShower
-	// }
+	for _, activity := range showerActivities {
+		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
+		if err != nil {
+			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		}
 
-	currentSisasStreak := 0
-	currentNonasStreak := 0
-	lastNonasStreak := 0
-	lastSisasStreak := 0
+		tookShower[createdAt.Weekday()] = labelTookShower
+	}
 
-	for _, stringValue := range tookShower {
+	var currentSisasStreak, currentNonasStreak, lastNonasStreak, lastSisasStreak int
+
+	days := []string{
+		tookShower[time.Monday],
+		tookShower[time.Tuesday],
+		tookShower[time.Wednesday],
+		tookShower[time.Thursday],
+		tookShower[time.Friday],
+		tookShower[time.Saturday],
+		tookShower[time.Sunday],
+	}
+
+	for _, stringValue := range days {
 		if stringValue == labelTookShower {
 			currentSisasStreak++
+
 			if currentNonasStreak != 0 {
 				lastNonasStreak = currentNonasStreak
 			}
+
 			currentNonasStreak = 0
+
 			continue
 		}
+
 		currentNonasStreak++
+
 		if currentSisasStreak != 0 {
 			lastSisasStreak = currentSisasStreak
 		}
-		currentSisasStreak = 0
 
+		currentSisasStreak = 0
 	}
 
 	if currentNonasStreak != 0 {
 		lastNonasStreak = currentNonasStreak
 	}
+
 	if currentSisasStreak != 0 {
 		lastSisasStreak = currentSisasStreak
 	}
 
-	if lastSisasStreak == 1 {
-		textSisasStreak = "día"
-	} else {
-		textSisasStreak = "días"
+	if lastSisasStreak == oneDayStreak {
+		textSisasStreak = oneDayLabel
 	}
-	if lastNonasStreak == 1 {
-		textNonasStreak = "día"
-	} else {
-		textNonasStreak = "días"
+
+	if lastNonasStreak == oneDayStreak {
+		textNonasStreak = oneDayLabel
 	}
-	// return fmt.Sprintf(reportShowerMessage,
-	// 	userName,
-	// 	tookShower[time.Monday],
-	// 	tookShower[time.Tuesday],
-	// 	tookShower[time.Wednesday],
-	// 	tookShower[time.Thursday],
-	// 	tookShower[time.Friday],
-	// 	tookShower[time.Saturday],
-	// 	tookShower[time.Sunday],
-	// 	lastSisasStreak, textSisasStreak,
-	// 	lastNonasStreak, textNonasStreak,
-	// ), nil
-	fmt.Println("lastSisas", lastSisasStreak, "lastNonas", lastNonasStreak, "currentNonas", currentNonasStreak, "currentSisas", currentSisasStreak)
-	return lastSisasStreak, lastNonasStreak, currentNonasStreak, currentSisasStreak, nil
+
+	return fmt.Sprintf(reportShowerMessage,
+		userName,
+		tookShower[time.Monday],
+		tookShower[time.Tuesday],
+		tookShower[time.Wednesday],
+		tookShower[time.Thursday],
+		tookShower[time.Friday],
+		tookShower[time.Saturday],
+		tookShower[time.Sunday],
+		lastSisasStreak, textSisasStreak,
+		lastNonasStreak, textNonasStreak,
+	), nil
 }
