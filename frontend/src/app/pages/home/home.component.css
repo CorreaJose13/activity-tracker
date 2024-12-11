@@ -1,0 +1,71 @@
+.content {
+  margin: 0.5rem;
+  width: 100%;
+  justify-content: center;
+  display: grid;
+}
+.description {
+  padding: 0.5rem;
+  margin-left: 5%;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 22.5px;
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+}
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  font-family: "Poppins";
+  padding: 1rem;
+}
+.btn {
+  width: 300px;
+  height: 45px;
+  border-radius: 10px;
+  margin: 0.8rem;
+  background-color: #883aeacc;
+  font-family: "Poppins";
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22.5px;
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  color: white;
+  size: 15px;
+  box-shadow:
+    0 8px 16px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  cursor: pointer;
+  border-color: transparent;
+}
+
+.instructions {
+  margin-bottom: 2rem;
+  border: 1px solid rgba(var(--accent-light), 25%);
+  background: linear-gradient(
+    rgba(var(--accent-dark), 66%),
+    rgba(var(--accent-dark), 33%)
+  );
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+.instructions code {
+  font-size: 0.8em;
+  font-weight: bold;
+  background: rgba(var(--accent-light), 12%);
+  color: rgb(var(--accent-light));
+  border-radius: 4px;
+  padding: 0.3em 0.4em;
+}
+.footer {
+  position: absolute;
+  justify-content: center;
+  width: 100%;
+  display: flex;
+  bottom: 0;
+}
