@@ -1,0 +1,49 @@
+<p>resources works!</p>
+<p>Other tasks by {{ name() }}</p>
+<input placeholder="abr" type="text" [formControl]="newTaskControl" (keydown.enter)="changeHandler()" />
+<ul>
+  <li *ngFor="let task of otherTasks(); index as i">
+    <div>
+      <input type="checkbox" (click)="updateCompletedHandler(i)" />
+      <label> {{ task.title }}</label>
+      <button class="btn" (click)="destroyHandler(i)">X</button>
+      <p>completed: {{ task.completed }}</p>
+    </div>
+  </li>
+</ul>
+<span
+  ><strong>{{ otherTasks().length }}</strong>
+  <p *ngIf="otherTasks().length === 1; else moreItems">item</p>
+  <ng-template #moreItems>items</ng-template>
+</span>
+<hr />
+<div *ngIf="name() === 'brayanj'; else myBlock">Test</div>
+<ng-template #myBlock> No brayan </ng-template>
+<input type="text" [value]="person().name" (change)="changeName($event)">
+<div [ngSwitch]="person().name">
+  <p *ngSwitchCase="'a'">soy a</p>
+  <p *ngSwitchCase="'b'">soy b</p>
+  <p *ngSwitchCase="'c'">soy c</p>
+  <p *ngSwitchCase="'d'">soy d</p>
+  <p *ngSwitchDefault>soy nadie</p>
+</div>
+<hr />
+<input type="color" [formControl]="colorCtrl"> 
+<p> color: {{ colorCtrl.value }}</p>
+
+<svg>
+  <g>
+    <rect x="0" y="0" height="100" width="100" [attr.fill]="widthCtrl"></rect>
+  </g>
+</svg>
+<hr />
+<input type="number" [formControl]="widthCtrl">
+<span class="box" [style.width.px]="widthCtrl.value"></span>
+<hr />
+<p>
+  <input type="text" [formControl]="nameCtrl"> <br />
+  <span class="message-error" [class.show]="nameCtrl.invalid && nameCtrl.touched">Nombre inválido</span>
+</p>
+<p>
+  <input type="text">
+</p>
