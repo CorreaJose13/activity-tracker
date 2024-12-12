@@ -17,9 +17,9 @@ func SendTrackRun(bot *shared.Bot, userName, content string, chatID int64) error
 	nowStr := now.Format(time.RFC3339)
 
 	userActivity := shared.UserActivity{
-		ID:        shared.GenerateActivityItemID(now, userName, shared.ToothBrush),
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Run),
 		Name:      userName,
-		Activity:  shared.ToothBrush,
+		Activity:  shared.Run,
 		CreatedAt: nowStr,
 		Content:   content,
 	}
