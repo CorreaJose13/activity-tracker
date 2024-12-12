@@ -17,9 +17,9 @@ func SendTrackSwimming(bot *shared.Bot, userName, content string, chatID int64) 
 	nowStr := now.Format(time.RFC3339)
 
 	userActivity := shared.UserActivity{
-		ID:        shared.GenerateActivityItemID(now, userName, shared.ToothBrush),
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Swimming),
 		Name:      userName,
-		Activity:  shared.ToothBrush,
+		Activity:  shared.Swimming,
 		CreatedAt: nowStr,
 		Content:   content,
 	}
