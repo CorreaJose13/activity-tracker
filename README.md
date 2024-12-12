@@ -49,21 +49,22 @@ terraform init
 
 ### 4. Set Sensitive Values
 
-To protect the project sensitive values (e.g., Telegram bot API token and MongoDB token) you can choose one of two methods:
+To protect the project sensitive values (e.g., Telegram bot API token , MongoDB token, etc.) you can choose one of two methods:
 
 a. Using a <code>.tfvars</code> file
 
-- Create a file named <code>secrets.tfvars</code> in the lambda directory:
+- Create a file with the extension <code>.tfvars</code> in the lambda directory:
 
 ```bash
 bot_api_token = "BOT-TOKEN"
 mongo_token = "MONGO-TOKEN"
+gemini_key = "GEM_API_KEY"
 ```
 
 - Deploy using the command:
 
 ```bash
-terraform apply -var-file="secrets.tfvars"
+terraform apply -var-file="your_file_name.tfvars"
 ```
 
 b. Using Environment Variables
@@ -71,7 +72,9 @@ b. Using Environment Variables
 - Set environment variables with the command:
 
 ```bash
-export TF_VAR_bot_api_token=BOT-TOKEN TF_VAR_mongo_token=MONGO-TOKEN
+export TF_VAR_bot_api_token=BOT-TOKEN
+export TF_VAR_mongo_token=MONGO-TOKEN
+export TF_VAR_gemini_key=GEM_API_KEY
 ```
 
 - Deploy using:
