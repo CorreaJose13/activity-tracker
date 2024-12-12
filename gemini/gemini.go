@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	ErrNoCandidates = errors.New("no candidates found")
-	ErrNoResponse   = errors.New("no response found")
-	ErrNoGemApiKey  = errors.New("missing API key in environment variables")
+	errNoCandidates = errors.New("no candidates found")
+	errNoResponse   = errors.New("no response found")
+	errNoGemAPIKey  = errors.New("missing API key in environment variables")
 )
 
 func getAPIKey() (string, error) {
 	key := os.Getenv("GEM_API_KEY")
 	if key == "" {
-		return "", ErrNoGemApiKey
+		return "", errNoGemAPIKey
 	}
 	return key, nil
 }
@@ -34,10 +34,10 @@ func extractFirstCandidate(candidates []*genai.Candidate) (string, error) {
 		return fmt.Sprintf("%v", content.Parts[0]), nil
 	}
 
-	return "", ErrNoCandidates
+	return "", errNoCandidates
 }
 
-func Gemini(prompt string) (string, error) {
+func QueryGemini(prompt string) (string, error) {
 	ctx := context.Background()
 
 	apiKey, err := getAPIKey()
@@ -61,7 +61,7 @@ func Gemini(prompt string) (string, error) {
 
 	if resp == nil {
 		fmt.Println("no response received from Gemini")
-		return "", ErrNoResponse
+		return "", errNoResponse
 	}
 
 	candidates := resp.Candidates

@@ -49,11 +49,11 @@ terraform init
 
 ### 4. Set Sensitive Values
 
-To protect the project sensitive values (e.g., Telegram bot API token , MongoDB token, etc.) you can choose one of two methods:
+To protect the project sensitive values (e.g., Telegram bot API token, MongoDB token, etc.) you can choose one of two methods:
 
 a. Using a <code>.tfvars</code> file
 
-- Create a file with the extension <code>.tfvars</code> in the lambda directory:
+- Create a file with extension \*<code>.tfvars</code> in the lambda directory:
 
 ```bash
 bot_api_token = "BOT-TOKEN"
