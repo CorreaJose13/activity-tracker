@@ -21,6 +21,7 @@ func getAPIKey() (string, error) {
 	if key == "" {
 		return "", errNoGemAPIKey
 	}
+
 	return key, nil
 }
 
