@@ -12,7 +12,7 @@ var (
 	msgGoal = `por fin vas a querer hacer algo diferente 🐸🐶
 haceme el cruce y me decís qué querés con un objetivo
 
-algo así tetranutra:
+algo así precioso:
 
 crear un objetivo: /goal create <activity> <goal> <optional: --daily=VALUE> <optional: --weekly=VALUE> <optional: --monthly=VALUE>	
 borrar un objetivo: /goal delete <activity>
