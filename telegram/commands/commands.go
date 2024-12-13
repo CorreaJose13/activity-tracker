@@ -7,6 +7,7 @@ import (
 	"activity-tracker/telegram/commands/report"
 	"activity-tracker/telegram/commands/track"
 	"activity-tracker/telegram/commands/wishlist"
+	"fmt"
 	"strings"
 )
 
@@ -28,6 +29,7 @@ var (
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
 		"/pinkipiensa": sendPinki,
+		"/chatID":      sendChatID,
 	}
 
 	suffixReportMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
@@ -193,4 +195,9 @@ func sendPinki(bot *shared.Bot, userName string, chatID int64) error {
 	}
 
 	return nil
+}
+
+func sendChatID(bot *shared.Bot, userName string, chatID int64) error {
+	message := fmt.Sprintf("Chat ID: %d", chatID)
+	return shared.SendMessage(bot, chatID, message)
 }
