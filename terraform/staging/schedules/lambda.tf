@@ -1,31 +1,33 @@
-resource "aws_iam_role" "schedules_lambda" {
-  name = "schedules-lambda"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
+resource "null_resource" "function_binary" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = "GOOS=linux GOARCH=amd64 go build -o ${local.binary_path} ${local.src_path}"
+  }
 }
 
-resource "aws_iam_policy_attachment" "lambda_basic_logs" {
-  name       = "lambda_basic_logs"
-  roles      = [aws_iam_role.schedules_lambda.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+data "archive_file" "function_archive" {
+  depends_on = [null_resource.function_binary]
+
+  type        = "zip"
+  source_file = local.binary_path
+  output_path = local.archive_path
 }
 
-resource "aws_lambda_function" "schedules_route" {
-  filename         = "example.zip"
-  function_name    = "schedules-route"
-  role             = aws_iam_role.schedules_lambda.arn
-  runtime          = "provided.al2"
+resource "aws_lambda_function" "scheduler_lambda_function" {
+  filename         = local.archive_path
+  function_name    = var.scheduler_lambda_function_name
+  role             = aws_iam_role.scheduler_lambda_execution_role.arn
+  runtime          = "provided.al2023"
   handler          = "main"
-  architectures    = ["arm64"]
-  source_code_hash = filebase64sha256("example.zip")
+  architectures    = ["x86_64"]
+  source_code_hash = data.archive_file.function_archive.output_base64sha256
+
+  environment {
+    variables = {
+      BOT_TOKEN = var.bot_api_token
+      CHAT_ID   = var.chat_id
+    }
+  }
 }
