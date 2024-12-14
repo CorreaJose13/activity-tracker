@@ -25,19 +25,19 @@ var (
 )
 
 // SendWaterReport sends the water report
-func SendWaterReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	wr, err := generateWaterReport(bot, userName, chatID)
+func SendWaterReport(client *shared.Client, userName, content string, chatID int64) error {
+	wr, err := generateWaterReport(client, userName, chatID)
 	if err != nil {
 		return err
 	}
 
-	return shared.SendMessage(bot, chatID, wr)
+	return client.SendMessage(chatID, wr)
 }
 
-func generateWaterReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+func generateWaterReport(client *shared.Client, userName string, chatID int64) (string, error) {
 	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "water")
 	if err != nil {
-		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	waterPerDay := map[time.Weekday]int{
@@ -53,7 +53,7 @@ func generateWaterReport(bot *shared.Bot, userName string, chatID int64) (string
 	for _, activity := range waterActivities {
 		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
 		if err != nil {
-			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 		}
 
 		day := createdAt.Weekday()

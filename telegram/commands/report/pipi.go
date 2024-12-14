@@ -25,19 +25,19 @@ var (
 )
 
 // SendPipiReport sends the pipi report
-func SendPipiReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	pr, err := generatePipiReport(bot, userName, chatID)
+func SendPipiReport(client *shared.Client, userName, content string, chatID int64) error {
+	pr, err := generatePipiReport(client, userName, chatID)
 	if err != nil {
 		return err
 	}
 
-	return shared.SendMessage(bot, chatID, pr)
+	return client.SendMessage(chatID, pr)
 }
 
-func generatePipiReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+func generatePipiReport(client *shared.Client, userName string, chatID int64) (string, error) {
 	pipiActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Pipi)
 	if err != nil {
-		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	pipiPerDay := map[time.Weekday]int{
@@ -53,7 +53,7 @@ func generatePipiReport(bot *shared.Bot, userName string, chatID int64) (string,
 	for _, activity := range pipiActivities {
 		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
 		if err != nil {
-			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 		}
 
 		day := createdAt.Weekday()
