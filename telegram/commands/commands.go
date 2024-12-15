@@ -2,6 +2,7 @@ package commands
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/telegram/commands/gemini"
 	"activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
 	"activity-tracker/telegram/commands/track"
@@ -65,6 +66,7 @@ var (
 		"/report":   handleReport,
 		"/goal":     handleGoal,
 		"/wishlist": wishlist.HandleWishlist,
+		"/gemini":   gemini.HandleGemini,
 	}
 
 	msgHelp = `Quieres pene?`

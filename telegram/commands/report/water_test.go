@@ -10,7 +10,7 @@ import (
 func TestWaterReport(t *testing.T) {
 	c := require.New(t)
 
-	pr, err := generateWaterReport(&shared.Bot{}, "test", 1)
+	pr, err := GenerateWaterReport(&shared.Bot{}, "test", 1)
 	c.NoError(err)
 
 	// It is set to fail to check the trace code in pipi.go

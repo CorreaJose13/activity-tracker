@@ -10,7 +10,7 @@ import (
 func TestShowerReport(t *testing.T) {
 	c := require.New(t)
 
-	rp, err := generateShowerReport(&shared.Bot{}, "test", 1)
+	rp, err := GenerateShowerReport(&shared.Bot{}, "test", 1)
 	c.NoError(err)
 	c.NotEmpty(rp)
 }
