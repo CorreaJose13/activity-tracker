@@ -28,7 +28,7 @@ var (
 
 // SendKeratineReport sends the keratine report
 func SendKeratineReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	kr, err := generateKeratineReport(bot, userName, chatID)
+	kr, err := GenerateKeratineReport(bot, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -36,7 +36,8 @@ func SendKeratineReport(bot *shared.Bot, userName, content string, chatID int64)
 	return shared.SendMessage(bot, chatID, kr)
 }
 
-func generateKeratineReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+// GenerateKeratineReport generates the keratine report
+func GenerateKeratineReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Keratine)
 	if err != nil {
 		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))

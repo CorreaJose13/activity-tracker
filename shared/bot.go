@@ -49,3 +49,15 @@ func SendPhoto(bot *Bot, chatID int64, url string) error {
 
 	return nil
 }
+
+// SendFile sends a file to the chat
+func SendFile(bot *Bot, chatID int64, filePath string) error {
+	msg := tgbotapi.NewDocument(chatID, tgbotapi.FilePath(filePath))
+
+	_, err := bot.Send(msg)
+	if err != nil {
+		return fmt.Errorf("can't send file: %w", err)
+	}
+
+	return nil
+}

@@ -26,7 +26,7 @@ var (
 
 // SendWaterReport sends the water report
 func SendWaterReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	wr, err := generateWaterReport(bot, userName, chatID)
+	wr, err := GenerateWaterReport(bot, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func SendWaterReport(bot *shared.Bot, userName, content string, chatID int64) er
 	return shared.SendMessage(bot, chatID, wr)
 }
 
-func generateWaterReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+func GenerateWaterReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "water")
 	if err != nil {
 		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))

@@ -33,6 +33,10 @@ var (
 		"water":    report.SendWaterReport,
 		"keratine": report.SendKeratineReport,
 		"pipi":     report.SendPipiReport,
+		"shower":   report.SendShowerReport,
+		"run":      report.SendRunReport,
+		"tooth":    report.SendToothReport,
+		"all":      report.GenerateAllReports,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(bot *shared.Bot, userName, content string, chatID int64) error{

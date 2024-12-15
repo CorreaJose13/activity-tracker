@@ -26,7 +26,7 @@ var (
 
 // SendPipiReport sends the pipi report
 func SendPipiReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	pr, err := generatePipiReport(bot, userName, chatID)
+	pr, err := GeneratePipiReport(bot, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func SendPipiReport(bot *shared.Bot, userName, content string, chatID int64) err
 	return shared.SendMessage(bot, chatID, pr)
 }
 
-func generatePipiReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+func GeneratePipiReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	pipiActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Pipi)
 	if err != nil {
 		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))

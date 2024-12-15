@@ -34,7 +34,7 @@ Andá bañate pa' que estos números mejoren, cochin@ de 💩💩`
 )
 
 func SendShowerReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	reportMessage, err := generateShowerReport(bot, userName, chatID)
+	reportMessage, err := GenerateShowerReport(bot, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func SendShowerReport(bot *shared.Bot, userName, content string, chatID int64) e
 	return shared.SendMessage(bot, chatID, reportMessage)
 }
 
-func generateShowerReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+func GenerateShowerReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
 	showerActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Shower)
 	if err != nil {
 		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
