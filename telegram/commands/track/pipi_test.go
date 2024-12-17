@@ -10,7 +10,10 @@ import (
 func TestSendTrackPipi(t *testing.T) {
 	c := require.New(t)
 
-	err := SendTrackPipi(&shared.Bot{}, "test", "", 1)
+	client, err := shared.NewMockBot("dummy")
+	c.Nil(err)
+
+	err = SendTrackPipi(client, "test", "", 1)
 
 	// It's not necessary to test the send message error
 	c.Error(err)

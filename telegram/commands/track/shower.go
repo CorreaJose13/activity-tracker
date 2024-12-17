@@ -8,10 +8,10 @@ import (
 )
 
 // SendTrackShower tracks the shower activity
-func SendTrackShower(bot *shared.Bot, userName, content string, chatID int64) error {
+func SendTrackShower(client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return client.SendMessage(chatID, err.Error())
 	}
 
 	nowStr := now.Format(time.RFC3339)
@@ -25,8 +25,8 @@ func SendTrackShower(bot *shared.Bot, userName, content string, chatID int64) er
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	return shared.SendMessage(bot, chatID, "ya era hora cochino hijueputa 🤢🤢🤢")
+	return client.SendMessage(chatID, "ya era hora cochino hijueputa 🤢🤢🤢")
 }

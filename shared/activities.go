@@ -7,6 +7,8 @@ import (
 
 type Activity string
 
+type Exercise string
+
 // UserActivity contains an user activity info
 type UserActivity struct {
 	ID           string   `bson:"id"`
@@ -33,8 +35,6 @@ const (
 	Pipi       Activity = "pipi"
 	Wishlist   Activity = "wishlist"
 )
-
-type Exercise string
 
 const (
 	Leg    Exercise = "leg"

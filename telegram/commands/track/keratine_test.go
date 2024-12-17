@@ -10,8 +10,10 @@ import (
 func TestSendTrackKeratine(t *testing.T) {
 	c := require.New(t)
 
-	err := SendTrackKeratine(&shared.Bot{}, "test1", "", 1)
+	client, err := shared.NewMockBot("dummy")
+	c.Nil(err)
 
+	err = SendTrackKeratine(client, "test1", "", 1)
 	// It's not necessary to test the send message error
 	c.Error(err)
 

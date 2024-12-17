@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	bot      *shared.Bot
+	client   *shared.Client
 	botToken = os.Getenv("BOT_TOKEN")
 	chatID   = os.Getenv("CHAT_ID")
 )
 
 func init() {
 	var err error
-	bot, err = shared.New(botToken)
+	client, err = shared.New(botToken)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ func handler(ctx context.Context, event Schedule) error {
 		panic(err)
 	}
 
-	return shared.SendMessage(bot, i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
+	return client.SendMessage(i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
 }
 
 func main() {

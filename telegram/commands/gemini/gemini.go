@@ -12,7 +12,7 @@ var (
 	forceText   = ",responde solo texto."
 )
 
-func HandleGemini(bot *shared.Bot, chatID int64, userName, content string) error {
+func HandleGemini(client *shared.Client, chatID int64, userName, content string) error {
 	if content == "" {
 		return errNoPrompt
 	}
@@ -21,8 +21,8 @@ func HandleGemini(bot *shared.Bot, chatID int64, userName, content string) error
 	response, err := gemini.QueryGemini(content + forceText)
 
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	return shared.SendMessage(bot, chatID, response)
+	return client.SendMessage(chatID, response)
 }
