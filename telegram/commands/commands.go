@@ -50,6 +50,7 @@ var (
 		shared.Keratine:   track.SendTrackKeratine,
 		shared.Pipi:       track.SendTrackPipi,
 		shared.Swimming:   track.SendTrackSwimming,
+		shared.Cycling:    track.SendTrackCycling,
 	}
 
 	suffixGoalMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
@@ -85,6 +86,8 @@ hint:
 -/track shower
 -/track sleep
 -/track gym
+-/track cycling
+-/track run
 -/track poop`
 
 	msgHello = "Hola precioso \n\n" + msgHelp
