@@ -2,35 +2,26 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.46.0"
+      version = "~> 5.75.0"
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.6.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2.3"
+    }
+  }
+  backend "s3" {
+    bucket         = "tf-state-scheduler-activity-tracker-bot"
+    key            = "state/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "scheduler_terraform_state_db"
   }
 }
 
 provider "aws" {
-  region = "us-east-1"
-}
-
-resource "aws_scheduler_schedule" "drink_water" {
-  name = "drink-water"
-
-  flexible_time_window {
-    mode = "OFF"
-  }
-
-  schedule_expression = "cron(0 8-21 * * *)"
-  schedule_expression_timezone = "America/Bogota"
-
-  target {
-    arn      = "arn:aws:scheduler:::aws-sdk:lambda:invoke"
-    role_arn = aws_iam_role.schedules_eventbridge.arn
-
-    input = jsonencode({
-      FunctionName = aws_lambda_function.schedules_route.function_name
-      InvocationType = "Event"
-      Payload = jsonencode({
-        message = "drink-water"
-      })
-    })
-  }
+  region = var.region
 }
