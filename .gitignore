@@ -49,3 +49,6 @@ bootstrap
 #VS Code config
 *.editorconfig
 project.auto.tfvars
+
+# ignore local dependencies
+vendor 
