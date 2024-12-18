@@ -36,6 +36,10 @@ var (
 		"water":    report.SendWaterReport,
 		"keratine": report.SendKeratineReport,
 		"pipi":     report.SendPipiReport,
+		"shower":   report.SendShowerReport,
+		"run":      report.SendRunReport,
+		"tooth":    report.SendToothReport,
+		"all":      report.GenerateAllReports,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
@@ -200,7 +204,7 @@ func sendPinki(client *shared.Client, userName string, chatID int64) error {
 	return nil
 }
 
-func sendChatID(bot *shared.Bot, userName string, chatID int64) error {
+func sendChatID(client *shared.Client, userName string, chatID int64) error {
 	message := fmt.Sprintf("Chat ID: %d", chatID)
-	return shared.SendMessage(bot, chatID, message)
+	return client.SendMessage(chatID, message)
 }
