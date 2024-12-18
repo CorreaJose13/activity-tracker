@@ -33,3 +33,9 @@ variable "mongo_token" {
   type        = string
   sensitive   = true
 }
+
+variable "gemini_key" {
+  description = "Gemini API key"
+  type        = string
+  sensitive   = true
+}

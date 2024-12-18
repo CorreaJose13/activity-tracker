@@ -10,7 +10,10 @@ import (
 func TestSendTrackShower(t *testing.T) {
 	c := require.New(t)
 
-	err := SendTrackShower(&shared.Bot{}, "test1", "", 1)
+	client, err := shared.NewMockBot("dummy")
+	c.Nil(err)
+
+	err = SendTrackShower(client, "test1", "", 1)
 
 	// It's not necessary to test the send message error
 	c.Error(err)

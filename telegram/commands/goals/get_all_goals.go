@@ -24,27 +24,27 @@ obtener todos tus objetivos: /goal all
 )
 
 // SendAllGoals handles the all goals message
-func SendAllGoals(bot *shared.Bot, userName, content string, chatID int64) error {
+func SendAllGoals(client *shared.Client, userName, content string, chatID int64) error {
 	goals, err := storage.GetAllPersonalGoals(userName)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	if len(goals) == 0 {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf("carecemos de objetivos bb, animate a crear uno y redimes un besucio de @%s", shared.GetRandomUserName()))
+		return client.SendMessage(chatID, fmt.Sprintf("carecemos de objetivos bb, animate a crear uno y redimes un besucio de @%s", shared.GetRandomUserName()))
 	}
 
-	msg := parseGoalsToString(bot, chatID, goals)
+	msg := parseGoalsToString(client, chatID, goals)
 
-	return shared.SendMessage(bot, chatID, fmt.Sprintf(msgAllGoals, msg))
+	return client.SendMessage(chatID, fmt.Sprintf(msgAllGoals, msg))
 }
 
-func parseGoalsToString(bot *shared.Bot, chatID int64, goals []*shared.PersonalGoal) string {
+func parseGoalsToString(client *shared.Client, chatID int64, goals []*shared.PersonalGoal) string {
 	var result strings.Builder
 	for _, goal := range goals {
 		goalConfigJSON, err := json.Marshal(goal.GoalConfig)
 		if err != nil {
-			_ = shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			_ = client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 
 			continue
 		}

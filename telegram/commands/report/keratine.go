@@ -27,19 +27,19 @@ var (
 )
 
 // SendKeratineReport sends the keratine report
-func SendKeratineReport(bot *shared.Bot, userName, content string, chatID int64) error {
-	kr, err := generateKeratineReport(bot, userName, chatID)
+func SendKeratineReport(client *shared.Client, userName, content string, chatID int64) error {
+	kr, err := generateKeratineReport(client, userName, chatID)
 	if err != nil {
 		return err
 	}
 
-	return shared.SendMessage(bot, chatID, kr)
+	return client.SendMessage(chatID, kr)
 }
 
-func generateKeratineReport(bot *shared.Bot, userName string, chatID int64) (string, error) {
+func generateKeratineReport(client *shared.Client, userName string, chatID int64) (string, error) {
 	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Keratine)
 	if err != nil {
-		return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	labelBoolDefault := "nonas"
@@ -57,7 +57,7 @@ func generateKeratineReport(bot *shared.Bot, userName string, chatID int64) (str
 	for _, activity := range keratineActivities {
 		createdAt, err := time.Parse(time.RFC3339, activity.CreatedAt)
 		if err != nil {
-			return "", shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+			return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 		}
 
 		day := createdAt.Weekday()

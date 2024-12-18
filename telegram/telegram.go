@@ -21,24 +21,24 @@ var (
 )
 
 // Fetch is the main function to process telegram updates
-func Fetch(bot *shared.Bot, update shared.Update) error {
-	err := process(bot, update)
+func Fetch(client *shared.Client, update shared.Update) error {
+	err := process(client, update)
 	if err != nil {
-		return shared.SendMessage(bot, update.Message.From.ID, "error while proccess: "+err.Error())
+		return client.SendMessage(update.Message.From.ID, "error while proccess: "+err.Error())
 	}
 
 	return nil
 }
 
-func process(bot *shared.Bot, update shared.Update) error {
+func process(client *shared.Client, update shared.Update) error {
 	if update.Message != nil {
-		return processMessage(bot, update.Message)
+		return processMessage(client, update.Message)
 	}
 
 	return nil
 }
 
-func processMessage(bot *shared.Bot, message *shared.Message) error {
+func processMessage(client *shared.Client, message *shared.Message) error {
 	user := message.From
 	if user == nil {
 		return errMissingUser
@@ -55,9 +55,9 @@ func processMessage(bot *shared.Bot, message *shared.Message) error {
 		return nil
 	}
 
-	err := commands.DoCommand(bot, message.Chat.ID, user.UserName, text)
+	err := commands.DoCommand(client, message.Chat.ID, user.UserName, text)
 	if err != nil {
-		return shared.SendMessage(bot, message.Chat.ID, "can't do command: "+err.Error())
+		return client.SendMessage(message.Chat.ID, "can't do command: "+err.Error())
 	}
 
 	return nil

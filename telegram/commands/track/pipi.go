@@ -8,10 +8,10 @@ import (
 )
 
 // SendTrackPipi tracks the pipi activity
-func SendTrackPipi(bot *shared.Bot, userName, content string, chatID int64) error {
+func SendTrackPipi(client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return client.SendMessage(chatID, err.Error())
 	}
 
 	nowStr := now.Format(time.RFC3339)
@@ -25,12 +25,12 @@ func SendTrackPipi(bot *shared.Bot, userName, content string, chatID int64) erro
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	if userName == shared.Valery {
-		return shared.SendMessage(bot, chatID, "Epa, buena esa mionsita 😎")
+		return client.SendMessage(chatID, "Epa, buena esa mionsita 😎")
 	}
 
-	return shared.SendMessage(bot, chatID, "Epa, buena esa mionsito 😎")
+	return client.SendMessage(chatID, "Epa, buena esa mionsito 😎")
 }

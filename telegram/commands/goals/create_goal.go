@@ -3,6 +3,6 @@ package goals
 import "activity-tracker/shared"
 
 // SendCreateGoal handles the create goal message
-func SendCreateGoal(bot *shared.Bot, userName, content string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, "goal created fake")
+func SendCreateGoal(client *shared.Client, userName, content string, chatID int64) error {
+	return client.SendMessage(chatID, "goal created fake")
 }
