@@ -17,6 +17,7 @@ var (
 		shared.Johan:  true,
 		shared.Jose:   true,
 		shared.Valery: true,
+		shared.Juan:   true,
 	}
 )
 
