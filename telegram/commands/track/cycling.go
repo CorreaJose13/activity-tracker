@@ -8,10 +8,10 @@ import (
 )
 
 // SendTrackCycling tracks cycling activity
-func SendTrackCycling(bot *shared.Bot, userName, content string, chatID int64) error {
+func SendTrackCycling(client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return client.SendMessage(chatID, err.Error())
 	}
 
 	nowStr := now.Format(time.RFC3339)
@@ -26,7 +26,7 @@ func SendTrackCycling(bot *shared.Bot, userName, content string, chatID int64) e
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	message := "ataca pogachaaaaaa 🚴"
@@ -34,5 +34,5 @@ func SendTrackCycling(bot *shared.Bot, userName, content string, chatID int64) e
 		message = "ve pero y ese poco de kilometros? te perseguía un veneco o q? anwy congrats"
 	}
 
-	return shared.SendMessage(bot, chatID, message)
+	return client.SendMessage(chatID, message)
 }

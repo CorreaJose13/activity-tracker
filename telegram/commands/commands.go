@@ -78,8 +78,8 @@ var (
 	/track
 	/report`
 
-	msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa. 
-hint: 
+	msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa.
+hint:
 -/track water
 -/track toothbrush
 -/track read
@@ -200,7 +200,7 @@ func sendPinki(client *shared.Client, userName string, chatID int64) error {
 	return nil
 }
 
-func sendChatID(bot *shared.Bot, userName string, chatID int64) error {
+func sendChatID(client *shared.Client, userName string, chatID int64) error {
 	message := fmt.Sprintf("Chat ID: %d", chatID)
-	return shared.SendMessage(bot, chatID, message)
+	return client.SendMessage(chatID, message)
 }
