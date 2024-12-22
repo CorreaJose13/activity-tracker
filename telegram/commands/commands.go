@@ -32,10 +32,11 @@ var (
 		"/chatID":      sendChatID,
 	}
 
-	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
-		"water":    report.SendWaterReport,
-		"keratine": report.SendKeratineReport,
-		"pipi":     report.SendPipiReport,
+	suffixReportMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
+		shared.Water:    report.SendWaterReport,
+		shared.Keratine: report.SendKeratineReport,
+		shared.Pipi:     report.SendPipiReport,
+		shared.Sleep:    report.SendSleepReport,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
@@ -134,7 +135,7 @@ func handleTrack(client *shared.Client, chatID int64, userName, suffix string) e
 func handleReport(client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
-	if fn, ok := suffixReportMap[before]; ok {
+	if fn, ok := suffixReportMap[shared.Activity(before)]; ok {
 		return fn(client, userName, after, chatID)
 	}
 
