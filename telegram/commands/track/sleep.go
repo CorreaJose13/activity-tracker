@@ -1,8 +1,22 @@
 package track
 
-import "activity-tracker/shared"
+import (
+	"activity-tracker/shared"
+	"activity-tracker/storage"
+	"fmt"
+)
 
 // SendTrackSleep tracks the sleep activity
-func SendTrackSleep(bot *shared.Bot, userName, content string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, "zzzzz")
+func SendTrackSleep(client *shared.Client, userName, content string, chatID int64) error {
+	userActivity, err := shared.NewActivity(shared.Sleep, userName, content)
+	if err != nil {
+		return client.SendMessage(chatID, err.Error())
+	}
+
+	err = storage.Create(userActivity)
+	if err != nil {
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+	}
+
+	return client.SendMessage(chatID, "Que descanses y sueñes conmigo 😏")
 }

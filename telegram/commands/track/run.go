@@ -8,25 +8,25 @@ import (
 )
 
 // SendTrackRun tracks the run activity
-func SendTrackRun(bot *shared.Bot, userName, content string, chatID int64) error {
+func SendTrackRun(client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return client.SendMessage(chatID, err.Error())
 	}
 
 	nowStr := now.Format(time.RFC3339)
 
 	userActivity := shared.UserActivity{
-		ID:        shared.GenerateActivityItemID(now, userName, shared.ToothBrush),
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Run),
 		Name:      userName,
-		Activity:  shared.ToothBrush,
+		Activity:  shared.Run,
 		CreatedAt: nowStr,
 		Content:   content,
 	}
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	message := "mi papacho el más usain vol 🏃‍♂️"
@@ -34,5 +34,5 @@ func SendTrackRun(bot *shared.Bot, userName, content string, chatID int64) error
 		message = fmt.Sprintf("uy mi papacho corrió %s? lo iba robar un negro o qué manito. anwy congrats", content)
 	}
 
-	return shared.SendMessage(bot, chatID, message)
+	return client.SendMessage(chatID, message)
 }

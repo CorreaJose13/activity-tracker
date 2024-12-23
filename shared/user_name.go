@@ -10,6 +10,7 @@ const (
 	Johan  = "JohanFlorez"
 	Jose   = "jCorreaM"
 	Mauro  = "mcortazar"
+	Juan   = "juancballesteros"
 )
 
 // GetRandomUserName returns a random user name from the list

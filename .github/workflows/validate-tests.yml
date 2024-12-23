@@ -1,4 +1,4 @@
-name: Test workflow
+name: Run repo unit tests
 
 on: 
     push:
@@ -23,6 +23,8 @@ jobs:
               run: go mod vendor
             
             - name: Check unit test
+              env:
+                MONGO_TOKEN: ${{ secrets.MONGO_TOKEN }}
               working-directory: ./
               run: go test ./...
               continue-on-error: false

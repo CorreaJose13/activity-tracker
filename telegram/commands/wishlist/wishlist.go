@@ -20,7 +20,7 @@ var (
 )
 
 // HandleWishlist handles the user wishlist command
-func HandleWishlist(bot *shared.Bot, chatID int64, userName, content string) error {
+func HandleWishlist(client *shared.Client, chatID int64, userName, content string) error {
 	contentParts := strings.Split(content, " ")
 	if len(contentParts) != expectedWishlistContentParts {
 		return errInvalidWishlistCommand
@@ -54,23 +54,23 @@ func HandleWishlist(bot *shared.Bot, chatID int64, userName, content string) err
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	msg := fmt.Sprintf(successWishlistItemAddedMessage, wishlistItem)
 
-	return shared.SendMessage(bot, chatID, msg)
+	return client.SendMessage(chatID, msg)
 }
 
 // GetWishlist returns the user wishlist
-func GetWishlist(bot *shared.Bot, userName string, chatID int64) error {
+func GetWishlist(client *shared.Client, userName string, chatID int64) error {
 	wishlistItems, err := storage.GetActivityHistory(userName, shared.Wishlist)
 	if errors.Is(err, storage.ErrNoActivitiesFound) {
-		return shared.SendMessage(bot, chatID, emptyWishlistMessage)
+		return client.SendMessage(chatID, emptyWishlistMessage)
 	}
 
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	wishlist := wishlistFinalMessage
@@ -79,5 +79,5 @@ func GetWishlist(bot *shared.Bot, userName string, chatID int64) error {
 		wishlist += fmt.Sprintf("- %s 🤑\n", item.Content)
 	}
 
-	return shared.SendMessage(bot, chatID, wishlist)
+	return client.SendMessage(chatID, wishlist)
 }

@@ -8,10 +8,10 @@ import (
 )
 
 // SendTrackTooth tracks the tooth activity
-func SendTrackTooth(bot *shared.Bot, userName, _ string, chatID int64) error {
+func SendTrackTooth(client *shared.Client, userName, _ string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return client.SendMessage(chatID, err.Error())
 	}
 
 	nowStr := now.Format(time.RFC3339)
@@ -25,8 +25,8 @@ func SendTrackTooth(bot *shared.Bot, userName, _ string, chatID int64) error {
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	return shared.SendMessage(bot, chatID, "menos mal, ya te olia a qlo la boca mi papacho 💩")
+	return client.SendMessage(chatID, "menos mal, ya te olia a qlo la boca mi papacho 💩")
 }
