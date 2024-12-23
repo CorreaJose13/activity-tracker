@@ -10,7 +10,7 @@ import (
 func TestPipiReport(t *testing.T) {
 	c := require.New(t)
 
-	pr, err := generatePipiReport(&shared.Client{}, "test", 1)
+	pr, err := GeneratePipiReport(&shared.Client{}, "test", 1)
 	c.NoError(err)
 
 	// It is set to fail to check the trace code in pipi.go
