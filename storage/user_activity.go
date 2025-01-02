@@ -27,6 +27,28 @@ func Create(userActivity shared.UserActivity) error {
 	return err
 }
 
+// Update an user activity in database
+func UpdateContent(userActivity shared.UserActivity) error {
+	filter := bson.M{
+		"id": userActivity.ID,
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"content":    userActivity.Content,
+			"updated_at": userActivity.UpdatedAt,
+		},
+	}
+
+	_, err := collection.UpdateOne(
+		context.Background(),
+		filter,
+		update,
+	)
+
+	return err
+}
+
 // GetCurrentDayActivities returns the current day activities from inputs
 func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	now, err := shared.GetNow()
