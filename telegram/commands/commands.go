@@ -32,11 +32,15 @@ var (
 		"/chatID":      sendChatID,
 	}
 
-	suffixReportMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
-		shared.Water:    report.SendWaterReport,
-		shared.Keratine: report.SendKeratineReport,
-		shared.Pipi:     report.SendPipiReport,
-		shared.Sleep:    report.SendSleepReport,
+	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
+		"water":    report.SendWaterReport,
+		"keratine": report.SendKeratineReport,
+		"pipi":     report.SendPipiReport,
+		"shower":   report.SendShowerReport,
+		"run":      report.SendRunReport,
+		"tooth":    report.SendToothReport,
+		"all":      report.GenerateAllReports,
+    "sleep":    report.SendSleepReport,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
