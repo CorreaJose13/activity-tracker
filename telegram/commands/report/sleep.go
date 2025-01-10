@@ -8,9 +8,6 @@ import (
 )
 
 var (
-	timeFormat   = "03:04 pm"
-	locationTime = "America/Bogota"
-
 	reportSleepMessage = `Pillá pues cómo son las vueltas precios@ %s 🍆
 
 	Esta semana te has acostado a estas horas bb:
@@ -29,12 +26,12 @@ var (
 
 // SendSleepReport sends the report of sleep tracker
 func SendSleepReport(client *shared.Client, userName string, _ string, chatID int64) error {
-	kr, err := generateSleepReport(userName)
+	report, err := generateSleepReport(userName)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	return client.SendMessage(chatID, kr)
+	return client.SendMessage(chatID, report)
 }
 
 func generateSleepReport(userName string) (string, error) {
@@ -43,7 +40,7 @@ func generateSleepReport(userName string) (string, error) {
 		return "", err
 	}
 
-	timeDefault := "--:-- --"
+	timeDefault := "---"
 
 	timeSleep := map[time.Weekday]string{
 		time.Monday:    timeDefault,
@@ -61,14 +58,9 @@ func generateSleepReport(userName string) (string, error) {
 			return "", err
 		}
 
-		location, err := time.LoadLocation(locationTime) // o cualquier ubicación en -05:00
-		if err != nil {
-			return "", err
-		}
-
 		day := createdAt.Weekday()
 
-		timeSleep[day] = createdAt.In(location).Format(timeFormat)
+		timeSleep[day] = activity.Content
 	}
 
 	return fmt.Sprintf(reportSleepMessage, userName, timeSleep[time.Monday], timeSleep[time.Tuesday], timeSleep[time.Wednesday], timeSleep[time.Thursday], timeSleep[time.Friday], timeSleep[time.Saturday], timeSleep[time.Sunday]), nil

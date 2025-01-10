@@ -16,6 +16,7 @@ type UserActivity struct {
 	Activity     Activity `bson:"activity"`
 	ExerciseType Exercise `bson:"excercise_type,omitempty"`
 	CreatedAt    string   `bson:"created_at"`
+	UpdatedAt    string   `bson:"updated_at"`
 	Content      string   `bson:"content,omitempty"`
 }
 
@@ -47,7 +48,7 @@ const (
 )
 
 // NewActivity creates a new activity with timestamp in format time.RFC3339
-func NewActivity(activity Activity, userName, content string) (UserActivity, error) {
+func NewActivity(activity Activity, userName string, content string) (UserActivity, error) {
 	now, err := GetNow()
 	if err != nil {
 		return UserActivity{}, err
