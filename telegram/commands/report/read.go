@@ -25,7 +25,7 @@ var (
 	`
 )
 
-// SendReadReport sends the read report
+// SendReadReport sends the report of read tracker
 func SendReadReport(client *shared.Client, userName, content string, chatID int64) error {
 	report, err := generateReadReport(client, userName, chatID)
 	if err != nil {

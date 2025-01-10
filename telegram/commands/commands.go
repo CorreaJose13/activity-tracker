@@ -39,6 +39,8 @@ var (
 		"shower":   report.SendShowerReport,
 		"run":      report.SendRunReport,
 		"tooth":    report.SendToothReport,
+		"sleep":    report.SendSleepReport,
+		"read":     report.SendReadReport,
 		"all":      report.GenerateAllReports,
 	}
 
