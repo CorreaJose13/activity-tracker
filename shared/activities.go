@@ -7,6 +7,8 @@ import (
 
 type Activity string
 
+type Exercise string
+
 // UserActivity contains an user activity info
 type UserActivity struct {
 	ID           string   `bson:"id"`
@@ -14,6 +16,7 @@ type UserActivity struct {
 	Activity     Activity `bson:"activity"`
 	ExerciseType Exercise `bson:"excercise_type,omitempty"`
 	CreatedAt    string   `bson:"created_at"`
+	UpdatedAt    string   `bson:"updated_at"`
 	Content      string   `bson:"content,omitempty"`
 }
 
@@ -34,8 +37,6 @@ const (
 	Wishlist   Activity = "wishlist"
 )
 
-type Exercise string
-
 const (
 	Leg    Exercise = "leg"
 	Bicep  Exercise = "bicep"
@@ -45,6 +46,24 @@ const (
 	Cardio Exercise = "cardio"
 	Chest  Exercise = "chest"
 )
+
+// NewActivity creates a new activity with timestamp in format time.RFC3339
+func NewActivity(activity Activity, userName string, content string) (UserActivity, error) {
+	now, err := GetNow()
+	if err != nil {
+		return UserActivity{}, err
+	}
+
+	nowStr := now.Format(time.RFC3339)
+
+	return UserActivity{
+		ID:        GenerateActivityItemID(now, userName, activity),
+		Name:      userName,
+		Activity:  activity,
+		Content:   content,
+		CreatedAt: nowStr,
+	}, nil
+}
 
 // GetNow returns the current time in Colombia
 func GetNow() (time.Time, error) {

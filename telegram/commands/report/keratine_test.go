@@ -10,7 +10,7 @@ import (
 func TestKeratineReport(t *testing.T) {
 	c := require.New(t)
 
-	pr, err := generateKeratineReport(&shared.Bot{}, "test", 1)
+	pr, err := GenerateKeratineReport(&shared.Client{}, "test", 1)
 	c.NoError(err)
 
 	// It is set to fail to check the trace code in pipi.go

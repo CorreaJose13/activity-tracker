@@ -28,6 +28,7 @@ resource "aws_lambda_function" "lambda_function" {
     variables = {
       BOT_TOKEN   = var.bot_api_token
       MONGO_TOKEN = var.mongo_token
+      GEM_API_KEY = var.gemini_key
     }
   }
 }

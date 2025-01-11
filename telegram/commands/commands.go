@@ -2,10 +2,12 @@ package commands
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/telegram/commands/gemini"
 	"activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
 	"activity-tracker/telegram/commands/track"
 	"activity-tracker/telegram/commands/wishlist"
+	"fmt"
 	"strings"
 )
 
@@ -16,7 +18,7 @@ const (
 )
 
 var (
-	commandMap = map[string]func(bot *shared.Bot, userName string, chatID int64) error{
+	commandMap = map[string]func(client *shared.Client, userName string, chatID int64) error{
 		"/hello":       sendHello,
 		"/help":        sendHelp,
 		"/commands":    sendCommands,
@@ -27,15 +29,21 @@ var (
 		"/hatriki":     sendHatriki,
 		"/tengohambre": sendHambre,
 		"/pinkipiensa": sendPinki,
+		"/chatID":      sendChatID,
 	}
 
-	suffixReportMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
+	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
 		"water":    report.SendWaterReport,
 		"keratine": report.SendKeratineReport,
 		"pipi":     report.SendPipiReport,
+		"shower":   report.SendShowerReport,
+		"run":      report.SendRunReport,
+		"tooth":    report.SendToothReport,
+		"all":      report.GenerateAllReports,
+    "sleep":    report.SendSleepReport,
 	}
 
-	suffixTrackMap = map[shared.Activity]func(bot *shared.Bot, userName, content string, chatID int64) error{
+	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
 		shared.Water:      track.SendTrackWater,
 		shared.ToothBrush: track.SendTrackTooth,
 		shared.Read:       track.SendTrackRead,
@@ -47,20 +55,22 @@ var (
 		shared.Keratine:   track.SendTrackKeratine,
 		shared.Pipi:       track.SendTrackPipi,
 		shared.Swimming:   track.SendTrackSwimming,
+		shared.Cycling:    track.SendTrackCycling,
 	}
 
-	suffixGoalMap = map[string]func(bot *shared.Bot, userName, content string, chatID int64) error{
+	suffixGoalMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
 		"create": goals.SendCreateGoal,
 		"delete": goals.SendDeleteGoal,
 		"update": goals.SendUpdateGoal,
 		"all":    goals.SendAllGoals,
 	}
 
-	prefixHandlers = map[string]func(bot *shared.Bot, chatID int64, userName, content string) error{
+	prefixHandlers = map[string]func(client *shared.Client, chatID int64, userName, content string) error{
 		"/track":    handleTrack,
 		"/report":   handleReport,
 		"/goal":     handleGoal,
 		"/wishlist": wishlist.HandleWishlist,
+		"/gemini":   gemini.HandleGemini,
 	}
 
 	msgHelp = `Quieres pene?`
@@ -73,14 +83,16 @@ var (
 	/track
 	/report`
 
-	msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa. 
-hint: 
+	msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa.
+hint:
 -/track water
 -/track toothbrush
 -/track read
 -/track shower
 -/track sleep
 -/track gym
+-/track cycling
+-/track run
 -/track poop`
 
 	msgHello = "Hola precioso \n\n" + msgHelp
@@ -89,7 +101,7 @@ hint:
 )
 
 // DoCommand handles the command
-func DoCommand(bot *shared.Bot, chatID int64, userName string, command string) error {
+func DoCommand(client *shared.Client, chatID int64, userName string, command string) error {
 	parts := strings.Split(command, " ")
 
 	before, _, found := strings.Cut(parts[0], "@")
@@ -100,95 +112,100 @@ func DoCommand(bot *shared.Bot, chatID int64, userName string, command string) e
 
 	fn, ok := commandMap[command]
 	if ok {
-		return fn(bot, userName, chatID)
+		return fn(client, userName, chatID)
 	}
 
 	for prefix, handler := range prefixHandlers {
 		if strings.HasPrefix(command, prefix+" ") {
 			content := strings.TrimPrefix(command, prefix+" ")
 
-			return handler(bot, chatID, userName, content)
+			return handler(client, chatID, userName, content)
 		}
 	}
 
-	return sendUnknownCommand(bot, chatID)
+	return sendUnknownCommand(client, chatID)
 }
 
-func handleTrack(bot *shared.Bot, chatID int64, userName, suffix string) error {
+func handleTrack(client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixTrackMap[shared.Activity(before)]; ok {
-		return fn(bot, userName, after, chatID)
+		return fn(client, userName, after, chatID)
 	}
 
-	return sendUnknownCommand(bot, chatID)
+	return sendUnknownCommand(client, chatID)
 }
 
-func handleReport(bot *shared.Bot, chatID int64, userName, suffix string) error {
+func handleReport(client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
-	if fn, ok := suffixReportMap[before]; ok {
-		return fn(bot, userName, after, chatID)
+	if fn, ok := suffixReportMap[shared.Activity(before)]; ok {
+		return fn(client, userName, after, chatID)
 	}
 
-	return sendUnknownCommand(bot, chatID)
+	return sendUnknownCommand(client, chatID)
 }
 
-func handleGoal(bot *shared.Bot, chatID int64, userName, suffix string) error {
+func handleGoal(client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixGoalMap[before]; ok {
-		return fn(bot, userName, after, chatID)
+		return fn(client, userName, after, chatID)
 	}
 
-	return sendUnknownCommand(bot, chatID)
+	return sendUnknownCommand(client, chatID)
 }
 
-func sendUnknownCommand(bot *shared.Bot, chatID int64) error {
-	return shared.SendMessage(bot, chatID, msgUnknownCommand)
+func sendUnknownCommand(client *shared.Client, chatID int64) error {
+	return client.SendMessage(chatID, msgUnknownCommand)
 }
 
-func sendHello(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, msgHello)
+func sendHello(client *shared.Client, userName string, chatID int64) error {
+	return client.SendMessage(chatID, msgHello)
 }
 
-func sendHelp(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, msgHelp)
+func sendHelp(client *shared.Client, userName string, chatID int64) error {
+	return client.SendMessage(chatID, msgHelp)
 }
 
-func sendGoalHelp(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, msgGoal)
+func sendGoalHelp(client *shared.Client, userName string, chatID int64) error {
+	return client.SendMessage(chatID, msgGoal)
 }
 
-func sendWishlist(bot *shared.Bot, userName string, chatID int64) error {
-	return wishlist.GetWishlist(bot, userName, chatID)
+func sendWishlist(client *shared.Client, userName string, chatID int64) error {
+	return wishlist.GetWishlist(client, userName, chatID)
 }
 
-func sendCommands(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, msgCommands)
+func sendCommands(client *shared.Client, userName string, chatID int64) error {
+	return client.SendMessage(chatID, msgCommands)
 }
 
-func sendTrackHelp(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, msgTrack)
+func sendTrackHelp(client *shared.Client, userName string, chatID int64) error {
+	return client.SendMessage(chatID, msgTrack)
 }
 
-func sendReportHelp(bot *shared.Bot, username string, chatID int64) error {
-	return shared.SendMessage(bot, chatID, "reporthelp")
+func sendReportHelp(client *shared.Client, username string, chatID int64) error {
+	return client.SendMessage(chatID, "reporthelp")
 }
 
-func sendHatriki(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendPhoto(bot, chatID, hatriki)
+func sendHatriki(client *shared.Client, userName string, chatID int64) error {
+	return client.SendPhoto(chatID, hatriki)
 }
 
-func sendHambre(bot *shared.Bot, userName string, chatID int64) error {
-	return shared.SendPhoto(bot, chatID, jeje)
+func sendHambre(client *shared.Client, userName string, chatID int64) error {
+	return client.SendPhoto(chatID, jeje)
 }
 
-func sendPinki(bot *shared.Bot, userName string, chatID int64) error {
-	err := shared.SendPhoto(bot, chatID, pinki)
+func sendPinki(client *shared.Client, userName string, chatID int64) error {
+	err := client.SendPhoto(chatID, pinki)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, "vamos pinki piensa")
+		return client.SendMessage(chatID, "vamos pinki piensa")
 	}
 
 	return nil
+}
+
+func sendChatID(client *shared.Client, userName string, chatID int64) error {
+	message := fmt.Sprintf("Chat ID: %d", chatID)
+	return client.SendMessage(chatID, message)
 }

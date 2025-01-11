@@ -8,14 +8,20 @@ import (
 
 type Bot = tgbotapi.BotAPI
 
-type Channel = tgbotapi.UpdatesChannel
-
 type Update = tgbotapi.Update
 
 type Message = tgbotapi.Message
 
+type Client struct {
+	Bot tgClientInterface
+}
+
+var (
+	BotAPI tgClientInterface = &tgbotapi.BotAPI{}
+)
+
 // New creates a new telegram bot
-func New(token string) (*Bot, error) {
+func New(token string) (*Client, error) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		return nil, fmt.Errorf("getting bot object failed: %w", err)
@@ -23,14 +29,17 @@ func New(token string) (*Bot, error) {
 
 	// Set this to true to log all interactions with telegram servers
 	bot.Debug = false
-	return bot, nil
+
+	BotAPI = bot
+
+	return &Client{Bot: BotAPI}, nil
 }
 
 // SendMessage sends a message to the chat
-func SendMessage(bot *Bot, chatID int64, text string) error {
+func (c *Client) SendMessage(chatID int64, text string) error {
 	msg := tgbotapi.NewMessage(chatID, text)
 
-	_, err := bot.Send(msg)
+	_, err := c.Bot.Send(msg)
 	if err != nil {
 		return fmt.Errorf("can't send message: %w", err)
 	}
@@ -39,12 +48,24 @@ func SendMessage(bot *Bot, chatID int64, text string) error {
 }
 
 // SendPhoto sends a photo to the chat
-func SendPhoto(bot *Bot, chatID int64, url string) error {
+func (c *Client) SendPhoto(chatID int64, url string) error {
 	msg := tgbotapi.NewPhoto(chatID, tgbotapi.FileURL(url))
 
-	_, err := bot.Send(msg)
+	_, err := c.Bot.Send(msg)
 	if err != nil {
 		return fmt.Errorf("can't send photo: %w", err)
+	}
+
+	return nil
+}
+
+// SendFile sends a file to the chat
+func (c *Client) SendFile(chatID int64, filePath string) error {
+	msg := tgbotapi.NewDocument(chatID, tgbotapi.FilePath(filePath))
+
+	_, err := c.Bot.Send(msg)
+	if err != nil {
+		return fmt.Errorf("can't send file: %w", err)
 	}
 
 	return nil

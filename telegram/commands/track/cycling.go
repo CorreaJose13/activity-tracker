@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// SendTrackRun tracks the run activity
-func SendTrackRun(client *shared.Client, userName, content string, chatID int64) error {
+// SendTrackCycling tracks cycling activity
+func SendTrackCycling(client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
 		return client.SendMessage(chatID, err.Error())
@@ -17,9 +17,9 @@ func SendTrackRun(client *shared.Client, userName, content string, chatID int64)
 	nowStr := now.Format(time.RFC3339)
 
 	userActivity := shared.UserActivity{
-		ID:        shared.GenerateActivityItemID(now, userName, shared.Run),
+		ID:        shared.GenerateActivityItemID(now, userName, shared.Cycling),
 		Name:      userName,
-		Activity:  shared.Run,
+		Activity:  shared.Cycling,
 		CreatedAt: nowStr,
 		Content:   content,
 	}
@@ -29,9 +29,9 @@ func SendTrackRun(client *shared.Client, userName, content string, chatID int64)
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	message := "mi papacho el más usain vol 🏃‍♂️"
+	message := "ataca pogachaaaaaa 🚴"
 	if content != "" {
-		message = fmt.Sprintf("uy mi papacho corrió %s? lo iba robar un negro o qué manito. anwy congrats", content)
+		message = "ve pero y ese poco de kilometros? te perseguía un veneco o q? anwy congrats"
 	}
 
 	return client.SendMessage(chatID, message)

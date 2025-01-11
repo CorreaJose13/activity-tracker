@@ -14,20 +14,20 @@ import (
 )
 
 var (
-	bot      *shared.Bot
+	client   *shared.Client
 	tokenbot = os.Getenv("BOT_TOKEN")
 )
 
 func init() {
 	var err error
-	bot, err = shared.New(tokenbot)
+	client, err = shared.New(tokenbot)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func processor(bot *shared.Bot, update shared.Update) error {
-	err := tg.Fetch(bot, update)
+func processor(client *shared.Client, update shared.Update) error {
+	err := tg.Fetch(client, update)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayPro
 		}, err
 	}
 
-	err = processor(bot, update)
+	err = processor(client, update)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,

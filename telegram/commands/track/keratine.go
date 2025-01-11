@@ -10,15 +10,15 @@ import (
 var goalKeratineConsume = 1
 
 // SendTrackKeratine tracks the keratine activity
-func SendTrackKeratine(bot *shared.Bot, userName, content string, chatID int64) error {
-	isGoalCompleted := isKeratineGoalCompleted(bot, userName, chatID)
+func SendTrackKeratine(client *shared.Client, userName, content string, chatID int64) error {
+	isGoalCompleted := isKeratineGoalCompleted(client, userName, chatID)
 	if isGoalCompleted {
-		return shared.SendMessage(bot, chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
+		return client.SendMessage(chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
 	}
 
 	now, err := shared.GetNow()
 	if err != nil {
-		return shared.SendMessage(bot, chatID, err.Error())
+		return client.SendMessage(chatID, err.Error())
 	}
 
 	nowStr := now.Format(time.RFC3339)
@@ -33,16 +33,16 @@ func SendTrackKeratine(bot *shared.Bot, userName, content string, chatID int64) 
 
 	err = storage.Create(userActivity)
 	if err != nil {
-		return shared.SendMessage(bot, chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
-	return shared.SendMessage(bot, chatID, "se wardó tu tomadita de keratina >:)")
+	return client.SendMessage(chatID, "se wardó tu tomadita de keratina >:)")
 }
 
-func isKeratineGoalCompleted(bot *shared.Bot, userName string, chatID int64) bool {
+func isKeratineGoalCompleted(client *shared.Client, userName string, chatID int64) bool {
 	currentDayKeratineActivities, err := storage.GetCurrentDayActivities(userName, shared.Keratine)
 	if err != nil {
-		_ = shared.SendMessage(bot, chatID, "tenemos problemas papi"+err.Error())
+		_ = client.SendMessage(chatID, "tenemos problemas papi"+err.Error())
 
 		return false
 	}
