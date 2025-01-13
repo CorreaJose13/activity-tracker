@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+
+import { Component, Injector, effect, signal, inject } from '@angular/core';
 import { Task } from './../../models/task.model'
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms'
 
 @Component({
   selector: 'app-resources',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './resources.component.html',
   styleUrl: './resources.component.css'
 })
@@ -16,7 +16,6 @@ export class ResourcesComponent {
 
   widthCtrl = new FormControl(50, {
     nonNullable: true,
-
   })
 
   nameCtrl = new FormControl('brayan', {
@@ -31,7 +30,26 @@ export class ResourcesComponent {
     this.colorCtrl.valueChanges.subscribe(value => {
       console.log(value)
     })
-  } 
+  }
+
+  injector = inject(Injector)
+
+  ngOnInit() {
+    const storage = localStorage.getItem("tasks")
+    if (storage) {
+      const tasks = JSON.parse(storage)
+      this.otherTasks.set(tasks)
+    }
+
+    this.trackTasks()
+  }
+
+  trackTasks() {
+    effect(() => {
+      const tasks = this.otherTasks()
+      localStorage.setItem("tasks", JSON.stringify(tasks))
+    }, { injector: this.injector })
+  }
 
   person = signal({
     name: 'e',
