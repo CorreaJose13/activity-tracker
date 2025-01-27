@@ -1,6 +1,7 @@
 package track
 
 import (
+	"activity-tracker/database"
 	"activity-tracker/shared"
 	"testing"
 
@@ -13,10 +14,9 @@ func TestSendTrackKeratine(t *testing.T) {
 	client, err := shared.NewMockBot("dummy")
 	c.Nil(err)
 
-	err = SendTrackKeratine(client, "test1", "", 1)
-	// It's not necessary to test the send message error
-	c.Error(err)
+	database.InitMongoMock()
 
-	// It is set to fail to check the trace code in commands.go
+	err = SendTrackKeratine(client, "test1", "", 1)
+	c.NoError(err)
 	c.Equal("a", "b")
 }

@@ -1,6 +1,7 @@
 package track
 
 import (
+	"activity-tracker/database"
 	"activity-tracker/shared"
 	"testing"
 	"time"
@@ -14,12 +15,16 @@ func TestSendTrackSleep(t *testing.T) {
 	client, err := shared.NewMockBot("dummy")
 	c.NoError(err)
 
+	database.InitMongoMock()
+
 	err = SendTrackSleep(client, "test", "", 1)
 	c.NoError(err)
 }
 
 func TestAddSleepTime(t *testing.T) {
 	c := require.New(t)
+
+	database.InitMongoMock()
 
 	activity, err := shared.NewActivity(shared.Sleep, "test", "2h")
 	c.NoError(err)

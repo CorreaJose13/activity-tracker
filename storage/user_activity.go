@@ -14,7 +14,6 @@ import (
 const tableName = "user-activity"
 
 var (
-	collection = database.GetCollection(tableName)
 
 	// ErrNoActivitiesFound is returned when no activities are found
 	ErrNoActivitiesFound = errors.New("no activities found")
@@ -22,6 +21,9 @@ var (
 
 // Create an user activity in database
 func Create(userActivity shared.UserActivity) error {
+	database.InitMongo()
+	collection := database.GetCollection(tableName)
+
 	_, err := collection.InsertOne(context.Background(), userActivity)
 
 	return err
@@ -29,6 +31,9 @@ func Create(userActivity shared.UserActivity) error {
 
 // Update an user activity in database
 func UpdateContent(userActivity shared.UserActivity) error {
+	database.InitMongo()
+	collection := database.GetCollection(tableName)
+
 	filter := bson.M{
 		"id": userActivity.ID,
 	}
@@ -51,6 +56,9 @@ func UpdateContent(userActivity shared.UserActivity) error {
 
 // GetCurrentDayActivities returns the current day activities from inputs
 func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	database.InitMongo()
+	collection := database.GetCollection(tableName)
+
 	now, err := shared.GetNow()
 	if err != nil {
 		return nil, err
@@ -82,7 +90,7 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.U
 
 	var activities []*shared.UserActivity
 
-	for items.Next(ctx) {
+	for items.TryNext(ctx) {
 		var bs bson.M
 
 		err := items.Decode(&bs)
@@ -107,6 +115,9 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.U
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
 func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	database.InitMongo()
+	collection := database.GetCollection(tableName)
+
 	now, err := shared.GetNow()
 	if err != nil {
 		return nil, err
@@ -171,6 +182,9 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 
 // GetActivityHistory returns the activities by username and activity
 func GetActivityHistory(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	database.InitMongo()
+	collection := database.GetCollection(tableName)
+
 	filter := bson.M{}
 
 	filter["name"] = name

@@ -11,12 +11,11 @@ import (
 
 const personalGoaltableName = "personal-goal"
 
-var (
-	personalGoalCollection = database.GetCollection(personalGoaltableName)
-)
-
 // Create an user activity in database
 func CreatePersonalGoal(personalGoal shared.PersonalGoal) error {
+	database.InitMongo()
+	personalGoalCollection := database.GetCollection(personalGoaltableName)
+
 	_, err := personalGoalCollection.InsertOne(context.Background(), personalGoal)
 
 	return err
@@ -24,6 +23,9 @@ func CreatePersonalGoal(personalGoal shared.PersonalGoal) error {
 
 // UpdatePersonalGoal updates the personal goal of an user
 func UpdatePersonalGoal(personalGoal shared.PersonalGoal) error {
+	database.InitMongo()
+	personalGoalCollection := database.GetCollection(personalGoaltableName)
+
 	filter := bson.M{}
 
 	filter["username"] = personalGoal.Username
@@ -36,6 +38,9 @@ func UpdatePersonalGoal(personalGoal shared.PersonalGoal) error {
 
 // DeletePersonalGoal deletes the personal goal of an user
 func DeletePersonalGoal(username string, activity shared.Activity) error {
+	database.InitMongo()
+	personalGoalCollection := database.GetCollection(personalGoaltableName)
+
 	filter := bson.M{}
 
 	filter["username"] = username
@@ -48,6 +53,9 @@ func DeletePersonalGoal(username string, activity shared.Activity) error {
 
 // GetAllPersonalGoals returns all the personal goals of an user
 func GetAllPersonalGoals(username string) ([]*shared.PersonalGoal, error) {
+	database.InitMongo()
+	personalGoalCollection := database.GetCollection(personalGoaltableName)
+
 	filter := bson.M{}
 
 	filter["username"] = username

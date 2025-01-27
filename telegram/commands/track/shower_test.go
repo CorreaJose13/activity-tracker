@@ -1,6 +1,7 @@
 package track
 
 import (
+	"activity-tracker/database"
 	"activity-tracker/shared"
 	"testing"
 
@@ -13,11 +14,8 @@ func TestSendTrackShower(t *testing.T) {
 	client, err := shared.NewMockBot("dummy")
 	c.Nil(err)
 
+	database.InitMongoMock()
+
 	err = SendTrackShower(client, "test1", "", 1)
-
-	// It's not necessary to test the send message error
-	c.Error(err)
-
-	// It is set to fail to check the trace code in commands.go
-	c.Equal("a", "b")
+	c.NoError(err)
 }
