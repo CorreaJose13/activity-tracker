@@ -1,0 +1,19 @@
+<div class="flex justify-center items-center min-h-screen">
+    <div
+      class="relative w-full max-h-fit max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-blue dark:border-gray-700"
+    >
+      <div class="space-y-6">
+        <h5 class="text-xl font-medium text-gray-900 dark:text-black">¿Qué quiere trackear, rey?</h5>
+  
+        <div class="grid grid-cols-2 gap-4">
+          <button
+            *ngFor="let item of inputAvailableOptions"
+            class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none"
+          >
+            {{ item }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
