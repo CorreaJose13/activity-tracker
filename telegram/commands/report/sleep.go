@@ -24,6 +24,7 @@ var (
 	`
 )
 
+// SendSleepReport sends the report of sleep tracker
 func SendSleepReport(client *shared.Client, userName string, _ string, chatID int64) error {
 	report, err := generateSleepReport(userName)
 	if err != nil {

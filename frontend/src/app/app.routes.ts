@@ -4,6 +4,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { TrackComponent } from './pages/track/track.component';
 import { ReportComponent } from './pages/report/report.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
+import { ResourcesComponent } from './pages/resources/resources.component';
 export const routes: Routes = [
   {
     path: '',
@@ -20,5 +21,9 @@ export const routes: Routes = [
   {
     path: 'wishlist',
     component: WishlistComponent
+  },
+  {
+    path: 'resources',
+    component: ResourcesComponent,
   }
 ];

@@ -44,7 +44,7 @@ type clientMock struct{}
 type databaseMock struct{}
 type collectionMock struct{}
 
-func AddCursorItem(item []bson.M) {
+func AddFindItem(item []bson.M) {
 	findItems = append(findItems, item...)
 }
 

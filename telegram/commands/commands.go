@@ -39,8 +39,9 @@ var (
 		"shower":   report.SendShowerReport,
 		"run":      report.SendRunReport,
 		"tooth":    report.SendToothReport,
-		"all":      report.GenerateAllReports,
 		"sleep":    report.SendSleepReport,
+		"read":     report.SendReadReport,
+		"all":      report.GenerateAllReports,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
