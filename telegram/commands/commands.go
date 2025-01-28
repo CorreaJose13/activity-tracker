@@ -103,6 +103,11 @@ hint:
 
 // DoCommand handles the command
 func DoCommand(client *shared.Client, chatID int64, userName string, command string) error {
+	err := client.PrepareMenuButton(chatID)
+	if err != nil {
+		return err
+	}
+
 	parts := strings.Split(command, " ")
 
 	before, _, found := strings.Cut(parts[0], "@")

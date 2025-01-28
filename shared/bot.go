@@ -1,9 +1,17 @@
 package shared
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
+
+var (
+	setChatMenuURL = `https://api.telegram.org/bot%s/setChatMenuButton`
 )
 
 type Bot = tgbotapi.BotAPI
@@ -14,6 +22,14 @@ type Message = tgbotapi.Message
 
 type Client struct {
 	Bot tgClientInterface
+}
+
+type MenuButton struct {
+	Type   string `json:"type"`
+	Text   string `json:"text"`
+	WebApp struct {
+		URL string `json:"url"`
+	} `json:"web_app"`
 }
 
 var (
@@ -67,6 +83,35 @@ func (c *Client) SendFile(chatID int64, filePath string) error {
 	if err != nil {
 		return fmt.Errorf("can't send file: %w", err)
 	}
+
+	return nil
+}
+
+// PrepareMenuButton prepares the menu button
+func (c *Client) PrepareMenuButton(chatID int64) error {
+	url := fmt.Sprintf(setChatMenuURL, os.Getenv("BOT_TOKEN"))
+
+	menu := MenuButton{
+		Type: "web_app",
+		Text: "Launch app",
+	}
+
+	menu.WebApp.URL = WebAppURL
+
+	menuJSON, err := json.Marshal(map[string]interface{}{
+		"menu_button": menu,
+	})
+
+	if err != nil {
+		return fmt.Errorf("can't create the json: %w", err)
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(menuJSON))
+	if err != nil {
+		return fmt.Errorf("can't send request: %w", err)
+	}
+
+	defer resp.Body.Close()
 
 	return nil
 }
