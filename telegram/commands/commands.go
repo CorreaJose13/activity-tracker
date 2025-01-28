@@ -140,7 +140,7 @@ func handleTrack(client *shared.Client, chatID int64, userName, suffix string) e
 func handleReport(client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
-	if fn, ok := suffixReportMap[string(shared.Activity(before))]; ok {
+	if fn, ok := suffixReportMap[before]; ok {
 		return fn(client, userName, after, chatID)
 	}
 

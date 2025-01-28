@@ -1,6 +1,7 @@
 package report
 
 import (
+	"activity-tracker/database"
 	"activity-tracker/shared"
 	"testing"
 
@@ -10,9 +11,12 @@ import (
 func TestPipiReport(t *testing.T) {
 	c := require.New(t)
 
-	pr, err := GeneratePipiReport(&shared.Client{}, "test", 1)
-	c.NoError(err)
+	client, err := shared.NewMockBot("dummy")
+	c.Nil(err)
 
-	// It is set to fail to check the trace code in pipi.go
-	c.Equal("testToFail", pr)
+	database.InitMongoMock()
+
+	pr, err := GeneratePipiReport(client, "test", 1)
+	c.NoError(err)
+	c.NotEmpty(pr)
 }

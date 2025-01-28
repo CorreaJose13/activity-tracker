@@ -1,8 +1,8 @@
 package storage
 
 import (
+	"activity-tracker/database"
 	"activity-tracker/shared"
-	"fmt"
 	"testing"
 	"time"
 
@@ -13,13 +13,11 @@ func TestCreate(t *testing.T) {
 	c := require.New(t)
 
 	now, err := shared.GetNow()
-	if err != nil {
-		fmt.Println("Failed get now")
-
-		c.Equal("a", "b")
-	}
+	c.NoError(err)
 
 	nowStr := now.Format(time.RFC3339)
+
+	database.InitMongoMock()
 
 	user := shared.UserActivity{
 		ID:        "123",
@@ -29,12 +27,5 @@ func TestCreate(t *testing.T) {
 	}
 
 	err = Create(user)
-
-	if err != nil {
-		fmt.Println("Falla en crear user activity")
-	} else {
-		fmt.Println("epa")
-	}
-
-	c.Equal("a", user.Name)
+	c.NoError(err)
 }

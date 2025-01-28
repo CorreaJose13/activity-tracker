@@ -1,4 +1,4 @@
-package track
+package storage
 
 import (
 	"activity-tracker/database"
@@ -8,14 +8,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSendTrackPipi(t *testing.T) {
+func TestMoc(t *testing.T) {
 	c := require.New(t)
-
-	client, err := shared.NewMockBot("dummy")
-	c.Nil(err)
 
 	database.InitMongoMock()
 
-	err = SendTrackPipi(client, "test", "", 1)
-	c.NoError(err)
+	user := shared.PersonalGoal{
+		Username: "br",
+		Activity: shared.Cycling,
+	}
+
+	err := CreatePersonalGoal(user)
+	c.Nil(err)
 }
