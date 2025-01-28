@@ -3,7 +3,6 @@ package track
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
-	"errors"
 	"fmt"
 	"regexp"
 	"time"
@@ -14,9 +13,8 @@ const (
 )
 
 var (
-	errInvalidTimeFormat = errors.New("invalid time format")
-	messageInvalidHour   = "Ve pone bien el formato de horas, por ejemplo 8h o 10m o 2h30m"
-	secondsRegex         = `\d+s$`
+	messageInvalidHour = "Ve pone bien el formato de horas, por ejemplo 8h o 10m o 2h30m"
+	secondsRegex       = `\d+s$`
 )
 
 // SendTrackSleep tracks the sleep activity

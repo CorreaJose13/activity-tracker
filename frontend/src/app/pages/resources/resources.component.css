@@ -1,0 +1,28 @@
+.btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  margin: 0.8rem;
+  background-color: rgb(207, 53, 53);
+  text-align: center;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  color: white;
+  size: 15px;
+  cursor: pointer;
+  border-color: transparent;
+}
+.box{
+  height: 10px;
+  display: block;
+  background-color: red;
+}
+.message-error{
+  background-color: red;
+  color: white;
+  opacity: 0;
+  transition: all linear .5s;
+}
+.message-error.show{
+  opacity: 1;
+}

@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './wishlist.component.css'
 })
 export class WishlistComponent {
-
+  
 }

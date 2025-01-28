@@ -39,8 +39,9 @@ var (
 		"shower":   report.SendShowerReport,
 		"run":      report.SendRunReport,
 		"tooth":    report.SendToothReport,
+		"sleep":    report.SendSleepReport,
+		"read":     report.SendReadReport,
 		"all":      report.GenerateAllReports,
-    "sleep":    report.SendSleepReport,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
@@ -102,6 +103,11 @@ hint:
 
 // DoCommand handles the command
 func DoCommand(client *shared.Client, chatID int64, userName string, command string) error {
+	err := client.PrepareMenuButton(chatID)
+	if err != nil {
+		return err
+	}
+
 	parts := strings.Split(command, " ")
 
 	before, _, found := strings.Cut(parts[0], "@")
@@ -139,7 +145,7 @@ func handleTrack(client *shared.Client, chatID int64, userName, suffix string) e
 func handleReport(client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
-	if fn, ok := suffixReportMap[shared.Activity(before)]; ok {
+	if fn, ok := suffixReportMap[before]; ok {
 		return fn(client, userName, after, chatID)
 	}
 
