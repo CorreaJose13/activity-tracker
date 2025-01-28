@@ -1,6 +1,7 @@
 package wishlist
 
 import (
+	"activity-tracker/database"
 	"activity-tracker/shared"
 	"testing"
 
@@ -13,6 +14,8 @@ func TestHandleWishlist(t *testing.T) {
 	client, err := shared.NewMockBot("dummy")
 	c.Nil(err)
 
+	database.InitMongoMock()
+
 	err = HandleWishlist(client, 1, "test1", "test1")
 	c.Equal(errInvalidWishlistCommand, err)
 
@@ -20,19 +23,17 @@ func TestHandleWishlist(t *testing.T) {
 	c.Equal(errInvalidURL, err)
 
 	err = HandleWishlist(client, 1, "test1", "item https://www.google.com")
-
-	// It's not necessary to test the send message error, at this point the item is added to the database
-	c.Error(err)
+	c.NoError(err)
 }
 
 func TestGetWishlist(t *testing.T) {
 	c := require.New(t)
 
+	database.InitMongoMock()
+
 	client, err := shared.NewMockBot("dummy")
 	c.Nil(err)
 
 	err = GetWishlist(client, "test1", 1)
-
-	// It's not necessary to test the send message error, at this point the wishlist is obtained from the database
-	c.Error(err)
+	c.NoError(err)
 }
