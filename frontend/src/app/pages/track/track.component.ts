@@ -11,6 +11,8 @@ import { CommonModule } from '@angular/common';
 export class TrackComponent {
 
   //signals
-  options = signal<string[]>([]); 
+  userTrackingOptions = signal<string[]>(['Shower', 'Run', 'Read']); 
+  showModal = signal<boolean>(false);
+
   
 }
