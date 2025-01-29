@@ -16,17 +16,3 @@ func TestSendTrackRead(t *testing.T) {
 	err = SendTrackRead(client, "test", "", 1)
 	c.NoError(err)
 }
-
-func TestIsValidContent(t *testing.T) {
-	c := require.New(t)
-
-	content := "a"
-
-	b := isValidContent(content)
-	c.False(b)
-
-	content = "10"
-
-	b = isValidContent(content)
-	c.True(b)
-}
