@@ -2,6 +2,7 @@ package shared
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -80,4 +81,10 @@ func GenerateActivityItemID(now time.Time, username string, activity Activity) s
 	formattedNow := now.Format(time.RFC3339)
 
 	return fmt.Sprintf("%s-%s-%s", formattedNow, username, activity)
+}
+
+func IsValidNumber(content string) bool {
+	value, err := strconv.Atoi(content)
+
+	return err == nil && value > 0
 }

@@ -34,6 +34,7 @@ var (
 
 	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
 		"water":    report.SendWaterReport,
+		"poop":     report.SendPoopReport,
 		"keratine": report.SendKeratineReport,
 		"pipi":     report.SendPipiReport,
 		"shower":   report.SendShowerReport,
@@ -103,6 +104,11 @@ hint:
 
 // DoCommand handles the command
 func DoCommand(client *shared.Client, chatID int64, userName string, command string) error {
+	err := client.PrepareMenuButton(chatID)
+	if err != nil {
+		return err
+	}
+
 	parts := strings.Split(command, " ")
 
 	before, _, found := strings.Cut(parts[0], "@")

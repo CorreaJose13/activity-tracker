@@ -4,7 +4,6 @@ import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
-	"strconv"
 )
 
 var (
@@ -19,7 +18,7 @@ func SendTrackRead(client *shared.Client, userName, content string, chatID int64
 		return client.SendMessage(chatID, missingContentMessage)
 	}
 
-	if !isValidContent(content) {
+	if !shared.IsValidNumber(content) {
 		return client.SendMessage(chatID, invalidContentMessage)
 	}
 
@@ -34,10 +33,4 @@ func SendTrackRead(client *shared.Client, userName, content string, chatID int64
 	}
 
 	return client.SendMessage(chatID, successMessage)
-}
-
-func isValidContent(content string) bool {
-	value, err := strconv.Atoi(content)
-
-	return err == nil && value > 0
 }
