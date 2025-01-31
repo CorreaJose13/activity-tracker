@@ -16,7 +16,7 @@ func TestKeratineReport(t *testing.T) {
 
 	database.InitMongoMock()
 
-	pr, err := GenerateKeratineReport(client, "test", 1)
+	pr, err := GenerateKeratineReport(client, "BrayanEscobar", 1)
 	c.NoError(err)
 	c.NotEmpty(pr)
 }
