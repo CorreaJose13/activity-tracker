@@ -28,7 +28,7 @@ type Schedule struct {
 }
 
 func handler(ctx context.Context, event Schedule) error {
-	for _, chatID := range shared.KeratineChatIDs {
+	for _, chatID := range shared.KeratineSchedulerChatIDs {
 		err := client.SendMessage(chatID, message)
 		if err != nil {
 			return err

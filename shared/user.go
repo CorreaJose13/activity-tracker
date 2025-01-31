@@ -13,22 +13,25 @@ var (
 	Juan    = "juancballesteros"
 	Daniela = "DaniCD8"
 
+	// TODO: Add the missing user chat ids in another PR
 	ValeryChatID = int64(2071323849)
 	BrayanChatID = int64(622185634)
 	JohanChatID  = int64(815505945)
+	JoseChatID   = int64(2112190700)
 
-	// User chat IDs
-	UsersChatIDs = map[string]int64{
-		// Valery:  ValeryChatID,
+	// Schedulers chat ids
+	KeratineSchedulerChatIDs = map[string]int64{
+		Valery: ValeryChatID,
 		Brayan: BrayanChatID,
-		// Johan:   JohanChatID,
+		Johan:  JohanChatID,
 	}
 
-	// Keratine chat IDs
-	KeratineChatIDs = []int64{ValeryChatID, BrayanChatID, JohanChatID}
-
-	// All reports chat IDs
-	AllReportsChatIDs = []int64{ValeryChatID, BrayanChatID, JohanChatID}
+	AllReportsSchedulerChatIDs = map[string]int64{
+		Valery: ValeryChatID,
+		Brayan: BrayanChatID,
+		Johan:  JohanChatID,
+		Jose:   JoseChatID,
+	}
 )
 
 // GetRandomUserName returns a random user name from the list

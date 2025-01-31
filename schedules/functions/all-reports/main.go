@@ -27,8 +27,9 @@ type Schedule struct {
 	Message string `json:"message"`
 }
 
+// TODO: This lambda will be used in another ticket when the TF files are created
 func handler(ctx context.Context, event Schedule) error {
-	for userName, chatID := range shared.UsersChatIDs {
+	for userName, chatID := range shared.AllReportsSchedulerChatIDs {
 		err := report.GenerateAllReports(client, userName, "", chatID)
 		if err != nil {
 			return err
