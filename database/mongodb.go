@@ -11,12 +11,14 @@ import (
 )
 
 var (
-	Client            MongoClientInterface     = &mongo.Client{}
-	Database          MongoDatabaseInterface   = &mongo.Database{}
-	Collection        MongoCollectionInterface = &mongo.Collection{}
-	funcClientConfig                           = setClientConfig
-	funcGetDatabase                            = getDatabase
-	funcGetCollection                          = getCollection
+	Client     MongoClientInterface     = &mongo.Client{}
+	Database   MongoDatabaseInterface   = &mongo.Database{}
+	Collection MongoCollectionInterface = &mongo.Collection{}
+	// funcClientConfig                           = setClientConfig
+	// funcGetDatabase   = getDatabase
+	// funcGetCollection = getCollection
+
+	mongoClient *mongo.Client
 )
 
 const (
@@ -24,7 +26,7 @@ const (
 	databaseName = "activitytracker"
 )
 
-func setClientConfig() (context.Context, MongoClientInterface) {
+func init() {
 	pswd := os.Getenv("MONGO_TOKEN")
 	if pswd == "" {
 		panic("failed to get mongo token env var value")
@@ -40,29 +42,35 @@ func setClientConfig() (context.Context, MongoClientInterface) {
 		panic(err)
 	}
 
-	return ctx, mongo
-}
+	mongoClient = mongo
 
-func InitMongo() {
-	ctx, cli := funcClientConfig()
-	Client = cli
-
-	err := Client.Ping(ctx, nil)
+	err = mongoClient.Ping(context.Background(), nil)
 	if err != nil {
 		panic(err)
 	}
+
+	// return context.Background(), mongoClient
 }
 
-func getDatabase() MongoDatabaseInterface {
-	return Client.Database(databaseName)
+func InitMongo() {
+	// ctx, cli := setClientConfig()
+	// // Client = cli
+
+	// err := cli.Ping(ctx, nil)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
-func getCollection(database MongoDatabaseInterface, tableName string) MongoCollectionInterface {
-	return Database.Collection(tableName)
-}
+// func getDatabase() MongoDatabaseInterface {
+// 	return Client.Database(databaseName)
+// }
+
+// func getCollection(database MongoDatabaseInterface, tableName string) MongoCollectionInterface {
+// 	return Database.Collection(tableName)
+// }
 
 // GetCollection function to get the mogodb collection
 func GetCollection(tableName string) MongoCollectionInterface {
-	Database = funcGetDatabase()
-	return funcGetCollection(Database, tableName)
+	return mongoClient.Database(databaseName).Collection(tableName)
 }
