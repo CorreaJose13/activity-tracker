@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	missingPoopContentMessage = "cagaste aire o que malparido????"
-	invalidPoopContentMessage = "al parecer la kk la tienes en el cerebro, manda el numero bien ps 😡"
+	missingPoopContentMessage = "sos down???? mandame la info así:\n\t /track poop <times u pooped today>"
+	invalidPoopContentMessage = "al parecer la kk la tienes en el cerebro, manda el número bien ps 😡"
 	successPoopMessage        = "a ber de q color es? 👀👀"
 )
 
@@ -19,7 +19,7 @@ func SendTrackPoop(client *shared.Client, userName, content string, chatID int64
 	}
 
 	if !shared.IsValidNumber(content) {
-		return client.SendMessage(chatID, invalidContentMessage)
+		return client.SendMessage(chatID, invalidPoopContentMessage)
 	}
 
 	userActivity, err := shared.NewActivity(shared.Poop, userName, content)
