@@ -34,6 +34,7 @@ var (
 
 	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
 		"water":    report.SendWaterReport,
+		"poop":     report.SendPoopReport,
 		"keratine": report.SendKeratineReport,
 		"pipi":     report.SendPipiReport,
 		"shower":   report.SendShowerReport,

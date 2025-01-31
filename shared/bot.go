@@ -75,6 +75,18 @@ func (c *Client) SendPhoto(chatID int64, url string) error {
 	return nil
 }
 
+// SendAnimation sends an animation to the chat
+func (c *Client) SendAnimation(chatID int64, url string) error {
+	msg := tgbotapi.NewAnimation(chatID, tgbotapi.FileURL(url))
+
+	_, err := c.Bot.Send(msg)
+	if err != nil {
+		return fmt.Errorf("can't send animation: %w", err)
+	}
+
+	return nil
+}
+
 // SendFile sends a file to the chat
 func (c *Client) SendFile(chatID int64, filePath string) error {
 	msg := tgbotapi.NewDocument(chatID, tgbotapi.FilePath(filePath))
