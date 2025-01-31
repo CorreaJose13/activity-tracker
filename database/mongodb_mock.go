@@ -70,17 +70,17 @@ func InitMongoMock() {
 	Database = &databaseMock{}
 	Collection = &collectionMock{}
 
-	funcClientConfig = func() (context.Context, MongoClientInterface) {
-		return context.Background(), Client
-	}
+	// funcClientConfig = func() (context.Context, MongoClientInterface) {
+	// 	return context.Background(), Client
+	// }
 
-	funcGetDatabase = func() MongoDatabaseInterface {
-		return Database
-	}
+	// funcGetDatabase = func() MongoDatabaseInterface {
+	// 	return Database
+	// }
 
-	funcGetCollection = func(_ MongoDatabaseInterface, _ string) MongoCollectionInterface {
-		return Collection
-	}
+	// funcGetCollection = func(_ MongoDatabaseInterface, _ string) MongoCollectionInterface {
+	// 	return Collection
+	// }
 }
 
 func (c *clientMock) Database(name string, opts ...*options.DatabaseOptions) *mongo.Database {

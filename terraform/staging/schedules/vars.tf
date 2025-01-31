@@ -22,22 +22,10 @@ variable "scheduler_lambda_function_name" {
   default     = "tg_bot_scheduler_lambda"
 }
 
-variable "all_reports_lambda_function_name" {
-  description = "Name for the all reports Lambda function"
-  type        = string
-  default     = "tg_bot_all_reports_lambda"
-}
-
 variable "scheduler_name" {
   description = "Name for the scheduler"
   type        = string
   default     = "tg_bot_scheduler"
-}
-
-variable "all_reports_scheduler_name" {
-  description = "Name for the all reports scheduler"
-  type        = string
-  default     = "tg_bot_all_reports_scheduler"
 }
 
 variable "binary_name" {
