@@ -1,11 +1,11 @@
-resource "aws_scheduler_schedule" "drink_water" {
+resource "aws_scheduler_schedule" "drink_keratine_scheduler" {
   name = var.scheduler_name
 
   flexible_time_window {
     mode = "OFF"
   }
 
-  schedule_expression          = "rate(1 minutes)"
+  schedule_expression          = "cron(5 9,21 * * ? *)"
   schedule_expression_timezone = "America/Bogota"
 
   target {
@@ -16,7 +16,7 @@ resource "aws_scheduler_schedule" "drink_water" {
       FunctionName   = aws_lambda_function.scheduler_lambda_function.function_name
       InvocationType = "Event"
       Payload = jsonencode({
-        message = "drink-water"
+        message = "drink-keratine"
       })
     })
   }

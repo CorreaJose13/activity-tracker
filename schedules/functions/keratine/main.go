@@ -4,7 +4,6 @@ import (
 	"activity-tracker/shared"
 	"context"
 	"os"
-	"strconv"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -12,7 +11,7 @@ import (
 var (
 	client   *shared.Client
 	botToken = os.Getenv("BOT_TOKEN")
-	chatID   = os.Getenv("CHAT_ID")
+	message  = "acordate de tomar la creatina 💪 sapa asquerosa"
 )
 
 func init() {
@@ -29,12 +28,14 @@ type Schedule struct {
 }
 
 func handler(ctx context.Context, event Schedule) error {
-	i, err := strconv.ParseInt(chatID, 10, 64)
-	if err != nil {
-		panic(err)
+	for _, chatID := range shared.KeratineChatIDs {
+		err := client.SendMessage(chatID, message)
+		if err != nil {
+			return err
+		}
 	}
 
-	return client.SendMessage(i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
+	return nil
 }
 
 func main() {

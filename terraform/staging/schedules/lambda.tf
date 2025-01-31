@@ -7,12 +7,29 @@ resource "null_resource" "function_binary" {
   }
 }
 
+resource "null_resource" "all_reports_function_binary" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = "GOOS=linux GOARCH=amd64 go build -o ${local.all_reports_binary_path} ${local.all_reports_src_path}"
+  }
+}
+
 data "archive_file" "function_archive" {
   depends_on = [null_resource.function_binary]
 
   type        = "zip"
   source_file = local.binary_path
   output_path = local.archive_path
+}
+
+data "archive_file" "all_reports_archive" {
+  depends_on = [null_resource.all_reports_function_binary]
+
+  type        = "zip"
+  source_file = local.all_reports_binary_path
+  output_path = local.all_reports_archive_path
 }
 
 resource "aws_lambda_function" "scheduler_lambda_function" {
@@ -27,7 +44,22 @@ resource "aws_lambda_function" "scheduler_lambda_function" {
   environment {
     variables = {
       BOT_TOKEN = var.bot_api_token
-      CHAT_ID   = var.chat_id
+    }
+  }
+}
+
+resource "aws_lambda_function" "all_reports_lambda_function" {
+  filename         = local.all_reports_archive_path
+  function_name    = var.all_reports_lambda_function_name
+  role             = aws_iam_role.scheduler_lambda_execution_role.arn
+  runtime          = "provided.al2023"
+  handler          = "main"
+  architectures    = ["x86_64"]
+  source_code_hash = data.archive_file.all_reports_archive.output_base64sha256
+
+  environment {
+    variables = {
+      BOT_TOKEN = var.bot_api_token
     }
   }
 }

@@ -9,5 +9,5 @@ import (
 func TestGetRandomUserName(t *testing.T) {
 	c := require.New(t)
 
-	c.Contains([]string{Valery, Brayan, Johan, Jose, Mauro}, GetRandomUserName())
+	c.Contains([]string{Valery, Brayan, Johan, Jose, Juan, Daniela}, GetRandomUserName())
 }
