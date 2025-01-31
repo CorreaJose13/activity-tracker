@@ -24,7 +24,7 @@ const (
 	databaseName = "activitytracker"
 )
 
-func setClientConfig() (context.Context, MongoClientInterface) {
+func setClientConfig() MongoClientInterface {
 	pswd := os.Getenv("MONGO_TOKEN")
 	if pswd == "" {
 		panic("failed to get mongo token env var value")
@@ -32,7 +32,7 @@ func setClientConfig() (context.Context, MongoClientInterface) {
 
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s.2ykonih.mongodb.net/", user, pswd, databaseName))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	mongo, err := mongo.Connect(ctx, clientOpts)
@@ -40,17 +40,16 @@ func setClientConfig() (context.Context, MongoClientInterface) {
 		panic(err)
 	}
 
-	return ctx, mongo
-}
-
-func InitMongo() {
-	ctx, cli := funcClientConfig()
-	Client = cli
-
-	err := Client.Ping(ctx, nil)
+	err = mongo.Ping(ctx, nil)
 	if err != nil {
 		panic(err)
 	}
+
+	return mongo
+}
+
+func InitMongo() {
+	Client = funcClientConfig()
 }
 
 func getDatabase() MongoDatabaseInterface {

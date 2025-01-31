@@ -70,8 +70,8 @@ func InitMongoMock() {
 	Database = &databaseMock{}
 	Collection = &collectionMock{}
 
-	funcClientConfig = func() (context.Context, MongoClientInterface) {
-		return context.Background(), Client
+	funcClientConfig = func() MongoClientInterface {
+		return Client
 	}
 
 	funcGetDatabase = func() MongoDatabaseInterface {
