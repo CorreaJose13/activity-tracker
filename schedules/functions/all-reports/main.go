@@ -2,9 +2,9 @@ package main
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/telegram/commands/report"
 	"context"
 	"os"
-	"strconv"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -12,7 +12,6 @@ import (
 var (
 	client   *shared.Client
 	botToken = os.Getenv("BOT_TOKEN")
-	chatID   = os.Getenv("CHAT_ID")
 )
 
 func init() {
@@ -28,13 +27,16 @@ type Schedule struct {
 	Message string `json:"message"`
 }
 
+// TODO: This lambda will be used in another ticket when the TF files are created
 func handler(ctx context.Context, event Schedule) error {
-	i, err := strconv.ParseInt(chatID, 10, 64)
-	if err != nil {
-		panic(err)
+	for userName, chatID := range shared.AllReportsSchedulerChatIDs {
+		err := report.GenerateAllReports(client, userName, "", chatID)
+		if err != nil {
+			return err
+		}
 	}
 
-	return client.SendMessage(i, "ya viene siendo como hora de tomar awita perr@ hpta 🙂")
+	return nil
 }
 
 func main() {

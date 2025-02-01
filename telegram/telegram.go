@@ -12,12 +12,12 @@ var (
 	errInvalidUser = errors.New("user is not allowed to use Samantha Bot")
 
 	allowedUsers = map[string]bool{
-		shared.Brayan: true,
-		shared.Mauro:  true,
-		shared.Johan:  true,
-		shared.Jose:   true,
-		shared.Valery: true,
-		shared.Juan:   true,
+		shared.Brayan:  true,
+		shared.Johan:   true,
+		shared.Jose:    true,
+		shared.Valery:  true,
+		shared.Juan:    true,
+		shared.Daniela: true,
 	}
 )
 

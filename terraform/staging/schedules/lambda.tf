@@ -27,7 +27,6 @@ resource "aws_lambda_function" "scheduler_lambda_function" {
   environment {
     variables = {
       BOT_TOKEN = var.bot_api_token
-      CHAT_ID   = var.chat_id
     }
   }
 }

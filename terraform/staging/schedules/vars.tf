@@ -45,10 +45,3 @@ variable "bot_api_token" {
   type        = string
   sensitive   = true
 }
-
-variable "chat_id" {
-  description = "Telegram chat id"
-  type        = string
-  sensitive   = true
-}
-
