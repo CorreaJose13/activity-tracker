@@ -1,8 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+
 @Component({
   selector: 'app-add-tracker',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './add-tracker.component.html',
   standalone: true,
   styleUrl: './add-tracker.component.css'
@@ -15,6 +15,5 @@ export class AddTrackerComponent {
   closeModal() {
     this.close.emit(); 
   }
-
 
 }
