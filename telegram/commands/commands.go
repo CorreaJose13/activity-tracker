@@ -3,9 +3,30 @@ package commands
 import (
 	"activity-tracker/shared"
 	"activity-tracker/telegram/commands/gemini"
-	"activity-tracker/telegram/commands/goals"
+	goals "activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
-	"activity-tracker/telegram/commands/track"
+	reportKeratine "activity-tracker/telegram/commands/report/keratine"
+	reportPipi "activity-tracker/telegram/commands/report/pipi"
+	reportPoop "activity-tracker/telegram/commands/report/poop"
+	reportRead "activity-tracker/telegram/commands/report/read"
+	reportRun "activity-tracker/telegram/commands/report/run"
+	reportShower "activity-tracker/telegram/commands/report/shower"
+	reportSleep "activity-tracker/telegram/commands/report/sleep"
+	reportTooth "activity-tracker/telegram/commands/report/tooth"
+	reportWater "activity-tracker/telegram/commands/report/water"
+	trackCycling "activity-tracker/telegram/commands/track/cycling"
+	trackGym "activity-tracker/telegram/commands/track/gym"
+	trackKeratine "activity-tracker/telegram/commands/track/keratine"
+	trackPipi "activity-tracker/telegram/commands/track/pipi"
+	trackPoop "activity-tracker/telegram/commands/track/poop"
+	trackRead "activity-tracker/telegram/commands/track/read"
+	trackRun "activity-tracker/telegram/commands/track/run"
+	trackShower "activity-tracker/telegram/commands/track/shower"
+	trackSleep "activity-tracker/telegram/commands/track/sleep"
+	trackSwimming "activity-tracker/telegram/commands/track/swimming"
+	trackTooth "activity-tracker/telegram/commands/track/tooth"
+	trackWater "activity-tracker/telegram/commands/track/water"
+
 	"activity-tracker/telegram/commands/wishlist"
 	"fmt"
 	"strings"
@@ -33,31 +54,31 @@ var (
 	}
 
 	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
-		"water":    report.SendWaterReport,
-		"poop":     report.SendPoopReport,
-		"keratine": report.SendKeratineReport,
-		"pipi":     report.SendPipiReport,
-		"shower":   report.SendShowerReport,
-		"run":      report.SendRunReport,
-		"tooth":    report.SendToothReport,
-		"sleep":    report.SendSleepReport,
-		"read":     report.SendReadReport,
+		"water":    reportWater.SendWaterReport,
+		"poop":     reportPoop.SendPoopReport,
+		"keratine": reportKeratine.SendKeratineReport,
+		"pipi":     reportPipi.SendPipiReport,
+		"shower":   reportShower.SendShowerReport,
+		"run":      reportRun.SendRunReport,
+		"tooth":    reportTooth.SendToothReport,
+		"sleep":    reportSleep.SendSleepReport,
+		"read":     reportRead.SendReadReport,
 		"all":      report.GenerateAllReports,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
-		shared.Water:      track.SendTrackWater,
-		shared.ToothBrush: track.SendTrackTooth,
-		shared.Read:       track.SendTrackRead,
-		shared.Shower:     track.SendTrackShower,
-		shared.Sleep:      track.SendTrackSleep,
-		shared.Gym:        track.SendTrackGym,
-		shared.Poop:       track.SendTrackPoop,
-		shared.Run:        track.SendTrackRun,
-		shared.Keratine:   track.SendTrackKeratine,
-		shared.Pipi:       track.SendTrackPipi,
-		shared.Swimming:   track.SendTrackSwimming,
-		shared.Cycling:    track.SendTrackCycling,
+		shared.Water:      trackWater.SendTrackWater,
+		shared.ToothBrush: trackTooth.SendTrackTooth,
+		shared.Read:       trackRead.SendTrackRead,
+		shared.Shower:     trackShower.SendTrackShower,
+		shared.Sleep:      trackSleep.SendTrackSleep,
+		shared.Gym:        trackGym.SendTrackGym,
+		shared.Poop:       trackPoop.SendTrackPoop,
+		shared.Run:        trackRun.SendTrackRun,
+		shared.Keratine:   trackKeratine.SendTrackKeratine,
+		shared.Pipi:       trackPipi.SendTrackPipi,
+		shared.Swimming:   trackSwimming.SendTrackSwimming,
+		shared.Cycling:    trackCycling.SendTrackCycling,
 	}
 
 	suffixGoalMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
@@ -86,20 +107,20 @@ var (
 	/report`
 
 	msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa.
-hint:
--/track water
--/track toothbrush
--/track read
--/track shower
--/track sleep
--/track gym
--/track cycling
--/track run
--/track poop`
+	hint:
+	-/track water
+	-/track toothbrush
+	-/track read
+	-/track shower
+	-/track sleep
+	-/track gym
+	-/track cycling
+	-/track run
+	-/track poop`
 
 	msgHello = "Hola precioso \n\n" + msgHelp
 
-	msgUnknownCommand = "Unknown command 🤔"
+	msgUnknownCommand = "q mondá es eso? 🤔"
 )
 
 // DoCommand handles the command
@@ -176,7 +197,7 @@ func sendHelp(client *shared.Client, userName string, chatID int64) error {
 }
 
 func sendGoalHelp(client *shared.Client, userName string, chatID int64) error {
-	return client.SendMessage(chatID, msgGoal)
+	return client.SendMessage(chatID, goals.MsgGoal)
 }
 
 func sendWishlist(client *shared.Client, userName string, chatID int64) error {
