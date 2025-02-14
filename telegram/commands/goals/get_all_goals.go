@@ -9,15 +9,15 @@ import (
 )
 
 var (
-	msgGoal = `por fin vas a querer hacer algo diferente 🐸🐶
-haceme el cruce y me decís qué querés con un objetivo
+	MsgGoal = `por fin vas a querer hacer algo diferente 🐸🐶
+	haceme el cruce y me decís qué querés con un objetivo
 
-algo así precioso:
+	algo así precioso:
 
-crear un objetivo: /goal create <activity> <goal> <optional: --daily=VALUE> <optional: --weekly=VALUE> <optional: --monthly=VALUE>	
-borrar un objetivo: /goal delete <activity>
-actualizar un objetivo: /goal update <activity> <new goal>
-obtener todos tus objetivos: /goal all
+	crear un objetivo: /goal create <activity> <goal> <optional: --daily=VALUE> <optional: --weekly=VALUE> <optional: --monthly=VALUE>	
+	borrar un objetivo: /goal delete <activity>
+	actualizar un objetivo: /goal update <activity> <new goal>
+	obtener todos tus objetivos: /goal all
 `
 
 	msgAllGoals = `tus objetivos son:\n\n%s`

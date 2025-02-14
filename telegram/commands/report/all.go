@@ -2,16 +2,29 @@ package report
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/telegram/commands/report/keratine"
+	"activity-tracker/telegram/commands/report/pipi"
+	"activity-tracker/telegram/commands/report/poop"
+	"activity-tracker/telegram/commands/report/read"
+	"activity-tracker/telegram/commands/report/run"
+	"activity-tracker/telegram/commands/report/shower"
+	"activity-tracker/telegram/commands/report/sleep"
+	"activity-tracker/telegram/commands/report/tooth"
+	"activity-tracker/telegram/commands/report/water"
 	"os"
 )
 
 var (
 	reportsFunctions = []func(bot *shared.Client, userName string, chatID int64) (string, error){
-		GenerateKeratineReport,
-		GeneratePipiReport,
-		GenerateShowerReport,
-		GenerateToothReport,
-		GenerateWaterReport,
+		keratine.GenerateKeratineReport,
+		pipi.GeneratePipiReport,
+		poop.GeneratePoopReport,
+		read.GenerateReadReport,
+		run.GenerateRunReport,
+		shower.GenerateShowerReport,
+		sleep.GenerateSleepReport,
+		tooth.GenerateToothReport,
+		water.GenerateWaterReport,
 	}
 	generateReportErrorMessage = "Error generando reporte"
 )
@@ -19,7 +32,7 @@ var (
 // GenerateAllReports generates all reports and send it in txt file
 func GenerateAllReports(client *shared.Client, userName, content string, chatID int64) error {
 	reports := ""
-	filePath := "all_reports.txt"
+	filePath := os.TempDir() + "/all_reports.txt"
 
 	for _, fn := range reportsFunctions {
 		report, err := fn(client, userName, chatID)
