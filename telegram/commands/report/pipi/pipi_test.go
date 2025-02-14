@@ -3,6 +3,7 @@ package pipi
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,9 @@ func TestPipiReport(t *testing.T) {
 
 	database.InitMongoMock()
 
-	rp, err := GeneratePipiReport(client, "test", 1)
+	ctx := context.Background()
+
+	rp, err := GeneratePipiReport(ctx, client, "test", 1)
 	c.NoError(err)
 	c.NotEmpty(rp)
 }

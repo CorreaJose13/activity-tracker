@@ -3,6 +3,7 @@ package read
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 )
 
@@ -13,7 +14,7 @@ var (
 )
 
 // SendTrackRead tracks the read activity
-func SendTrackRead(client *shared.Client, userName, content string, chatID int64) error {
+func SendTrackRead(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
 	if content == "" {
 		return client.SendMessage(chatID, missingReadContentMessage)
 	}
@@ -27,7 +28,7 @@ func SendTrackRead(client *shared.Client, userName, content string, chatID int64
 		return client.SendMessage(chatID, err.Error())
 	}
 
-	err = storage.Create(userActivity)
+	err = storage.Create(ctx, userActivity)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

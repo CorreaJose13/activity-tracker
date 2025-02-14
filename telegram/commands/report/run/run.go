@@ -3,6 +3,7 @@ package run
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -34,8 +35,8 @@ func getRunString(count float64) string {
 }
 
 // SendRunReport sends the run report
-func SendRunReport(client *shared.Client, userName, content string, chatID int64) error {
-	report, err := GenerateRunReport(client, userName, chatID)
+func SendRunReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	report, err := GenerateRunReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -49,8 +50,8 @@ func SendRunReport(client *shared.Client, userName, content string, chatID int64
 }
 
 // GenerateRunReport generates the run report
-func GenerateRunReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	runActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Run)
+func GenerateRunReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	runActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Run)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

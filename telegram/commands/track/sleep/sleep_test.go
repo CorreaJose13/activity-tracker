@@ -3,6 +3,7 @@ package sleep
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 	"time"
 
@@ -17,7 +18,9 @@ func TestSendTrackSleep(t *testing.T) {
 
 	database.InitMongoMock()
 
-	err = SendTrackSleep(client, "test", "", 1)
+	ctx := context.Background()
+
+	err = SendTrackSleep(ctx, client, "test", "", 1)
 	c.NoError(err)
 }
 

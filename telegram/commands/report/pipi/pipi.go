@@ -3,6 +3,7 @@ package pipi
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -40,8 +41,8 @@ func getPipiString(count int) string {
 }
 
 // SendPipiReport sends the pipi report
-func SendPipiReport(client *shared.Client, userName, content string, chatID int64) error {
-	pr, err := GeneratePipiReport(client, userName, chatID)
+func SendPipiReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	pr, err := GeneratePipiReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -54,8 +55,8 @@ func SendPipiReport(client *shared.Client, userName, content string, chatID int6
 	return client.SendAnimation(chatID, pipiGif)
 }
 
-func GeneratePipiReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	pipiActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Pipi)
+func GeneratePipiReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	pipiActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Pipi)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

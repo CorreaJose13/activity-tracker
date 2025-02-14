@@ -3,6 +3,7 @@ package poop
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -38,8 +39,8 @@ func getCagadaString(count int) string {
 	return strconv.Itoa(count) + " cagadas"
 }
 
-func SendPoopReport(client *shared.Client, userName, content string, chatID int64) error {
-	report, err := GeneratePoopReport(client, userName, chatID)
+func SendPoopReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	report, err := GeneratePoopReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -52,8 +53,8 @@ func SendPoopReport(client *shared.Client, userName, content string, chatID int6
 	return client.SendAnimation(chatID, poopinGif)
 }
 
-func GeneratePoopReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	poopActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Poop)
+func GeneratePoopReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	poopActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Poop)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

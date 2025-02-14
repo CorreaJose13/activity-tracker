@@ -17,6 +17,7 @@ type MongoCollectionInterface interface {
 	UpdateOne(ctx context.Context, filter interface{}, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 	DeleteOne(ctx context.Context, filter interface{}, opts ...*options.DeleteOptions) (*mongo.DeleteResult, error)
 	Find(ctx context.Context, filter interface{}, opts ...*options.FindOptions) (cur *mongo.Cursor, err error)
+	FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) *mongo.SingleResult
 }
 
 type MongoDatabaseInterface interface {
@@ -26,6 +27,7 @@ type MongoDatabaseInterface interface {
 type MongoClientInterface interface {
 	Ping(ctx context.Context, rp *readpref.ReadPref) error
 	Database(name string, opts ...*options.DatabaseOptions) *mongo.Database
+	Disconnect(ctx context.Context) error
 }
 
 type MongoCollection struct {
@@ -87,6 +89,10 @@ func (c *clientMock) Database(name string, opts ...*options.DatabaseOptions) *mo
 	return nil
 }
 
+func (c *clientMock) Disconnect(ctx context.Context) error {
+	return nil
+}
+
 func (c *clientMock) Ping(ctx context.Context, rp *readpref.ReadPref) error {
 	return nil
 }
@@ -114,4 +120,8 @@ func (c *collectionMock) Find(ctx context.Context, filter interface{}, opts ...*
 	}
 
 	return mongo.NewCursorFromDocuments(documents, nil, nil)
+}
+
+func (c *collectionMock) FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) *mongo.SingleResult {
+	return nil
 }

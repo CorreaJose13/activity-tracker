@@ -11,11 +11,12 @@ import (
 	"activity-tracker/telegram/commands/report/sleep"
 	"activity-tracker/telegram/commands/report/tooth"
 	"activity-tracker/telegram/commands/report/water"
+	"context"
 	"os"
 )
 
 var (
-	reportsFunctions = []func(bot *shared.Client, userName string, chatID int64) (string, error){
+	reportsFunctions = []func(ctx context.Context, bot *shared.Client, userName string, chatID int64) (string, error){
 		keratine.GenerateKeratineReport,
 		pipi.GeneratePipiReport,
 		poop.GeneratePoopReport,
@@ -30,12 +31,12 @@ var (
 )
 
 // GenerateAllReports generates all reports and send it in txt file
-func GenerateAllReports(client *shared.Client, userName, content string, chatID int64) error {
+func GenerateAllReports(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
 	reports := ""
 	filePath := os.TempDir() + "/all_reports.txt"
 
 	for _, fn := range reportsFunctions {
-		report, err := fn(client, userName, chatID)
+		report, err := fn(ctx, client, userName, chatID)
 		if err != nil {
 			_ = client.SendMessage(chatID, generateReportErrorMessage)
 

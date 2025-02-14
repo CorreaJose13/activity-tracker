@@ -2,6 +2,7 @@ package commands
 
 import (
 	"activity-tracker/shared"
+	"activity-tracker/storage"
 	"activity-tracker/telegram/commands/gemini"
 	goals "activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
@@ -28,14 +29,21 @@ import (
 	trackWater "activity-tracker/telegram/commands/track/water"
 
 	"activity-tracker/telegram/commands/wishlist"
+	"context"
 	"fmt"
 	"strings"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 const (
 	hatriki = "https://external-preview.redd.it/jrtz49x5F1cjvDQoFzb0I4cv2dwhA5RDhqaEcBbiXIU.png?format=pjpg&auto=webp&s=3ef741c83f7927eca91cb8ac2d610fd6f010d5b0"
 	jeje    = "https://static.wikia.nocookie.net/memes-pedia/images/5/5e/Quieres_Pene.jpg/revision/latest/scale-to-width-down/1200?cb=20230507024715&path-prefix=es"
 	pinki   = "https://scontent.fclo8-1.fna.fbcdn.net/v/t39.30808-6/438734143_848452533981874_4817032528961290089_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=2PwwxOpwaxIQ7kNvgFy3y0R&_nc_zt=23&_nc_ht=scontent.fclo8-1.fna&_nc_gid=A7V0dhgzh2JTTbFFzNtHs3k&oh=00_AYCd9sWEqbIXqz-WtD8NvL0oSChHI8m_oBvz0FfZEofWXA&oe=673849E8"
+
+	msgUserAlreadyRegistered = "User already registered"
+	acceptMessageButton      = "Accept ✅"
+	rejectMessageButton      = "Reject ❌"
 )
 
 var (
@@ -53,7 +61,7 @@ var (
 		"/chatID":      sendChatID,
 	}
 
-	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
+	suffixReportMap = map[string]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
 		"water":    reportWater.SendWaterReport,
 		"poop":     reportPoop.SendPoopReport,
 		"keratine": reportKeratine.SendKeratineReport,
@@ -66,7 +74,7 @@ var (
 		"all":      report.GenerateAllReports,
 	}
 
-	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
+	suffixTrackMap = map[shared.Activity]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
 		shared.Water:      trackWater.SendTrackWater,
 		shared.ToothBrush: trackTooth.SendTrackTooth,
 		shared.Read:       trackRead.SendTrackRead,
@@ -88,7 +96,7 @@ var (
 		"all":    goals.SendAllGoals,
 	}
 
-	prefixHandlers = map[string]func(client *shared.Client, chatID int64, userName, content string) error{
+	prefixHandlers = map[string]func(ctx context.Context, client *shared.Client, chatID int64, userName, content string) error{
 		"/track":    handleTrack,
 		"/report":   handleReport,
 		"/goal":     handleGoal,
@@ -124,8 +132,8 @@ var (
 )
 
 // DoCommand handles the command
-func DoCommand(client *shared.Client, chatID int64, userName string, command string) error {
-	err := client.PrepareMenuButton(chatID)
+func DoCommand(ctx context.Context, client *shared.Client, chatID int64, userName string, command string) error {
+	err := client.PrepareMenuButton(userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -147,34 +155,34 @@ func DoCommand(client *shared.Client, chatID int64, userName string, command str
 		if strings.HasPrefix(command, prefix+" ") {
 			content := strings.TrimPrefix(command, prefix+" ")
 
-			return handler(client, chatID, userName, content)
+			return handler(ctx, client, chatID, userName, content)
 		}
 	}
 
 	return sendUnknownCommand(client, chatID)
 }
 
-func handleTrack(client *shared.Client, chatID int64, userName, suffix string) error {
+func handleTrack(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixTrackMap[shared.Activity(before)]; ok {
-		return fn(client, userName, after, chatID)
+		return fn(ctx, client, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(client, chatID)
 }
 
-func handleReport(client *shared.Client, chatID int64, userName, suffix string) error {
+func handleReport(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixReportMap[before]; ok {
-		return fn(client, userName, after, chatID)
+		return fn(ctx, client, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(client, chatID)
 }
 
-func handleGoal(client *shared.Client, chatID int64, userName, suffix string) error {
+func handleGoal(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixGoalMap[before]; ok {
@@ -201,7 +209,8 @@ func sendGoalHelp(client *shared.Client, userName string, chatID int64) error {
 }
 
 func sendWishlist(client *shared.Client, userName string, chatID int64) error {
-	return wishlist.GetWishlist(client, userName, chatID)
+	ctx := context.Background()
+	return wishlist.GetWishlist(ctx, client, userName, chatID)
 }
 
 func sendCommands(client *shared.Client, userName string, chatID int64) error {
@@ -236,4 +245,31 @@ func sendPinki(client *shared.Client, userName string, chatID int64) error {
 func sendChatID(client *shared.Client, userName string, chatID int64) error {
 	message := fmt.Sprintf("Chat ID: %d", chatID)
 	return client.SendMessage(chatID, message)
+}
+
+// RegisterUser registers a user
+func RegisterUser(ctx context.Context, client *shared.Client, userName string, chatID int64) error {
+	_, err := storage.GetUser(ctx, userName)
+	if err == nil {
+		return client.SendMessage(chatID, "User already registered")
+	}
+
+	for _, adminChatID := range shared.AdminUsersChatIDs {
+		msg := tgbotapi.NewMessage(adminChatID, fmt.Sprintf("User %s (ID: %d) wants to register 👀", userName, chatID))
+
+		keyboard := shared.NewInlineKeyboardMarkup(
+			shared.NewInlineKeyboardRow(
+				shared.NewInlineKeyboardButtonData(acceptMessageButton, fmt.Sprintf("accept_%d_%s", chatID, userName)),
+				shared.NewInlineKeyboardButtonData(rejectMessageButton, fmt.Sprintf("reject_%d_%s", chatID, userName)),
+			),
+		)
+		msg.ReplyMarkup = keyboard
+
+		_, err := client.Bot.Send(msg)
+		if err != nil {
+			return client.SendMessage(chatID, fmt.Sprintf("failed to send registration request to admin: %v", err))
+		}
+	}
+
+	return client.SendMessage(chatID, msgUserAlreadyRegistered)
 }

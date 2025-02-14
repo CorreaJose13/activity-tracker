@@ -26,8 +26,8 @@ func init() {
 	}
 }
 
-func processor(client *shared.Client, update shared.Update) error {
-	err := tg.Fetch(client, update)
+func processor(ctx context.Context, client *shared.Client, update shared.Update) error {
+	err := tg.Fetch(ctx,client, update)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func HandleRequest(ctx context.Context, event interface{}) (events.APIGatewayPro
 		}, err
 	}
 
-	err = processor(client, update)
+	err = processor(ctx, client, update)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,

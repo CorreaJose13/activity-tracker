@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -20,6 +21,8 @@ type Update = tgbotapi.Update
 
 type Message = tgbotapi.Message
 
+type CallbackQuery = tgbotapi.CallbackQuery
+
 type Client struct {
 	Bot tgClientInterface
 }
@@ -33,7 +36,10 @@ type MenuButton struct {
 }
 
 var (
-	BotAPI tgClientInterface = &tgbotapi.BotAPI{}
+	BotAPI                      tgClientInterface = &tgbotapi.BotAPI{}
+	NewInlineKeyboardMarkup                       = tgbotapi.NewInlineKeyboardMarkup
+	NewInlineKeyboardRow                          = tgbotapi.NewInlineKeyboardRow
+	NewInlineKeyboardButtonData                   = tgbotapi.NewInlineKeyboardButtonData
 )
 
 // New creates a new telegram bot
@@ -100,15 +106,20 @@ func (c *Client) SendFile(chatID int64, filePath string) error {
 }
 
 // PrepareMenuButton prepares the menu button
-func (c *Client) PrepareMenuButton(chatID int64) error {
-	url := fmt.Sprintf(setChatMenuURL, os.Getenv("BOT_TOKEN"))
+func (c *Client) PrepareMenuButton(userName string, chatID int64) error {
+	apiURL := fmt.Sprintf(setChatMenuURL, os.Getenv("BOT_TOKEN"))
+
+	webAppURLWithParams := fmt.Sprintf("%s?user=%s&chat_id=%d",
+		WebAppURL,
+		url.QueryEscape(userName),
+		chatID,
+	)
 
 	menu := MenuButton{
 		Type: "web_app",
 		Text: "Launch app",
 	}
-
-	menu.WebApp.URL = WebAppURL
+	menu.WebApp.URL = webAppURLWithParams
 
 	menuJSON, err := json.Marshal(map[string]interface{}{
 		"menu_button": menu,
@@ -118,7 +129,7 @@ func (c *Client) PrepareMenuButton(chatID int64) error {
 		return fmt.Errorf("can't create the json: %w", err)
 	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(menuJSON))
+	resp, err := http.Post(apiURL, "application/json", bytes.NewBuffer(menuJSON))
 	if err != nil {
 		return fmt.Errorf("can't send request: %w", err)
 	}

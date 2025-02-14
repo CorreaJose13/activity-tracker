@@ -3,6 +3,7 @@ package shower
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,6 +17,8 @@ func TestSendTrackShower(t *testing.T) {
 
 	database.InitMongoMock()
 
-	err = SendTrackShower(client, "test1", "", 1)
+	ctx := context.Background()
+
+	err = SendTrackShower(ctx, client, "test1", "", 1)
 	c.NoError(err)
 }

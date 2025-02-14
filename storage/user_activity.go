@@ -20,18 +20,31 @@ var (
 )
 
 // Create an user activity in database
-func Create(userActivity shared.UserActivity) error {
+func Create(ctx context.Context, userActivity shared.UserActivity) error {
 	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
 	collection := database.GetCollection(tableName)
 
-	_, err := collection.InsertOne(context.Background(), userActivity)
+	_, err := collection.InsertOne(ctx, userActivity)
 
 	return err
 }
 
 // Update an user activity in database
-func UpdateContent(userActivity shared.UserActivity) error {
+func UpdateContent(ctx context.Context, userActivity shared.UserActivity) error {
 	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
 	collection := database.GetCollection(tableName)
 
 	filter := bson.M{
@@ -46,7 +59,7 @@ func UpdateContent(userActivity shared.UserActivity) error {
 	}
 
 	_, err := collection.UpdateOne(
-		context.Background(),
+		ctx,
 		filter,
 		update,
 	)
@@ -55,8 +68,15 @@ func UpdateContent(userActivity shared.UserActivity) error {
 }
 
 // GetCurrentDayActivities returns the current day activities from inputs
-func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+func GetCurrentDayActivities(ctx context.Context, name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
 	collection := database.GetCollection(tableName)
 
 	now, err := shared.GetNow()
@@ -78,8 +98,6 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.U
 		"$gte": startDayStr,
 		"$lt":  endDayStr,
 	}
-
-	ctx := context.Background()
 
 	items, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -114,8 +132,15 @@ func GetCurrentDayActivities(name string, activity shared.Activity) ([]*shared.U
 }
 
 // GetLastWeekUserHistoryPerActivity returns the last week activities by username and activity
-func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+func GetLastWeekUserHistoryPerActivity(ctx context.Context, name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
 	collection := database.GetCollection(tableName)
 
 	now, err := shared.GetNow()
@@ -145,8 +170,6 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 		"$gte": startDateStr,
 		"$lt":  nowStr,
 	}
-
-	ctx := context.Background()
 
 	items, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -181,16 +204,21 @@ func GetLastWeekUserHistoryPerActivity(name string, activity shared.Activity) ([
 }
 
 // GetActivityHistory returns the activities by username and activity
-func GetActivityHistory(name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+func GetActivityHistory(ctx context.Context, name string, activity shared.Activity) ([]*shared.UserActivity, error) {
 	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
 	collection := database.GetCollection(tableName)
 
 	filter := bson.M{}
 
 	filter["name"] = name
 	filter["activity"] = activity
-
-	ctx := context.Background()
 
 	items, err := collection.Find(ctx, filter)
 	if err != nil {
