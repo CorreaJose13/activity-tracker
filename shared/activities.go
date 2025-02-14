@@ -88,3 +88,9 @@ func IsValidNumber(content string) bool {
 
 	return err == nil && value > 0
 }
+
+func IsValidFloat(content string) bool {
+	value, err := strconv.ParseFloat(content, 64)
+
+	return err == nil && value > 0
+}
