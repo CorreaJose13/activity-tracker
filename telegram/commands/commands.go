@@ -2,7 +2,6 @@ package commands
 
 import (
 	"activity-tracker/shared"
-	"activity-tracker/storage"
 	"activity-tracker/telegram/commands/gemini"
 	goals "activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
@@ -32,18 +31,12 @@ import (
 	"context"
 	"fmt"
 	"strings"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 const (
 	hatriki = "https://external-preview.redd.it/jrtz49x5F1cjvDQoFzb0I4cv2dwhA5RDhqaEcBbiXIU.png?format=pjpg&auto=webp&s=3ef741c83f7927eca91cb8ac2d610fd6f010d5b0"
 	jeje    = "https://static.wikia.nocookie.net/memes-pedia/images/5/5e/Quieres_Pene.jpg/revision/latest/scale-to-width-down/1200?cb=20230507024715&path-prefix=es"
 	pinki   = "https://scontent.fclo8-1.fna.fbcdn.net/v/t39.30808-6/438734143_848452533981874_4817032528961290089_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=2PwwxOpwaxIQ7kNvgFy3y0R&_nc_zt=23&_nc_ht=scontent.fclo8-1.fna&_nc_gid=A7V0dhgzh2JTTbFFzNtHs3k&oh=00_AYCd9sWEqbIXqz-WtD8NvL0oSChHI8m_oBvz0FfZEofWXA&oe=673849E8"
-
-	msgUserAlreadyRegistered = "User already registered"
-	acceptMessageButton      = "Accept ✅"
-	rejectMessageButton      = "Reject ❌"
 )
 
 var (
@@ -245,31 +238,4 @@ func sendPinki(client *shared.Client, userName string, chatID int64) error {
 func sendChatID(client *shared.Client, userName string, chatID int64) error {
 	message := fmt.Sprintf("Chat ID: %d", chatID)
 	return client.SendMessage(chatID, message)
-}
-
-// RegisterUser registers a user
-func RegisterUser(ctx context.Context, client *shared.Client, userName string, chatID int64) error {
-	_, err := storage.GetUser(ctx, userName)
-	if err == nil {
-		return client.SendMessage(chatID, "User already registered")
-	}
-
-	for _, adminChatID := range shared.AdminUsersChatIDs {
-		msg := tgbotapi.NewMessage(adminChatID, fmt.Sprintf("User %s (ID: %d) wants to register 👀", userName, chatID))
-
-		keyboard := shared.NewInlineKeyboardMarkup(
-			shared.NewInlineKeyboardRow(
-				shared.NewInlineKeyboardButtonData(acceptMessageButton, fmt.Sprintf("accept_%d_%s", chatID, userName)),
-				shared.NewInlineKeyboardButtonData(rejectMessageButton, fmt.Sprintf("reject_%d_%s", chatID, userName)),
-			),
-		)
-		msg.ReplyMarkup = keyboard
-
-		_, err := client.Bot.Send(msg)
-		if err != nil {
-			return client.SendMessage(chatID, fmt.Sprintf("failed to send registration request to admin: %v", err))
-		}
-	}
-
-	return client.SendMessage(chatID, msgUserAlreadyRegistered)
 }

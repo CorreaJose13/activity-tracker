@@ -123,5 +123,7 @@ func (c *collectionMock) Find(ctx context.Context, filter interface{}, opts ...*
 }
 
 func (c *collectionMock) FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) *mongo.SingleResult {
-	return nil
+	AddDummyFindItem()
+
+	return mongo.NewSingleResultFromDocument(findItems[0], nil, nil)
 }

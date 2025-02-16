@@ -18,6 +18,7 @@ var (
 	BrayanChatID = int64(622185634)
 	JohanChatID  = int64(815505945)
 	JoseChatID   = int64(2112190700)
+	GroupChatID  = int64(-1002060026446)
 
 	// Schedulers chat ids
 	KeratineSchedulerChatIDs = map[string]int64{

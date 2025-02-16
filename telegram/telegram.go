@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	register "activity-tracker/telegram/commands/register"
 )
 
 const (
@@ -27,6 +28,7 @@ const (
 	unknownAction      = "unknown action: %s"
 	failedCallback     = "failed to answer callback: %w"
 	failedUpdateMsg    = "failed to update message: %w"
+	denyRegisterMsg    = "Registering in private chat is not allowed 🤡🤡"
 )
 
 var (
@@ -70,7 +72,11 @@ func processMessage(ctx context.Context, client *shared.Client, message *shared.
 	}
 
 	if text == registerCommand {
-		return commands.RegisterUser(ctx, client, user.UserName, message.Chat.ID)
+		if message.Chat.ID != shared.GroupChatID {
+			return client.SendMessage(message.Chat.ID, denyRegisterMsg)
+		}
+
+		return register.RegisterUser(ctx, client, user.UserName, message.Chat.ID)
 	}
 
 	_, err := storage.GetUser(ctx, user.UserName)
