@@ -10,8 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	register "activity-tracker/telegram/commands/register"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 const (
@@ -29,6 +30,8 @@ const (
 	failedCallback     = "failed to answer callback: %w"
 	failedUpdateMsg    = "failed to update message: %w"
 	denyRegisterMsg    = "Registering in private chat is not allowed 🤡🤡"
+
+	callbackDataParts = 3
 )
 
 var (
@@ -95,11 +98,12 @@ func processMessage(ctx context.Context, client *shared.Client, message *shared.
 // processCallbackQuery is the function to process callback queries, modify this function to handle other callback queries
 func processCallbackQuery(ctx context.Context, client *shared.Client, callback *shared.CallbackQuery) error {
 	parts := strings.Split(callback.Data, "_")
-	if len(parts) != 3 {
+	if len(parts) != callbackDataParts {
 		return errInvalidCallbackFmt
 	}
 
 	action := parts[0]
+
 	userChatID, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
 		return fmt.Errorf(invalidChatID, err)
