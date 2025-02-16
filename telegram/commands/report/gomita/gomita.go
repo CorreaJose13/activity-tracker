@@ -4,6 +4,7 @@ import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"fmt"
+	"math/big"
 	"strconv"
 	"time"
 )
@@ -33,7 +34,8 @@ func getGomitaString(count float64) string {
 	}
 
 	if count <= 1 {
-		return fmt.Sprintf("%.2f", count) + " de gomita 🍁"
+		p, q := floatToFraction(count)
+		return fmt.Sprintf("%d/%d", p, q) + " de gomita 🍁"
 	}
 
 	if count == 1 {
@@ -41,6 +43,24 @@ func getGomitaString(count float64) string {
 	}
 
 	return fmt.Sprintf("%.2f", count) + " gomitas 🍁"
+}
+
+func floatToFraction(f float64) (p, q int64) {
+	// Create a new big.Float from the float64 value
+	bf := big.NewFloat(f)
+
+	// Set the precision high enough to handle the float
+	bf.SetPrec(64)
+
+	// Convert the big.Float to a big.Rat (rational number)
+	rat := new(big.Rat)
+	rat.SetFloat64(f)
+
+	// Get the numerator and denominator
+	p = rat.Num().Int64()
+	q = rat.Denom().Int64()
+
+	return p, q
 }
 
 func SendGomitaReport(client *shared.Client, userName, content string, chatID int64) error {
