@@ -36,6 +36,7 @@ const (
 	Keratine   Activity = "keratine"
 	Pipi       Activity = "pipi"
 	Wishlist   Activity = "wishlist"
+	Gomita     Activity = "gomita"
 )
 
 const (

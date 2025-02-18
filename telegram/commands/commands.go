@@ -5,6 +5,7 @@ import (
 	"activity-tracker/telegram/commands/gemini"
 	goals "activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
+	reportGomita "activity-tracker/telegram/commands/report/gomita"
 	reportKeratine "activity-tracker/telegram/commands/report/keratine"
 	reportPipi "activity-tracker/telegram/commands/report/pipi"
 	reportPoop "activity-tracker/telegram/commands/report/poop"
@@ -15,6 +16,7 @@ import (
 	reportTooth "activity-tracker/telegram/commands/report/tooth"
 	reportWater "activity-tracker/telegram/commands/report/water"
 	trackCycling "activity-tracker/telegram/commands/track/cycling"
+	trackGomita "activity-tracker/telegram/commands/track/gomita"
 	trackGym "activity-tracker/telegram/commands/track/gym"
 	trackKeratine "activity-tracker/telegram/commands/track/keratine"
 	trackPipi "activity-tracker/telegram/commands/track/pipi"
@@ -63,6 +65,7 @@ var (
 		"tooth":    reportTooth.SendToothReport,
 		"sleep":    reportSleep.SendSleepReport,
 		"read":     reportRead.SendReadReport,
+		"gomita":   reportGomita.SendGomitaReport,
 		"all":      report.GenerateAllReports,
 	}
 
@@ -79,6 +82,7 @@ var (
 		shared.Pipi:       trackPipi.SendTrackPipi,
 		shared.Swimming:   trackSwimming.SendTrackSwimming,
 		shared.Cycling:    trackCycling.SendTrackCycling,
+		shared.Gomita:     trackGomita.SendTrackGomita,
 	}
 
 	suffixGoalMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
