@@ -150,30 +150,26 @@ func GetLastWeekUserHistoryPerActivity(ctx context.Context, name string, activit
 
 	nowStr := now.Format(time.RFC3339)
 
-	// Calculate the days until the last monday
-	daysUntilLastMonday := int(now.Weekday())
-	if daysUntilLastMonday == 0 { // it's sunday
-		daysUntilLastMonday = 7
-	}
+	// Calculate the number of days since Monday.
+	daysSinceMonday := (int(now.Weekday()) + 6) % 7
 
-	// Go back to the last monday at 00:00:00
-	startDate := now.AddDate(0, 0, -daysUntilLastMonday)
+	startDate := now.AddDate(0, 0, -daysSinceMonday)
 	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, startDate.Location())
 
 	startDateStr := startDate.Format(time.RFC3339)
 
-	filter := bson.M{}
-
-	filter["name"] = name
-	filter["activity"] = activity
-	filter["created_at"] = bson.M{
-		"$gte": startDateStr,
-		"$lt":  nowStr,
+	filter := bson.M{
+		"name":     name,
+		"activity": activity,
+		"created_at": bson.M{
+			"$gte": startDateStr,
+			"$lt":  nowStr,
+		},
 	}
 
 	items, err := collection.Find(ctx, filter)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	defer items.Close(ctx)
@@ -185,7 +181,7 @@ func GetLastWeekUserHistoryPerActivity(ctx context.Context, name string, activit
 
 		err := items.Decode(&bs)
 		if err != nil {
-			return nil, fmt.Errorf("decode bson failed")
+			return nil, fmt.Errorf("decode bson failed: %w", err)
 		}
 
 		var activity shared.UserActivity
@@ -194,7 +190,71 @@ func GetLastWeekUserHistoryPerActivity(ctx context.Context, name string, activit
 
 		err = bson.Unmarshal(bsBytes, &activity)
 		if err != nil {
-			return nil, fmt.Errorf("decode activity failed")
+			return nil, fmt.Errorf("decode activity failed: %w", err)
+		}
+
+		activities = append(activities, &activity)
+	}
+
+	return activities, nil
+}
+
+// GetCurrentMonthUserHistoryPerActivity returns the current month activities by username and activity
+func GetCurrentMonthUserHistoryPerActivity(ctx context.Context, name string, activity shared.Activity) ([]*shared.UserActivity, error) {
+	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	collection := database.GetCollection(tableName)
+
+	now, err := shared.GetNow()
+	if err != nil {
+		return nil, err
+	}
+
+	nowStr := now.Format(time.RFC3339)
+
+	currentMonth := now.Month()
+	startDate := time.Date(now.Year(), currentMonth, 1, 0, 0, 0, 0, now.Location())
+	startDateStr := startDate.Format(time.RFC3339)
+
+	filter := bson.M{
+		"name":     name,
+		"activity": activity,
+		"created_at": bson.M{
+			"$gte": startDateStr,
+			"$lt":  nowStr,
+		},
+	}
+
+	items, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer items.Close(ctx)
+
+	var activities []*shared.UserActivity
+
+	for items.Next(ctx) {
+		var bs bson.M
+
+		err := items.Decode(&bs)
+		if err != nil {
+			return nil, fmt.Errorf("decode bson failed: %w", err)
+		}
+
+		var activity shared.UserActivity
+
+		bsBytes, _ := bson.Marshal(bs)
+
+		err = bson.Unmarshal(bsBytes, &activity)
+		if err != nil {
+			return nil, fmt.Errorf("decode activity failed: %w", err)
 		}
 
 		activities = append(activities, &activity)
