@@ -29,7 +29,7 @@ provider "aws" {
 locals {
   src_path     = "${path.module}/../../../functions/telegram/main.go"
   binary_path  = "${path.module}/tf_generated/bootstrap"
-  archive_path = "${path.module}/tf_generated/${var.lambda_function_name}.zip"
+  archive_path = "${path.module}/tf_generated/lambda_function.zip"
 }
 
 module "iam_role" {
@@ -45,7 +45,7 @@ module "lambda_function" {
   src_path             = local.src_path
   binary_path          = local.binary_path
   archive_path         = local.archive_path
-  lambda_function_name = var.lambda_function_name
+  lambda_function_name = "activity-tracker-bot"
   role_arn             = module.iam_role.role_arn
   environment_variables = {
     "BOT_TOKEN"   = var.bot_api_token
