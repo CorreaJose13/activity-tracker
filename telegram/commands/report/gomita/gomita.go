@@ -33,7 +33,7 @@ func getGomitaString(count float64) string {
 		return "ni una bb :("
 	}
 
-	if count <= 1 {
+	if count < 1 {
 		p, q := floatToFraction(count)
 		return fmt.Sprintf("%d/%d", p, q) + " de gomita 🍁"
 	}
@@ -46,17 +46,13 @@ func getGomitaString(count float64) string {
 }
 
 func floatToFraction(f float64) (p, q int64) {
-	// Create a new big.Float from the float64 value
 	bf := big.NewFloat(f)
 
-	// Set the precision high enough to handle the float
 	bf.SetPrec(64)
 
-	// Convert the big.Float to a big.Rat (rational number)
 	rat := new(big.Rat)
 	rat.SetFloat64(f)
 
-	// Get the numerator and denominator
 	p = rat.Num().Int64()
 	q = rat.Denom().Int64()
 
