@@ -11,7 +11,6 @@ import (
 var (
 	client   *shared.Client
 	botToken = os.Getenv("BOT_TOKEN")
-	message  = "acordate de tomar la creatina 💪 sapa asquerosa"
 )
 
 func init() {
@@ -29,7 +28,7 @@ type Schedule struct {
 
 func handler(ctx context.Context, event Schedule) error {
 	for _, chatID := range shared.KeratineSchedulerChatIDs {
-		err := client.SendMessage(chatID, message)
+		err := client.SendMessage(chatID, event.Message)
 		if err != nil {
 			return err
 		}
