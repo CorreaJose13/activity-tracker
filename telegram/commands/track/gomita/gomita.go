@@ -20,12 +20,15 @@ func fractionToFloatString(content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	den, err := strconv.ParseFloat(split[1], 64)
 	if err != nil {
 		return "", err
 	}
+
 	result := num / den
 	floatString := fmt.Sprintf("%f", result)
+
 	return floatString, nil
 }
 
@@ -40,6 +43,7 @@ func SendTrackGomita(client *shared.Client, userName, content string, chatID int
 		if err != nil {
 			return client.SendMessage(chatID, invalidContentMessage)
 		}
+
 		content = floatString
 	} else if !shared.IsValidFloat(content) {
 		return client.SendMessage(chatID, invalidContentMessage)
