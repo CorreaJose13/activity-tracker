@@ -38,6 +38,7 @@ func SendTrackGomita(client *shared.Client, userName, content string, chatID int
 	if strings.Contains(content, "/") {
 		floatString, err := fractionToFloatString(content)
 		if err != nil {
+			return client.SendMessage(chatID, invalidContentMessage)
 		}
 		content = floatString
 	} else if !shared.IsValidFloat(content) {
