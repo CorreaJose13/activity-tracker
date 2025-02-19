@@ -27,20 +27,29 @@ provider "aws" {
 }
 
 locals {
-  src_path     = "${path.module}/../../../functions/schedules/keratine/main.go"
+  src_path     = "${path.module}/../../../../functions/schedules/keratine/main.go"
   binary_path  = "${path.module}/tf_generated/bootstrap"
   archive_path = "${path.module}/tf_generated/lambda_function.zip"
 }
 
 module "iam_role_lambda_scheduler" {
-  source = "../../modules/iam_role/"
+  source = "../../../modules/iam_role/"
 
   role_name               = "iam_for_lambda_scheduler"
   assume_role_identifiers = ["lambda.amazonaws.com"]
 }
 
+module "iam_policy_attachment_logs" {
+  source = "../../../modules/iam_policy_attachment/"
+
+  policy_name = "logs_lambda_scheduler"
+  action      = ["logs:CreateLogStream", "logs:PutLogEvents"]
+  resource    = "arn:aws:logs:*:*:*"
+  role_name   = module.iam_role_lambda_scheduler.role_name
+}
+
 module "lambda_function" {
-  source = "../../modules/services/lambda_function/"
+  source = "../../../modules/services/lambda_function/"
 
   src_path             = local.src_path
   binary_path          = local.binary_path
@@ -60,16 +69,16 @@ module "iam_role_scheduler" {
 }
 
 module "iam_policy_attachment" {
-  source = "../../modules/iam_policy_attachment/"
+  source = "../../../modules/iam_policy_attachment/"
 
-  policy_name         = "scheduler_invoke_lambda_policy"
-  action              = "lambda:InvokeFunction"
-  lambda_function_arn = module.lambda_function.lambda_function_arn
-  role_name           = module.iam_role_scheduler.role_name
+  policy_name = "scheduler_invoke_lambda_policy"
+  action      = ["lambda:InvokeFunction"]
+  resource    = module.lambda_function.lambda_function_arn
+  role_name   = module.iam_role_scheduler.role_name
 }
 
-module "keratine_scheduler" {
-  source = "../../modules/services/scheduler/"
+module "scheduler" {
+  source = "../../../modules/services/scheduler/"
 
   scheduler_name       = "tg_bot_scheduler"
   schedule_expression  = "cron(* * * * ?)"
