@@ -21,4 +21,5 @@ variable "lambda_function_name" {
 variable "message" {
   description = "The message to be passed as input to the Lambda function"
   type        = string
+  default     = ""
 }
