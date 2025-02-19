@@ -1,7 +1,3 @@
-locals {
-
-}
-
 resource "null_resource" "function_binary" {
   triggers = {
     always_run = "${timestamp()}"
