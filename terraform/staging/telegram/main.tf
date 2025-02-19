@@ -39,6 +39,15 @@ module "iam_role" {
   assume_role_identifiers = ["lambda.amazonaws.com"]
 }
 
+module "iam_policy_attachment_logs" {
+  source = "../../modules/iam_policy_attachment/"
+
+  policy_name = "logs_lambda_scheduler"
+  action      = ["logs:CreateLogStream", "logs:PutLogEvents"]
+  resource    = "arn:aws:logs:*:*:*"
+  role_name   = module.iam_role.role_name
+}
+
 module "lambda_function" {
   source = "../../modules/services/lambda_function/"
 
