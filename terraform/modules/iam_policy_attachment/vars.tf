@@ -5,11 +5,11 @@ variable "policy_name" {
 
 variable "action" {
   description = "The action that the policy will allow"
-  type        = string
+  type        = list(string)
 }
 
-variable "lambda_function_arn" {
-  description = "The ARN of the Lambda function that the policy will allow to invoke"
+variable "resource" {
+  description = "The resource that the policy will grant permissions to access or invoke"
   type        = string
 }
 

@@ -7,7 +7,7 @@ resource "aws_iam_policy" "this" {
       {
         Effect   = "Allow",
         Action   = var.action,
-        Resource = var.lambda_function_arn
+        Resource = var.resource
       },
     ],
   })
