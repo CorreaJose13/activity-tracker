@@ -35,14 +35,14 @@ locals {
 module "iam_role_lambda_scheduler" {
   source = "../../../modules/iam_role/"
 
-  role_name               = "iam_for_lambda_scheduler_1"
+  role_name               = "iam_for_lambda_scheduler_all_reports"
   assume_role_identifiers = ["lambda.amazonaws.com"]
 }
 
 module "iam_policy_attachment_logs" {
   source = "../../../modules/iam_policy_attachment/"
 
-  policy_name = "logs_lambda_scheduler"
+  policy_name = "logs_lambda_scheduler_all_reports"
   action      = ["logs:CreateLogStream", "logs:PutLogEvents"]
   resource    = "arn:aws:logs:*:*:*"
   role_name   = module.iam_role_lambda_scheduler.role_name
@@ -65,14 +65,14 @@ module "lambda_function" {
 module "iam_role_scheduler" {
   source = "../../../modules/iam_role/"
 
-  role_name               = "iam_for_scheduler_1"
+  role_name               = "iam_for_scheduler_all_reports"
   assume_role_identifiers = ["scheduler.amazonaws.com"]
 }
 
 module "iam_policy_attachment" {
   source = "../../../modules/iam_policy_attachment/"
 
-  policy_name = "scheduler_invoke_lambda_policy_1"
+  policy_name = "scheduler_invoke_lambda_policy_all_reports"
   action      = ["lambda:InvokeFunction"]
   resource    = module.lambda_function.lambda_function_arn
   role_name   = module.iam_role_scheduler.role_name
@@ -81,7 +81,7 @@ module "iam_policy_attachment" {
 module "scheduler" {
   source = "../../../modules/services/scheduler/"
 
-  scheduler_name       = "tg_bot_scheduler_1"
+  scheduler_name       = "tg_bot_scheduler_all_reports"
   schedule_expression  = "cron(* * * * ?)"
   role_arn             = module.iam_role_scheduler.role_arn
   lambda_function_name = module.lambda_function.lambda_function_name

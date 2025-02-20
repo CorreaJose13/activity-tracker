@@ -81,8 +81,8 @@ module "scheduler" {
   source = "../../../modules/services/scheduler/"
 
   scheduler_name       = "tg_bot_scheduler"
-  schedule_expression  = "cron(* * * * ?)"
+  schedule_expression  = "cron(5 9,21 * * ? *)"
   role_arn             = module.iam_role_scheduler.role_arn
   lambda_function_name = module.lambda_function.lambda_function_name
-  message              = "drink-keratine"
+  message              = "acordate de tomar la creatina 💪 sapa asquerosa"
 }
