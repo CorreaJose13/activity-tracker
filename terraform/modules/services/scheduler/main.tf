@@ -5,18 +5,18 @@ resource "aws_scheduler_schedule" "drink_keratine_scheduler" {
     mode = "OFF"
   }
 
-  schedule_expression          = "cron(5 9,21 * * ? *)"
+  schedule_expression          = var.schedule_expression
   schedule_expression_timezone = "America/Bogota"
 
   target {
     arn      = "arn:aws:scheduler:::aws-sdk:lambda:invoke"
-    role_arn = aws_iam_role.scheduler_eventbridge_role.arn
+    role_arn = var.role_arn
 
     input = jsonencode({
-      FunctionName   = aws_lambda_function.scheduler_lambda_function.function_name
+      FunctionName   = var.lambda_function_name
       InvocationType = "Event"
       Payload = jsonencode({
-        message = "drink-keratine"
+        message = var.message
       })
     })
   }
