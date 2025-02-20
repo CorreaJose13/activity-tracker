@@ -3,6 +3,7 @@ package sleep
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"time"
 )
@@ -27,8 +28,8 @@ var (
 )
 
 // SendSleepReport sends the report of sleep tracker
-func SendSleepReport(client *shared.Client, userName string, _ string, chatID int64) error {
-	report, err := GenerateSleepReport(client, userName, chatID)
+func SendSleepReport(ctx context.Context, client *shared.Client, userName string, _ string, chatID int64) error {
+	report, err := GenerateSleepReport(ctx, client, userName, chatID)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -41,8 +42,8 @@ func SendSleepReport(client *shared.Client, userName string, _ string, chatID in
 	return client.SendAnimation(chatID, sleepGif)
 }
 
-func GenerateSleepReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	sleepActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Sleep)
+func GenerateSleepReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	sleepActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Sleep)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

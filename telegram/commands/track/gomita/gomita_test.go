@@ -3,6 +3,7 @@ package gomita
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,6 +17,8 @@ func TestSendTrackGomita(t *testing.T) {
 
 	database.InitMongoMock()
 
-	err = SendTrackGomita(client, "test", "", 1)
+	ctx := context.Background()
+
+	err = SendTrackGomita(ctx, client, "test", "", 1)
 	c.NoError(err)
 }

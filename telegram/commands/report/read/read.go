@@ -3,6 +3,7 @@ package read
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -40,8 +41,8 @@ func getReadString(count int) string {
 }
 
 // SendReadReport sends the report of read tracker
-func SendReadReport(client *shared.Client, userName, content string, chatID int64) error {
-	report, err := GenerateReadReport(client, userName, chatID)
+func SendReadReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	report, err := GenerateReadReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -54,8 +55,8 @@ func SendReadReport(client *shared.Client, userName, content string, chatID int6
 	return client.SendAnimation(chatID, readingGif)
 }
 
-func GenerateReadReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	readActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Read)
+func GenerateReadReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	readActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Read)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

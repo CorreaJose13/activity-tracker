@@ -30,6 +30,7 @@ import (
 	trackWater "activity-tracker/telegram/commands/track/water"
 
 	"activity-tracker/telegram/commands/wishlist"
+	"context"
 	"fmt"
 	"strings"
 )
@@ -55,7 +56,7 @@ var (
 		"/chatID":      sendChatID,
 	}
 
-	suffixReportMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
+	suffixReportMap = map[string]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
 		"water":    reportWater.SendWaterReport,
 		"poop":     reportPoop.SendPoopReport,
 		"keratine": reportKeratine.SendKeratineReport,
@@ -69,7 +70,7 @@ var (
 		"all":      report.GenerateAllReports,
 	}
 
-	suffixTrackMap = map[shared.Activity]func(client *shared.Client, userName, content string, chatID int64) error{
+	suffixTrackMap = map[shared.Activity]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
 		shared.Water:      trackWater.SendTrackWater,
 		shared.ToothBrush: trackTooth.SendTrackTooth,
 		shared.Read:       trackRead.SendTrackRead,
@@ -92,7 +93,7 @@ var (
 		"all":    goals.SendAllGoals,
 	}
 
-	prefixHandlers = map[string]func(client *shared.Client, chatID int64, userName, content string) error{
+	prefixHandlers = map[string]func(ctx context.Context, client *shared.Client, chatID int64, userName, content string) error{
 		"/track":    handleTrack,
 		"/report":   handleReport,
 		"/goal":     handleGoal,
@@ -128,8 +129,8 @@ var (
 )
 
 // DoCommand handles the command
-func DoCommand(client *shared.Client, chatID int64, userName string, command string) error {
-	err := client.PrepareMenuButton(chatID)
+func DoCommand(ctx context.Context, client *shared.Client, chatID int64, userName string, command string) error {
+	err := client.PrepareMenuButton(userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -151,34 +152,34 @@ func DoCommand(client *shared.Client, chatID int64, userName string, command str
 		if strings.HasPrefix(command, prefix+" ") {
 			content := strings.TrimPrefix(command, prefix+" ")
 
-			return handler(client, chatID, userName, content)
+			return handler(ctx, client, chatID, userName, content)
 		}
 	}
 
 	return sendUnknownCommand(client, chatID)
 }
 
-func handleTrack(client *shared.Client, chatID int64, userName, suffix string) error {
+func handleTrack(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixTrackMap[shared.Activity(before)]; ok {
-		return fn(client, userName, after, chatID)
+		return fn(ctx, client, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(client, chatID)
 }
 
-func handleReport(client *shared.Client, chatID int64, userName, suffix string) error {
+func handleReport(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixReportMap[before]; ok {
-		return fn(client, userName, after, chatID)
+		return fn(ctx, client, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(client, chatID)
 }
 
-func handleGoal(client *shared.Client, chatID int64, userName, suffix string) error {
+func handleGoal(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
 	if fn, ok := suffixGoalMap[before]; ok {
@@ -205,7 +206,8 @@ func sendGoalHelp(client *shared.Client, userName string, chatID int64) error {
 }
 
 func sendWishlist(client *shared.Client, userName string, chatID int64) error {
-	return wishlist.GetWishlist(client, userName, chatID)
+	ctx := context.Background()
+	return wishlist.GetWishlist(ctx, client, userName, chatID)
 }
 
 func sendCommands(client *shared.Client, userName string, chatID int64) error {

@@ -3,6 +3,7 @@ package tooth
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -38,8 +39,8 @@ func getToothString(count int) any {
 }
 
 // SendToothReport sends the tooth report
-func SendToothReport(client *shared.Client, userName, content string, chatID int64) error {
-	tr, err := GenerateToothReport(client, userName, chatID)
+func SendToothReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	tr, err := GenerateToothReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -52,8 +53,8 @@ func SendToothReport(client *shared.Client, userName, content string, chatID int
 	return client.SendAnimation(chatID, toothGif)
 }
 
-func GenerateToothReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	toothActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "tooth")
+func GenerateToothReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	toothActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.ToothBrush)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

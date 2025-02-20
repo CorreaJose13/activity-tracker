@@ -30,7 +30,7 @@ type Schedule struct {
 // TODO: This lambda will be used in another ticket when the TF files are created
 func handler(ctx context.Context, event Schedule) error {
 	for userName, chatID := range shared.AllReportsSchedulerChatIDs {
-		err := report.GenerateAllReports(client, userName, "", chatID)
+		err := report.GenerateAllReports(ctx, client, userName, "", chatID)
 		if err != nil {
 			return err
 		}

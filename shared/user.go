@@ -18,6 +18,7 @@ var (
 	BrayanChatID = int64(622185634)
 	JohanChatID  = int64(815505945)
 	JoseChatID   = int64(2112190700)
+	GroupChatID  = int64(-1002060026446)
 
 	// Schedulers chat ids
 	KeratineSchedulerChatIDs = map[string]int64{
@@ -32,7 +33,27 @@ var (
 		Johan:  JohanChatID,
 		Jose:   JoseChatID,
 	}
+
+	AdminUsersChatIDs = map[string]int64{
+		Brayan: BrayanChatID,
+	}
 )
+
+// User contains an user info
+type User struct {
+	Name             string     `bson:"name"`
+	ChatID           int64      `bson:"chat_id"`
+	EnabledActivites []Activity `bson:"enabled_activities"`
+}
+
+// NewUser creates a new user
+func NewUser(name string, chatID int64, enabledActivities []Activity) *User {
+	return &User{
+		Name:             name,
+		ChatID:           chatID,
+		EnabledActivites: enabledActivities,
+	}
+}
 
 // GetRandomUserName returns a random user name from the list
 func GetRandomUserName() string {

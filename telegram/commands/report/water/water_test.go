@@ -3,6 +3,7 @@ package water
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,9 @@ func TestWaterReport(t *testing.T) {
 
 	database.InitMongoMock()
 
-	pr, err := GenerateWaterReport(client, "test", 1)
+	ctx := context.Background()
+
+	pr, err := GenerateWaterReport(ctx, client, "test", 1)
 	c.NoError(err)
 	c.NotEmpty(pr)
 }

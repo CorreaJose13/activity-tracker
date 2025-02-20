@@ -3,6 +3,7 @@ package keratine
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"time"
 )
@@ -28,8 +29,8 @@ var (
 )
 
 // SendKeratineReport sends the keratine report
-func SendKeratineReport(client *shared.Client, userName, content string, chatID int64) error {
-	kr, err := GenerateKeratineReport(client, userName, chatID)
+func SendKeratineReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	kr, err := GenerateKeratineReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -43,8 +44,8 @@ func SendKeratineReport(client *shared.Client, userName, content string, chatID 
 }
 
 // GenerateKeratineReport generates the keratine report
-func GenerateKeratineReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Keratine)
+func GenerateKeratineReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	keratineActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Keratine)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

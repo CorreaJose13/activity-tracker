@@ -3,6 +3,7 @@ package shower
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"time"
 )
@@ -33,8 +34,8 @@ var (
 	oneDayStreak       = 1
 )
 
-func SendShowerReport(client *shared.Client, userName, content string, chatID int64) error {
-	reportMessage, err := GenerateShowerReport(client, userName, chatID)
+func SendShowerReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	reportMessage, err := GenerateShowerReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -42,8 +43,8 @@ func SendShowerReport(client *shared.Client, userName, content string, chatID in
 	return client.SendMessage(chatID, reportMessage)
 }
 
-func GenerateShowerReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	showerActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Shower)
+func GenerateShowerReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	showerActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Shower)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

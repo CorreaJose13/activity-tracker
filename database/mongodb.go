@@ -8,6 +8,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
@@ -32,7 +33,7 @@ func setClientConfig() MongoClientInterface {
 
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s.2ykonih.mongodb.net/", user, pswd, databaseName))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	mongo, err := mongo.Connect(ctx, clientOpts)
@@ -40,7 +41,7 @@ func setClientConfig() MongoClientInterface {
 		panic(err)
 	}
 
-	err = mongo.Ping(ctx, nil)
+	err = mongo.Ping(ctx, readpref.Primary())
 	if err != nil {
 		panic(err)
 	}
@@ -64,4 +65,8 @@ func getCollection(database MongoDatabaseInterface, tableName string) MongoColle
 func GetCollection(tableName string) MongoCollectionInterface {
 	Database = funcGetDatabase()
 	return funcGetCollection(Database, tableName)
+}
+
+func Disconnect(ctx context.Context) error {
+	return Client.Disconnect(ctx)
 }

@@ -3,6 +3,7 @@ package storage
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 	"time"
 
@@ -26,6 +27,6 @@ func TestCreate(t *testing.T) {
 		CreatedAt: nowStr,
 	}
 
-	err = Create(user)
+	err = Create(context.Background(), user)
 	c.NoError(err)
 }

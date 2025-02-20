@@ -51,4 +51,6 @@ bootstrap
 project.auto.tfvars
 
 # ignore local dependencies
-vendor 
+vendor
+
+*.firebase

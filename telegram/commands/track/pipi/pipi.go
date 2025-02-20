@@ -3,12 +3,13 @@ package pipi
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"time"
 )
 
 // SendTrackPipi tracks the pipi activity
-func SendTrackPipi(client *shared.Client, userName, content string, chatID int64) error {
+func SendTrackPipi(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
 		return client.SendMessage(chatID, err.Error())
@@ -23,7 +24,7 @@ func SendTrackPipi(client *shared.Client, userName, content string, chatID int64
 		CreatedAt: nowStr,
 	}
 
-	err = storage.Create(userActivity)
+	err = storage.Create(ctx, userActivity)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
