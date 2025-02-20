@@ -12,6 +12,7 @@ import (
 	"activity-tracker/telegram/commands/report/tooth"
 	"activity-tracker/telegram/commands/report/water"
 	"context"
+	"fmt"
 	"os"
 )
 
@@ -48,7 +49,7 @@ func GenerateAllReports(ctx context.Context, client *shared.Client, userName, co
 
 	err := os.WriteFile(filePath, []byte(reports), 0644)
 	if err != nil {
-		return err
+		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	return client.SendFile(chatID, filePath)
