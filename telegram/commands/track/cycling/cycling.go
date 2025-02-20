@@ -3,12 +3,13 @@ package cycling
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"time"
 )
 
 // SendTrackCycling tracks cycling activity
-func SendTrackCycling(client *shared.Client, userName, content string, chatID int64) error {
+func SendTrackCycling(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
 	now, err := shared.GetNow()
 	if err != nil {
 		return client.SendMessage(chatID, err.Error())
@@ -24,7 +25,7 @@ func SendTrackCycling(client *shared.Client, userName, content string, chatID in
 		Content:   content,
 	}
 
-	err = storage.Create(userActivity)
+	err = storage.Create(ctx, userActivity)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

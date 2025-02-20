@@ -3,6 +3,7 @@ package wishlist
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -20,7 +21,7 @@ var (
 )
 
 // HandleWishlist handles the user wishlist command
-func HandleWishlist(client *shared.Client, chatID int64, userName, content string) error {
+func HandleWishlist(ctx context.Context, client *shared.Client, chatID int64, userName, content string) error {
 	contentParts := strings.Split(content, " ")
 	if len(contentParts) != expectedWishlistContentParts {
 		return errInvalidWishlistCommand
@@ -52,7 +53,7 @@ func HandleWishlist(client *shared.Client, chatID int64, userName, content strin
 		Content:   content,
 	}
 
-	err = storage.Create(userActivity)
+	err = storage.Create(ctx, userActivity)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -63,8 +64,8 @@ func HandleWishlist(client *shared.Client, chatID int64, userName, content strin
 }
 
 // GetWishlist returns the user wishlist
-func GetWishlist(client *shared.Client, userName string, chatID int64) error {
-	wishlistItems, err := storage.GetActivityHistory(userName, shared.Wishlist)
+func GetWishlist(ctx context.Context, client *shared.Client, userName string, chatID int64) error {
+	wishlistItems, err := storage.GetActivityHistory(ctx, userName, shared.Wishlist)
 	if errors.Is(err, storage.ErrNoActivitiesFound) {
 		return client.SendMessage(chatID, emptyWishlistMessage)
 	}

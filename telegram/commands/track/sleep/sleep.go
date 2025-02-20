@@ -3,6 +3,7 @@ package sleep
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"regexp"
 	"time"
@@ -18,7 +19,7 @@ var (
 )
 
 // SendTrackSleep tracks the sleep activity
-func SendTrackSleep(client *shared.Client, userName, content string, chatID int64) error {
+func SendTrackSleep(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
 	if content == "" {
 		return client.SendMessage(chatID, messageInvalidHour)
 	}
@@ -28,15 +29,15 @@ func SendTrackSleep(client *shared.Client, userName, content string, chatID int6
 		return client.SendMessage(chatID, messageInvalidHour)
 	}
 
-	isNewActivity, userActivity, err := getUserActivity(userName, duration)
+	isNewActivity, userActivity, err := getUserActivity(ctx, userName, duration)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
 
 	if isNewActivity {
-		err = storage.Create(userActivity)
+		err = storage.Create(ctx, userActivity)
 	} else {
-		err = storage.UpdateContent(userActivity)
+		err = storage.UpdateContent(ctx, userActivity)
 	}
 
 	if err != nil {
@@ -46,8 +47,8 @@ func SendTrackSleep(client *shared.Client, userName, content string, chatID int6
 	return client.SendMessage(chatID, sleepMessage)
 }
 
-func getUserActivity(userName string, duration time.Duration) (bool, shared.UserActivity, error) {
-	activities, err := storage.GetCurrentDayActivities(userName, shared.Sleep)
+func getUserActivity(ctx context.Context, userName string, duration time.Duration) (bool, shared.UserActivity, error) {
+	activities, err := storage.GetCurrentDayActivities(ctx, userName, shared.Sleep)
 	if err != nil {
 		return false, shared.UserActivity{}, err
 	}

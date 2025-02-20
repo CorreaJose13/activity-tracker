@@ -3,6 +3,7 @@ package gomita
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -59,8 +60,8 @@ func floatToFraction(f float64) (p, q int64) {
 	return p, q
 }
 
-func SendGomitaReport(client *shared.Client, userName, content string, chatID int64) error {
-	report, err := GenerateGomitaReport(client, userName, chatID)
+func SendGomitaReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	report, err := GenerateGomitaReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -73,8 +74,8 @@ func SendGomitaReport(client *shared.Client, userName, content string, chatID in
 	return client.SendAnimation(chatID, gomitaGif)
 }
 
-func GenerateGomitaReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	gomitaActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, shared.Gomita)
+func GenerateGomitaReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	gomitaActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Gomita)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

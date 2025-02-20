@@ -2,6 +2,7 @@ package poop
 
 import (
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,9 +11,11 @@ import (
 func TestSendTrackPoop(t *testing.T) {
 	c := require.New(t)
 
+	ctx := context.Background()
+
 	client, err := shared.NewMockBot("dummy")
 	c.NoError(err)
 
-	err = SendTrackPoop(client, "test", "", 1)
+	err = SendTrackPoop(ctx, client, "test", "", 1)
 	c.NoError(err)
 }

@@ -3,6 +3,7 @@ package keratine
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"time"
 )
@@ -10,8 +11,8 @@ import (
 var goalKeratineConsume = 1
 
 // SendTrackKeratine tracks the keratine activity
-func SendTrackKeratine(client *shared.Client, userName, content string, chatID int64) error {
-	isGoalCompleted := isKeratineGoalCompleted(client, userName, chatID)
+func SendTrackKeratine(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	isGoalCompleted := isKeratineGoalCompleted(ctx, client, userName, chatID)
 	if isGoalCompleted {
 		return client.SendMessage(chatID, "ya te tomaste la keratina de hoy, aprende a tener límites xfi")
 	}
@@ -31,7 +32,7 @@ func SendTrackKeratine(client *shared.Client, userName, content string, chatID i
 		Content:   content,
 	}
 
-	err = storage.Create(userActivity)
+	err = storage.Create(ctx, userActivity)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -39,8 +40,8 @@ func SendTrackKeratine(client *shared.Client, userName, content string, chatID i
 	return client.SendMessage(chatID, "se wardó tu tomadita de keratina >:)")
 }
 
-func isKeratineGoalCompleted(client *shared.Client, userName string, chatID int64) bool {
-	currentDayKeratineActivities, err := storage.GetCurrentDayActivities(userName, shared.Keratine)
+func isKeratineGoalCompleted(ctx context.Context, client *shared.Client, userName string, chatID int64) bool {
+	currentDayKeratineActivities, err := storage.GetCurrentDayActivities(ctx, userName, shared.Keratine)
 	if err != nil {
 		_ = client.SendMessage(chatID, "tenemos problemas papi"+err.Error())
 

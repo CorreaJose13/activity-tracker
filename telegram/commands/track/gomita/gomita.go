@@ -3,6 +3,7 @@ package gomita
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -33,7 +34,7 @@ func fractionToFloatString(content string) (string, error) {
 }
 
 // SendTrackGomita tracks how many gomitas did u take
-func SendTrackGomita(client *shared.Client, userName, content string, chatID int64) error {
+func SendTrackGomita(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
 	if content == "" {
 		return client.SendMessage(chatID, missingContentMessage)
 	}
@@ -54,7 +55,7 @@ func SendTrackGomita(client *shared.Client, userName, content string, chatID int
 		return client.SendMessage(chatID, err.Error())
 	}
 
-	err = storage.Create(userActivity)
+	err = storage.Create(ctx, userActivity)
 	if err != nil {
 		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}

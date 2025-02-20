@@ -3,6 +3,7 @@ package water
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -40,8 +41,8 @@ func getWaterString(count int) string {
 }
 
 // SendWaterReport sends the water report
-func SendWaterReport(client *shared.Client, userName, content string, chatID int64) error {
-	wr, err := GenerateWaterReport(client, userName, chatID)
+func SendWaterReport(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+	wr, err := GenerateWaterReport(ctx, client, userName, chatID)
 	if err != nil {
 		return err
 	}
@@ -54,8 +55,8 @@ func SendWaterReport(client *shared.Client, userName, content string, chatID int
 	return client.SendAnimation(chatID, waterGif)
 }
 
-func GenerateWaterReport(client *shared.Client, userName string, chatID int64) (string, error) {
-	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(userName, "water")
+func GenerateWaterReport(ctx context.Context, client *shared.Client, userName string, chatID int64) (string, error) {
+	waterActivities, err := storage.GetLastWeekUserHistoryPerActivity(ctx, userName, shared.Water)
 	if err != nil {
 		return "", client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
 	}
@@ -82,13 +83,13 @@ func GenerateWaterReport(client *shared.Client, userName string, chatID int64) (
 	}
 
 	report := fmt.Sprintf(reportMessage, userName,
-		waterPerDay[time.Monday],
-		waterPerDay[time.Tuesday],
-		waterPerDay[time.Wednesday],
-		waterPerDay[time.Thursday],
-		waterPerDay[time.Friday],
-		waterPerDay[time.Saturday],
-		waterPerDay[time.Sunday])
+		getWaterString(waterPerDay[time.Monday]),
+		getWaterString(waterPerDay[time.Tuesday]),
+		getWaterString(waterPerDay[time.Wednesday]),
+		getWaterString(waterPerDay[time.Thursday]),
+		getWaterString(waterPerDay[time.Friday]),
+		getWaterString(waterPerDay[time.Saturday]),
+		getWaterString(waterPerDay[time.Sunday]))
 
 	return report, nil
 }

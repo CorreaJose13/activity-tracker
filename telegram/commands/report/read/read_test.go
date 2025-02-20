@@ -3,6 +3,7 @@ package read
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,9 @@ func TestReadReport(t *testing.T) {
 
 	database.InitMongoMock()
 
-	rp, err := GenerateReadReport(client, "test", 1)
+	ctx := context.Background()
+
+	rp, err := GenerateReadReport(ctx, client, "test", 1)
 	c.NoError(err)
 	c.NotEmpty(rp)
 }

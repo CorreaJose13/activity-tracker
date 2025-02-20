@@ -15,6 +15,7 @@ var (
 
 type tgClientInterface interface {
 	Send(c tgbotapi.Chattable) (tgbotapi.Message, error)
+	Request(c tgbotapi.Chattable) (*tgbotapi.APIResponse, error)
 }
 
 func ActivateMockBot(c *Client) {
@@ -40,4 +41,12 @@ func (m *mockBot) Send(c tgbotapi.Chattable) (tgbotapi.Message, error) {
 	}
 
 	return tgbotapi.Message{}, nil
+}
+
+func (m *mockBot) Request(c tgbotapi.Chattable) (*tgbotapi.APIResponse, error) {
+	if ForceMockFailure {
+		return nil, ErrForcedFailure
+	}
+
+	return &tgbotapi.APIResponse{Ok: true}, nil
 }

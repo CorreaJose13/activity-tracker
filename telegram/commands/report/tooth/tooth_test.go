@@ -3,6 +3,7 @@ package tooth
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,9 @@ func TestToothReport(t *testing.T) {
 
 	database.InitMongoMock()
 
-	rp, err := GenerateToothReport(client, "test", 1)
+	ctx := context.Background()
+
+	rp, err := GenerateToothReport(ctx, client, "test", 1)
 	c.NoError(err)
 	c.NotEmpty(rp)
 }

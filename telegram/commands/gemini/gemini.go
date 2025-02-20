@@ -3,16 +3,17 @@ package gemini
 import (
 	"activity-tracker/gemini"
 	"activity-tracker/shared"
+	"context"
 	"errors"
 	"fmt"
 )
 
 var (
-	errNoPrompt = errors.New("En serio metiste un prompt vacío bobo hijueputa? Haz algo bien sub-humano 🙄")
-	forceText   = ",responde solo texto."
+	errNoPrompt = errors.New("en serio metiste un prompt vacío bobo hijueputa? haz algo bien sub-humano 🙄")
+	forceText   = ", responde solo texto."
 )
 
-func HandleGemini(client *shared.Client, chatID int64, userName, content string) error {
+func HandleGemini(ctx context.Context, client *shared.Client, chatID int64, userName, content string) error {
 	if content == "" {
 		return errNoPrompt
 	}

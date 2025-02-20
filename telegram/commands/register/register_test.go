@@ -1,4 +1,4 @@
-package pipi
+package register
 
 import (
 	"activity-tracker/database"
@@ -9,16 +9,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSendTrackPipi(t *testing.T) {
+func TestRegisterUser(t *testing.T) {
 	c := require.New(t)
 
 	client, err := shared.NewMockBot("dummy")
-	c.Nil(err)
-
-	ctx := context.Background()
+	c.NoError(err)
 
 	database.InitMongoMock()
 
-	err = SendTrackPipi(ctx, client, "test", "", 1)
+	ctx := context.Background()
+
+	user := shared.User{
+		Name:   "testuser",
+		ChatID: 12345,
+	}
+
+	err = RegisterUser(ctx, client, user.Name, user.ChatID)
 	c.NoError(err)
 }
