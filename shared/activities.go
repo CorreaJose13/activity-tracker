@@ -95,3 +95,22 @@ func IsValidFloat(content string) bool {
 
 	return err == nil && value > 0
 }
+
+// TODO: fix this when we have a table with all the activities
+func IsValidActivity(activity Activity) bool {
+	return activity == Water ||
+		activity == Gym ||
+		activity == ToothBrush ||
+		activity == Food ||
+		activity == Sleep ||
+		activity == Shower ||
+		activity == Read ||
+		activity == Run ||
+		activity == Swimming ||
+		activity == Cycling ||
+		activity == Poop ||
+		activity == Keratine ||
+		activity == Pipi ||
+		activity == Wishlist ||
+		activity == Gomita
+}
