@@ -1,4 +1,26 @@
-<div class="text-center text-5xl font-bold font-poppins p-4">HOLA SORRITAS 😘</div>
+<div class="h-screen w-screen bg-[#465AE1] flex justify-center items-center">
+  <div class="relative w-full h-full flex justify-center items-end">
+      <div class="absolute inset-0 w-full h-full flex justify-center items-end">
+          <img src="/principal_view.svg" alt="bolita" class="h-full w-auto" #imageRef />
+      </div>
+      
+      <div class="relative z-10 flex flex-col items-center pb-6 w-full" #buttonContainer>
+          <button (click)="trackHandler()" class="h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
+              Track 😈
+          </button>
+          <button (click)="reportHandler()" class="h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
+              Report 🥵
+          </button>
+          <button (click)="wishlistHandler()" class="h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
+              Wishlist 🤑
+          </button>
+      </div>
+  </div>
+</div>
+
+
+
+<!-- <div class="text-center text-5xl font-bold font-poppins p-4">HOLA SORRITAS 😘</div>
 
 <div class="px-2 mx-[5%] text-center text-base font-light leading-[22.5px]">
   <p>
@@ -9,16 +31,16 @@
 <div class="m-2 w-full justify-center grid">
   userName: {{ userName }}
   chatId: {{ chatId }}
-  <button (click)="trackHandler()" class="w-[300px] h-[45px] rounded-lg m-3 bg-[#883aeacc] font-poppins text-base font-medium leading-[22.5px] text-white cursor-pointer shadow-lg border-transparent">
+  <button (click)="trackHandler()" class="w-[300px] h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent">
     Track 😈
   </button>
-  <button (click)="reportHandler()" class="w-[300px] h-[45px] rounded-lg m-3 bg-[#883aeacc] font-poppins text-base font-medium leading-[22.5px] text-white cursor-pointer shadow-lg border-transparent">
+  <button (click)="reportHandler()" class="w-[300px] h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent">
     Report 🥵
   </button>
-  <button (click)="wishlistHandler()" class="w-[300px] h-[45px] rounded-lg m-3 bg-[#883aeacc] font-poppins text-base font-medium leading-[22.5px] text-white cursor-pointer shadow-lg border-transparent">
+  <button (click)="wishlistHandler()" class="w-[300px] h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent">
     Wishlist 🤑
   </button>
   <div class="absolute bottom-0 w-full flex justify-center">
     <img src="/bola-amarilla.svg" alt="bolita" width="100" height="100" />
   </div>
-</div>
+</div> -->

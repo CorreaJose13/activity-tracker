@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 @Component({
@@ -8,6 +8,10 @@ import { CommonModule } from '@angular/common';
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+
+  @ViewChild('imageRef') imageRef!: ElementRef;
+  @ViewChild('buttonContainer') buttonContainer!: ElementRef;
+
   userName: string | null = '';
   chatId: string | null = '';
 
@@ -30,5 +34,16 @@ export class HomeComponent implements OnInit {
 
   wishlistHandler() {
     window.location.pathname = '/wishlist';
+  }
+
+  ngAfterViewInit() {
+    this.adjustButtonWidth();
+  }
+
+  @HostListener('window:resize')
+  adjustButtonWidth() {
+    if (this.imageRef && this.buttonContainer) {
+      this.buttonContainer.nativeElement.style.maxWidth = `${this.imageRef.nativeElement.clientWidth}px`;
+    }
   }
 }
