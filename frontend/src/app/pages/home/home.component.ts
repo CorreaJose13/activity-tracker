@@ -14,6 +14,7 @@ export class HomeComponent implements OnInit {
 
   userName: string | null = '';
   chatId: string | null = '';
+  buttonWidth: string = '100%';
 
   constructor(private route: ActivatedRoute) {}
 
@@ -37,13 +38,21 @@ export class HomeComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.adjustButtonWidth();
+    if (this.imageRef) {
+      this.imageRef.nativeElement.onload = () => {
+        this.adjustButtonWidth();
+      };
+      // Si la imagen ya está cargada en caché
+      if (this.imageRef.nativeElement.complete) {
+        this.adjustButtonWidth();
+      }
+    }
   }
 
   @HostListener('window:resize')
   adjustButtonWidth() {
     if (this.imageRef && this.buttonContainer) {
-      this.buttonContainer.nativeElement.style.maxWidth = `${this.imageRef.nativeElement.clientWidth}px`;
+      this.buttonWidth = `${this.imageRef.nativeElement.clientWidth * 0.75}px`;
     }
   }
 }

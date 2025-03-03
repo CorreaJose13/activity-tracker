@@ -4,14 +4,14 @@
           <img src="/principal_view.svg" alt="bolita" class="h-full w-auto" #imageRef />
       </div>
       
-      <div class="relative z-10 flex flex-col items-center pb-6 w-full" #buttonContainer>
-          <button (click)="trackHandler()" class="h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
+      <div class="relative z-10 flex flex-col items-center pb-6 w-full" #buttonContainer [ngStyle]="{'max-width': buttonWidth}">
+          <button (click)="trackHandler()" class="h-[35px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[18px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
               Track 😈
           </button>
-          <button (click)="reportHandler()" class="h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
+          <button (click)="reportHandler()" class="h-[35px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[18px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
               Report 🥵
           </button>
-          <button (click)="wishlistHandler()" class="h-[45px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[22.5px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
+          <button (click)="wishlistHandler()" class="h-[35px] rounded-full m-3 bg-[#D5FF3B] font-poppins text-base font-medium leading-[18px] text-[#465AE1] cursor-pointer shadow-lg border-transparent w-full">
               Wishlist 🤑
           </button>
       </div>
