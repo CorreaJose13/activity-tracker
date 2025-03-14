@@ -68,6 +68,7 @@ var (
 		"read":     reportRead.SendReadReport,
 		"gomita":   reportGomita.SendGomitaReport,
 		"all":      report.GenerateAllReports,
+		"monthly":  report.GenerateMonthlyReport,
 	}
 
 	suffixTrackMap = map[shared.Activity]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
