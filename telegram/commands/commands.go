@@ -15,6 +15,7 @@ import (
 	reportSleep "activity-tracker/telegram/commands/report/sleep"
 	reportTooth "activity-tracker/telegram/commands/report/tooth"
 	reportWater "activity-tracker/telegram/commands/report/water"
+	shoulddeploy "activity-tracker/telegram/commands/shoulddeploy"
 	trackCycling "activity-tracker/telegram/commands/track/cycling"
 	trackGomita "activity-tracker/telegram/commands/track/gomita"
 	trackGym "activity-tracker/telegram/commands/track/gym"
@@ -43,17 +44,18 @@ const (
 
 var (
 	commandMap = map[string]func(client *shared.Client, userName string, chatID int64) error{
-		"/hello":       sendHello,
-		"/help":        sendHelp,
-		"/commands":    sendCommands,
-		"/track":       sendTrackHelp,
-		"/report":      sendReportHelp,
-		"/goal":        sendGoalHelp,
-		"/wishlist":    sendWishlist,
-		"/hatriki":     sendHatriki,
-		"/tengohambre": sendHambre,
-		"/pinkipiensa": sendPinki,
-		"/chatID":      sendChatID,
+		"/hello":             sendHello,
+		"/help":              sendHelp,
+		"/commands":          sendCommands,
+		"/track":             sendTrackHelp,
+		"/report":            sendReportHelp,
+		"/goal":              sendGoalHelp,
+		"/wishlist":          sendWishlist,
+		"/hatriki":           sendHatriki,
+		"/tengohambre":       sendHambre,
+		"/pinkipiensa":       sendPinki,
+		"/chatID":            sendChatID,
+		"/shoulddeploytoday": shoulddeploy.ShouldDeploy,
 	}
 
 	suffixReportMap = map[string]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{

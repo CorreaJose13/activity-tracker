@@ -42,7 +42,7 @@ module "iam_role_lambda_scheduler" {
 module "iam_policy_attachment_logs" {
   source = "../../../modules/iam_policy_attachment/"
 
-  policy_name = "logs_lambda_scheduler"
+  policy_name = "logs_lambda_keratine_scheduler"
   action      = ["logs:CreateLogStream", "logs:PutLogEvents"]
   resource    = "arn:aws:logs:*:*:*"
   role_name   = module.iam_role_lambda_scheduler.role_name
@@ -54,7 +54,7 @@ module "lambda_function" {
   src_path             = local.src_path
   binary_path          = local.binary_path
   archive_path         = local.archive_path
-  lambda_function_name = "tg_bot_scheduler_lambda"
+  lambda_function_name = "tg_bot_keratine_scheduler_lambda"
   role_arn             = module.iam_role_lambda_scheduler.role_arn
   environment_variables = {
     "BOT_TOKEN" = var.bot_api_token
@@ -62,7 +62,7 @@ module "lambda_function" {
 }
 
 module "iam_role_scheduler" {
-  source = "../../modules/iam_role/"
+  source = "../../../modules/iam_role/"
 
   role_name               = "iam_for_scheduler"
   assume_role_identifiers = ["scheduler.amazonaws.com"]
