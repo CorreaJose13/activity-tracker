@@ -49,6 +49,10 @@ module "lambda_function" {
   archive_path         = local.archive_path
   lambda_function_name = "lambda_get_available_activities"
   role_arn             = module.iam_role.role_arn
+
+  environment_variables = {
+    "MONGO_TOKEN" = var.mongo_token
+  }
 }
 
 data "terraform_remote_state" "api_gateway" {

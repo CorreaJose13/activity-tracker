@@ -365,16 +365,11 @@ func GetAvailableActivities(ctx context.Context) ([]*shared.Activity, error) {
 			return nil, fmt.Errorf("decode bson failed: %w", err)
 		}
 
-		var activity shared.Activity
-
-		bsBytes, _ := bson.Marshal(bs)
-
-		err = bson.Unmarshal(bsBytes, &activity)
-		if err != nil {
-			return nil, fmt.Errorf("decode activity failed: %w", err)
+		activityValue, ok := bs["activity"]
+		if ok {
+			activity := shared.Activity(activityValue.(string))
+			activities = append(activities, &activity)
 		}
-
-		activities = append(activities, &activity)
 	}
 
 	return activities, nil

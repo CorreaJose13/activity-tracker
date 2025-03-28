@@ -8,7 +8,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var (
@@ -41,7 +40,7 @@ func setClientConfig() MongoClientInterface {
 		panic(err)
 	}
 
-	err = mongo.Ping(ctx, readpref.Primary())
+	err = mongo.Ping(ctx, nil)
 	if err != nil {
 		panic(err)
 	}
