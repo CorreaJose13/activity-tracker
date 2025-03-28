@@ -1,11 +1,9 @@
 <div class="h-screen w-screen bg-[#f55c32] flex justify-center items-center">
   <div class="relative w-full h-full">
-    <!-- Imagen de fondo -->
     <div class="absolute inset-0 w-full h-full">
       <img src="/track_view.svg" alt="bolita" class="h-full w-auto" #imageRef />
     </div>
 
-    <!-- Contenedor de contenido superpuesto -->
     <div class="relative z-10 flex flex-col items-center w-full h-full">
       <div class="mt-6 text-center text-5xl font-bold font-poppins ">
         <p class="m-0">😈</p>
@@ -20,17 +18,16 @@
       </div>
 
       <div class="flex flex-grow items-center justify-center w-full">
-        <!-- Bloque condicional: muestra imagen o botones según la cantidad de opciones -->
         @if (userTrackingOptions().length === 0) {
-        <img src="/bg_empty.svg" alt="bolita" class="w-80 h-80" />
+          <img src="/bg_empty.svg" alt="bolita" class="w-80 h-80" />
         } @else {
-        <div class="grid grid-cols-2 gap-4">
-          @for (item of userTrackingOptions(); track item) {
-          <button class="px-4 py-2 text-white bg-[#D5FF3B] rounded hover:bg-blue-700 focus:outline-none">
-            {{ item }}
-          </button>
-          }
-        </div>
+          <div class="grid grid-cols-2 gap-4">
+            @for (item of userTrackingOptions(); track item) {
+              <button class="px-4 py-2 text-white bg-[#D5FF3B] rounded hover:bg-blue-700 focus:outline-none">
+                {{ item }}
+              </button>
+            }
+          </div>
         }
       </div>
 
@@ -38,8 +35,6 @@
         <img src="/add-circle.svg" alt="bolita" class="w-16 h-16 cursor-pointer" (click)="showModal.set(true)" />
       </div>
     </div>
-
-    <!-- Modal (si se debe mostrar) -->
     @if (showModal()){
     <div class="fixed inset-0 pt-20 flex items-center justify-center z-50">
       <div class="w-96 bg-transparent p-6">

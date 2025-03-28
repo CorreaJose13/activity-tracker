@@ -38,15 +38,17 @@ export class HomeComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    if (this.imageRef) {
-      this.imageRef.nativeElement.onload = () => {
-        this.adjustButtonWidth();
-      };
-      // Si la imagen ya está cargada en caché
-      if (this.imageRef.nativeElement.complete) {
-        this.adjustButtonWidth();
-      }
+
+    if (!this.imageRef) return;
+
+    this.imageRef.nativeElement.onload = () => {
+      this.adjustButtonWidth();
+    };
+    // Si la imagen ya está cargada en caché
+    if (this.imageRef.nativeElement.complete) {
+      this.adjustButtonWidth();
     }
+    
   }
 
   @HostListener('window:resize')
