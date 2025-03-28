@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 @Component({
@@ -8,8 +8,13 @@ import { CommonModule } from '@angular/common';
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+
+  @ViewChild('imageRef') imageRef!: ElementRef;
+  @ViewChild('buttonContainer') buttonContainer!: ElementRef;
+
   userName: string | null = '';
   chatId: string | null = '';
+  buttonWidth: string = '100%';
 
   constructor(private route: ActivatedRoute) {}
 
@@ -30,5 +35,26 @@ export class HomeComponent implements OnInit {
 
   wishlistHandler() {
     window.location.pathname = '/wishlist';
+  }
+
+  ngAfterViewInit() {
+
+    if (!this.imageRef) return;
+
+    this.imageRef.nativeElement.onload = () => {
+      this.adjustButtonWidth();
+    };
+    // Si la imagen ya está cargada en caché
+    if (this.imageRef.nativeElement.complete) {
+      this.adjustButtonWidth();
+    }
+    
+  }
+
+  @HostListener('window:resize')
+  adjustButtonWidth() {
+    if (this.imageRef && this.buttonContainer) {
+      this.buttonWidth = `${this.imageRef.nativeElement.clientWidth * 0.75}px`;
+    }
   }
 }
