@@ -1,28 +1,13 @@
-package sleep
+package trackers
 
 import (
 	"activity-tracker/database"
 	"activity-tracker/shared"
-	"context"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
-
-func TestSendTrackSleep(t *testing.T) {
-	c := require.New(t)
-
-	client, err := shared.NewMockBot("dummy")
-	c.NoError(err)
-
-	database.InitMongoMock()
-
-	ctx := context.Background()
-
-	err = SendTrackSleep(ctx, client, "test", "", 1)
-	c.NoError(err)
-}
 
 func TestAddSleepTime(t *testing.T) {
 	c := require.New(t)

@@ -16,19 +16,7 @@ import (
 	reportTooth "activity-tracker/telegram/commands/report/tooth"
 	reportWater "activity-tracker/telegram/commands/report/water"
 	shoulddeploy "activity-tracker/telegram/commands/shoulddeploy"
-	trackCycling "activity-tracker/telegram/commands/track/cycling"
-	trackGomita "activity-tracker/telegram/commands/track/gomita"
-	trackGym "activity-tracker/telegram/commands/track/gym"
-	trackKeratine "activity-tracker/telegram/commands/track/keratine"
-	trackPipi "activity-tracker/telegram/commands/track/pipi"
-	trackPoop "activity-tracker/telegram/commands/track/poop"
-	trackRead "activity-tracker/telegram/commands/track/read"
-	trackRun "activity-tracker/telegram/commands/track/run"
-	trackShower "activity-tracker/telegram/commands/track/shower"
-	trackSleep "activity-tracker/telegram/commands/track/sleep"
-	trackSwimming "activity-tracker/telegram/commands/track/swimming"
-	trackTooth "activity-tracker/telegram/commands/track/tooth"
-	trackWater "activity-tracker/telegram/commands/track/water"
+	"activity-tracker/telegram/commands/track"
 
 	"activity-tracker/telegram/commands/wishlist"
 	"context"
@@ -73,20 +61,20 @@ var (
 		"monthly":  report.GenerateMonthlyReport,
 	}
 
-	suffixTrackMap = map[shared.Activity]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
-		shared.Water:      trackWater.SendTrackWater,
-		shared.ToothBrush: trackTooth.SendTrackTooth,
-		shared.Read:       trackRead.SendTrackRead,
-		shared.Shower:     trackShower.SendTrackShower,
-		shared.Sleep:      trackSleep.SendTrackSleep,
-		shared.Gym:        trackGym.SendTrackGym,
-		shared.Poop:       trackPoop.SendTrackPoop,
-		shared.Run:        trackRun.SendTrackRun,
-		shared.Keratine:   trackKeratine.SendTrackKeratine,
-		shared.Pipi:       trackPipi.SendTrackPipi,
-		shared.Swimming:   trackSwimming.SendTrackSwimming,
-		shared.Cycling:    trackCycling.SendTrackCycling,
-		shared.Gomita:     trackGomita.SendTrackGomita,
+	suffixTrackMap = map[shared.Activity]bool{
+		shared.Water:      true,
+		shared.ToothBrush: true,
+		shared.Read:       true,
+		shared.Shower:     true,
+		shared.Sleep:      true,
+		shared.Gym:        true,
+		shared.Poop:       true,
+		shared.Run:        true,
+		shared.Keratine:   true,
+		shared.Pipi:       true,
+		shared.Swimming:   true,
+		shared.Cycling:    true,
+		shared.Gomita:     true,
 	}
 
 	suffixGoalMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
@@ -165,8 +153,8 @@ func DoCommand(ctx context.Context, client *shared.Client, chatID int64, userNam
 func handleTrack(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
-	if fn, ok := suffixTrackMap[shared.Activity(before)]; ok {
-		return fn(ctx, client, userName, after, chatID)
+	if _, ok := suffixTrackMap[shared.Activity(before)]; ok {
+		return track.SendTrackActivity(ctx, shared.Activity(before), client, userName, after, chatID)
 	}
 
 	return sendUnknownCommand(client, chatID)
