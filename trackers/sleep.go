@@ -1,37 +1,53 @@
-package sleep
+package trackers
 
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"context"
-	"fmt"
 	"regexp"
 	"time"
 )
 
-const (
-	sleepMessage = "Espero estar en esos ricos sueños 😏"
-)
-
 var (
 	messageInvalidHour = "pone bien el gran hpta formato, por ejemplo 8h o 10m o 2h30m"
-	secondsRegex       = `\d+s$`
+
+	successMessageSleep = "Que sueñes con los angelitos bb 😴😴😴"
+
+	secondsRegex = `\d+s$`
+
+	mapSleepMessagesBySource = ErrorMessages{
+		ErrInvalidContent: {
+			APISource: messageInvalidHour,
+			TGSource:  messageInvalidHour,
+		},
+	}
 )
 
-// SendTrackSleep tracks the sleep activity
-func SendTrackSleep(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error {
+type SleepTracker struct {
+	activityType shared.Activity
+	sourceType   SourceType
+}
+
+func NewSleepTracker(activityType shared.Activity, source SourceType) (Tracker, error) {
+	return &SleepTracker{
+		activityType: activityType,
+		sourceType:   source,
+	}, nil
+}
+
+func (t *SleepTracker) Track(ctx context.Context, username string, content string) error {
 	if content == "" {
-		return client.SendMessage(chatID, messageInvalidHour)
+		return ErrInvalidContent
 	}
 
 	duration, err := time.ParseDuration(content)
 	if err != nil {
-		return client.SendMessage(chatID, messageInvalidHour)
+		return ErrInvalidContent
 	}
 
-	isNewActivity, userActivity, err := getUserActivity(ctx, userName, duration)
+	isNewActivity, userActivity, err := getUserActivity(ctx, username, duration)
 	if err != nil {
-		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
+		return err
 	}
 
 	if isNewActivity {
@@ -40,11 +56,7 @@ func SendTrackSleep(ctx context.Context, client *shared.Client, userName, conten
 		err = storage.UpdateContent(ctx, userActivity)
 	}
 
-	if err != nil {
-		return client.SendMessage(chatID, fmt.Sprintf(shared.ErrSendMessage, err.Error()))
-	}
-
-	return client.SendMessage(chatID, sleepMessage)
+	return err
 }
 
 func getUserActivity(ctx context.Context, userName string, duration time.Duration) (bool, shared.UserActivity, error) {
@@ -93,4 +105,12 @@ func addSleepTime(activity *shared.UserActivity, duration time.Duration) error {
 func durationToStringWithoutSeconds(duration time.Duration) string {
 	re := regexp.MustCompile(secondsRegex)
 	return re.ReplaceAllString(duration.String(), "")
+}
+
+func (t *SleepTracker) GetErrorMessage(err error) string {
+	return GetErrorMessageByTracker(err, t.sourceType, mapSleepMessagesBySource)
+}
+
+func (t *SleepTracker) GetSuccessMessage() string {
+	return successMessageSleep
 }
