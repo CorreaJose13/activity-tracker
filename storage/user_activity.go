@@ -11,7 +11,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const tableName = "user-activity"
+const (
+	userActivityTableName = "user-activity"
+	activitiesTableName   = "activities"
+)
 
 var (
 
@@ -28,7 +31,7 @@ func Create(ctx context.Context, userActivity shared.UserActivity) error {
 			panic(err)
 		}
 	}()
-	collection := database.GetCollection(tableName)
+	collection := database.GetCollection(userActivityTableName)
 
 	_, err := collection.InsertOne(ctx, userActivity)
 
@@ -45,7 +48,7 @@ func UpdateContent(ctx context.Context, userActivity shared.UserActivity) error 
 		}
 	}()
 
-	collection := database.GetCollection(tableName)
+	collection := database.GetCollection(userActivityTableName)
 
 	filter := bson.M{
 		"id": userActivity.ID,
@@ -77,7 +80,7 @@ func GetCurrentDayActivities(ctx context.Context, name string, activity shared.A
 		}
 	}()
 
-	collection := database.GetCollection(tableName)
+	collection := database.GetCollection(userActivityTableName)
 
 	now, err := shared.GetNow()
 	if err != nil {
@@ -141,7 +144,7 @@ func GetLastWeekUserHistoryPerActivity(ctx context.Context, name string, activit
 		}
 	}()
 
-	collection := database.GetCollection(tableName)
+	collection := database.GetCollection(userActivityTableName)
 
 	now, err := shared.GetNow()
 	if err != nil {
@@ -209,7 +212,7 @@ func GetCurrentMonthUserHistoryPerActivity(ctx context.Context, name string, act
 		}
 	}()
 
-	collection := database.GetCollection(tableName)
+	collection := database.GetCollection(userActivityTableName)
 
 	now, err := shared.GetNow()
 	if err != nil {
@@ -273,7 +276,7 @@ func GetActivityHistory(ctx context.Context, name string, activity shared.Activi
 		}
 	}()
 
-	collection := database.GetCollection(tableName)
+	collection := database.GetCollection(userActivityTableName)
 
 	filter := bson.M{}
 
@@ -311,6 +314,62 @@ func GetActivityHistory(ctx context.Context, name string, activity shared.Activi
 
 	if len(activities) == 0 {
 		return nil, ErrNoActivitiesFound
+	}
+
+	return activities, nil
+}
+
+// CreateActivity creates a new activity
+func CreateActivity(ctx context.Context, activity shared.Activity) error {
+	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	collection := database.GetCollection(activitiesTableName)
+
+	_, err := collection.InsertOne(ctx, activity)
+
+	return err
+}
+
+// GetAvailableActivities returns the available activities
+func GetAvailableActivities(ctx context.Context) ([]*shared.Activity, error) {
+	database.InitMongo()
+
+	defer func() {
+		if err := database.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	collection := database.GetCollection(activitiesTableName)
+
+	items, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	defer items.Close(ctx)
+
+	var activities []*shared.Activity
+
+	for items.Next(ctx) {
+		var bs bson.M
+
+		err := items.Decode(&bs)
+		if err != nil {
+			return nil, fmt.Errorf("decode bson failed: %w", err)
+		}
+
+		activityValue, ok := bs["activity"]
+		if ok {
+			activity := shared.Activity(activityValue.(string))
+			activities = append(activities, &activity)
+		}
 	}
 
 	return activities, nil

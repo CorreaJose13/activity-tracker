@@ -5,5 +5,5 @@ resource "aws_iam_user" "brayan" {
 
 resource "aws_iam_user_group_membership" "brayan_groups" {
   user   = aws_iam_user.brayan.name
-  groups = [var.developer_group]
+  groups = [var.tracker_group]
 }
