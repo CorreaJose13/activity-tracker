@@ -12,6 +12,8 @@ var (
 	missingRunContentMessage = "mandame el hpta numero de kilometros que corriste bobo hpta"
 	invalidRunContentMessage = " eso ni siquiera es un número válido, perro hpta"
 
+	templateSuccessMessageRun = "uy manito corriste %s  kilometros? te benias cagando o qué? 🏃🏾‍♂️ te felicito bb"
+
 	ErrRunInvalidNumber = errors.New("invalid run number")
 
 	mapRunMessagesBySource = ErrorMessages{
@@ -63,5 +65,5 @@ func (t *RunTracker) GetErrorMessage(err error) string {
 }
 
 func (t *RunTracker) GetSuccessMessage() string {
-	return fmt.Sprintf("uy manito corriste %s  kilometros? te benias cagando o qué? 🏃🏾‍♂️ te felicito bb", t.content)
+	return fmt.Sprintf(templateSuccessMessageRun, t.content)
 }

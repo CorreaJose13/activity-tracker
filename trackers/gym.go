@@ -16,6 +16,8 @@ var (
 	missingDurationMessage = "eh pero cuánto tiempo te ejercitaste sapa inmunda"
 	missingMuscleMessage   = "eh pero hiciste chisme al fallo o q 🐸? mandame el musculo que ejercitaste sapa. Ej: bicep,pecho,jeta"
 
+	successMessageGym = "isss mi papacho el próximo cbum ve"
+
 	mapGymMessagesBySource = ErrorMessages{
 		ErrInvalidContent: {
 			APISource: "eh pero vos sos tonto o te haces? mandame el time y el muscle",
@@ -81,5 +83,5 @@ func (t *GymTracker) GetErrorMessage(err error) string {
 }
 
 func (t *GymTracker) GetSuccessMessage() string {
-	return "isss mi papacho el próximo cbum ve"
+	return successMessageGym
 }

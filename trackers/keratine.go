@@ -13,6 +13,8 @@ var (
 
 	limitMessage = "ya te tomaste la keratina de hoy, aprende a tener límites xfi"
 
+	successMessageKeratine = "se wardó tu tomadita de keratina >:)"
+
 	ErrKeratineLimitReached = errors.New("keratine limit reached")
 
 	mapKeratineMessagesBySource = ErrorMessages{
@@ -77,5 +79,5 @@ func (t *KeratineTracker) GetErrorMessage(err error) string {
 }
 
 func (t *KeratineTracker) GetSuccessMessage() string {
-	return "se wardó tu tomadita de keratina >:)"
+	return successMessageKeratine
 }

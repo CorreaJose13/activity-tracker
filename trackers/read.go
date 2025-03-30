@@ -11,6 +11,8 @@ var (
 	missingReadContentMessage = "y vos qué creés que voy a trackear si no me mandas el número de páginas que te leíste 🐸"
 	invalidReadContentMessage = "es muy difícil mandar un número bien? conectá solo 2 neuronas y mandá un número de páginas 🐸"
 
+	successMessageRead = "congrats por decidir dejar la ignorancia un poquito atrás, seguí leyendo a ver si cambiamos este cochino país 👃🏾◻️"
+
 	ErrReadInvalidNumber = errors.New("read invalid page number")
 
 	mapReadMessagesBySource = ErrorMessages{
@@ -59,5 +61,5 @@ func (t *ReadTracker) GetErrorMessage(err error) string {
 }
 
 func (t *ReadTracker) GetSuccessMessage() string {
-	return "congrats por decidir dejar la ignorancia un poquito atrás, seguí leyendo a ver si cambiamos este cochino país 👃🏾◻️"
+	return successMessageRead
 }

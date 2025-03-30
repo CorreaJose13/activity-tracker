@@ -13,6 +13,8 @@ var (
 
 	messageWaterLimit = "ya te tomaste los 3L de awa mi papacho, aprende a tener límites"
 
+	successMessageWater = "se wardó tu tomadita de awa golosito"
+
 	ErrWaterLimitReached = errors.New("water limit reached")
 
 	mapWaterMessagesBySource = ErrorMessages{
@@ -77,5 +79,5 @@ func (t *WaterTracker) GetErrorMessage(err error) string {
 }
 
 func (t *WaterTracker) GetSuccessMessage() string {
-	return "se wardó tu tomadita de awa golosito"
+	return successMessageWater
 }

@@ -8,6 +8,8 @@ import (
 )
 
 var (
+	successMessageShower = "ya era hora cochino hijueputa 🤢🤢🤢"
+
 	mapShowerMessagesBySource = ErrorMessages{}
 )
 
@@ -46,5 +48,5 @@ func (t *ShowerTracker) GetErrorMessage(err error) string {
 }
 
 func (t *ShowerTracker) GetSuccessMessage() string {
-	return "ya era hora cochino hijueputa 🤢🤢🤢"
+	return successMessageShower
 }

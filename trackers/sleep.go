@@ -11,6 +11,8 @@ import (
 var (
 	messageInvalidHour = "pone bien el gran hpta formato, por ejemplo 8h o 10m o 2h30m"
 
+	successMessageSleep = "Que sueñes con los angelitos bb 😴😴😴"
+
 	secondsRegex = `\d+s$`
 
 	mapSleepMessagesBySource = ErrorMessages{
@@ -110,5 +112,5 @@ func (t *SleepTracker) GetErrorMessage(err error) string {
 }
 
 func (t *SleepTracker) GetSuccessMessage() string {
-	return "Que sueñes con los angelitos bb 😴😴😴"
+	return successMessageSleep
 }

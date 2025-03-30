@@ -10,6 +10,22 @@ import (
 var (
 	ErrTrackerNotImplemented = errors.New("tracker not implemented")
 	ErrInvalidContent        = errors.New("invalid content")
+
+	mapTrackerByActivity = map[shared.Activity]func(shared.Activity, SourceType) (Tracker, error){
+		shared.Cycling:    NewCyclingTracker,
+		shared.Gomita:     NewGomitaTracker,
+		shared.Gym:        NewGymTracker,
+		shared.Keratine:   NewKeratineTracker,
+		shared.Pipi:       NewPipiTracker,
+		shared.Poop:       NewPoopTracker,
+		shared.Read:       NewReadTracker,
+		shared.Run:        NewRunTracker,
+		shared.Shower:     NewShowerTracker,
+		shared.Sleep:      NewSleepTracker,
+		shared.Swimming:   NewSwimmingTracker,
+		shared.ToothBrush: NewToothBrushTracker,
+		shared.Water:      NewWaterTracker,
+	}
 )
 
 type TrackerError struct {
@@ -39,39 +55,15 @@ type Tracker interface {
 }
 
 func NewTracker(activityType shared.Activity, source SourceType) (Tracker, error) {
-	switch activityType {
-	case shared.Cycling:
-		return NewCyclingTracker(activityType, source)
-	case shared.Gomita:
-		return NewGomitaTracker(activityType, source)
-	case shared.Gym:
-		return NewGymTracker(activityType, source)
-	case shared.Keratine:
-		return NewKeratineTracker(activityType, source)
-	case shared.Pipi:
-		return NewPipiTracker(activityType, source)
-	case shared.Poop:
-		return NewPoopTracker(activityType, source)
-	case shared.Read:
-		return NewReadTracker(activityType, source)
-	case shared.Run:
-		return NewRunTracker(activityType, source)
-	case shared.Shower:
-		return NewShowerTracker(activityType, source)
-	case shared.Sleep:
-		return NewSleepTracker(activityType, source)
-	case shared.Swimming:
-		return NewSwimmingTracker(activityType, source)
-	case shared.ToothBrush:
-		return NewToothBrushTracker(activityType, source)
-	case shared.Water:
-		return NewWaterTracker(activityType, source)
+	newTracker, ok := mapTrackerByActivity[activityType]
+	if !ok {
+		return nil, &TrackerError{
+			BaseError: ErrTrackerNotImplemented,
+			Details:   fmt.Sprintf("[%s]", activityType),
+		}
 	}
 
-	return nil, &TrackerError{
-		BaseError: ErrTrackerNotImplemented,
-		Details:   fmt.Sprintf("[%s]", activityType),
-	}
+	return newTracker(activityType, source)
 }
 
 func GetErrorMessageByTracker(err error, source SourceType, messages ErrorMessages) string {

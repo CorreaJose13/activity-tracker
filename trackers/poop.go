@@ -10,6 +10,8 @@ import (
 var (
 	invalidPoopContentMessage = "al parecer la kk la tienes en el cerebro, manda el número bien ps 😡"
 
+	successMessagePoop = "a ber de q color es? 👀👀"
+
 	ErrPoopInvalidNumber = errors.New("invalid poop number")
 
 	mapPoopMessagesBySource = ErrorMessages{
@@ -58,5 +60,5 @@ func (t *PoopTracker) GetErrorMessage(err error) string {
 }
 
 func (t *PoopTracker) GetSuccessMessage() string {
-	return "a ber de q color es? 👀👀"
+	return successMessagePoop
 }

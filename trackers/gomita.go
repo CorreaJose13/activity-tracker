@@ -16,6 +16,8 @@ var (
 	missingGomitaContentMessage = "tan trabao estás?? mandame la info así vicioso:\n\t /track gomita <fraction or float>"
 	invalidGomitaContentMessage = "concentrate hijo de toda tu puta madre, escribe bien el número 😡"
 
+	successMessageGomita = "buen biaje mi sielo 🌈"
+
 	mapGomitaMessagesBySource = map[error]map[SourceType]string{
 		ErrInvalidContent: {
 			APISource: "tan trabao estás?? mandame la info así vicioso",
@@ -88,5 +90,5 @@ func (t *Gomita) GetErrorMessage(err error) string {
 }
 
 func (t *Gomita) GetSuccessMessage() string {
-	return "buen biaje mi sielo 🌈"
+	return successMessageGomita
 }

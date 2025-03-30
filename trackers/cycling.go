@@ -8,6 +8,9 @@ import (
 )
 
 var (
+	successMessageCyclingWithContent = "ve pero y ese poco de kilometros? te perseguía un veneco o q? anwy congrats"
+	successMessageCycling            = "ataca pogachaaaaaa 🚴"
+
 	mapCyclingMessagesBySource = map[error]map[SourceType]string{}
 )
 
@@ -49,8 +52,8 @@ func (t *Cycling) GetErrorMessage(err error) string {
 
 func (t *Cycling) GetSuccessMessage() string {
 	if t.hasContent {
-		return "ve pero y ese poco de kilometros? te perseguía un veneco o q? anwy congrats"
+		return successMessageCyclingWithContent
 	}
 
-	return "ataca pogachaaaaaa 🚴"
+	return successMessageCycling
 }

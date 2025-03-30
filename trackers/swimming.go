@@ -9,6 +9,9 @@ import (
 )
 
 var (
+	templateSuccessMessageSwimmingWithContent = "uy mi papacho nadó %s? lo iba robar un bagre negro o q? anwy congrats"
+	successMessageSwimming                    = "mi papacho el más bagrecito 🐟️"
+
 	mapSwimmingMessagesBySource = ErrorMessages{}
 )
 
@@ -52,8 +55,8 @@ func (t *SwimmingTracker) GetErrorMessage(err error) string {
 
 func (t *SwimmingTracker) GetSuccessMessage() string {
 	if t.content != "" {
-		return fmt.Sprintf("uy mi papacho nadó %s? lo iba robar un bagre negro o q? anwy congrats", t.content)
+		return fmt.Sprintf(templateSuccessMessageSwimmingWithContent, t.content)
 	}
 
-	return "mi papacho el más bagrecito 🐟️"
+	return successMessageSwimming
 }

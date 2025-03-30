@@ -8,6 +8,8 @@ import (
 )
 
 var (
+	successMessageTooth = "menos mal, ya te olia a qlo la boca mi papacho 💩"
+
 	mapToothBrushMessagesBySource = ErrorMessages{}
 )
 
@@ -47,5 +49,5 @@ func (t *ToothBrushTracker) GetErrorMessage(err error) string {
 }
 
 func (t *ToothBrushTracker) GetSuccessMessage() string {
-	return "menos mal, ya te olia a qlo la boca mi papacho 💩"
+	return successMessageTooth
 }

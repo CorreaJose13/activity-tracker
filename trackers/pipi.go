@@ -4,10 +4,13 @@ import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
 	"context"
+	"fmt"
 	"time"
 )
 
 var (
+	templateSuccessMessagePipi = "Epa, buena esa %s 😎"
+
 	mapPipiMessagesBySource = ErrorMessages{}
 )
 
@@ -50,8 +53,8 @@ func (t *PipiTracker) GetErrorMessage(err error) string {
 
 func (t *PipiTracker) GetSuccessMessage() string {
 	if t.username == shared.Valery {
-		return "Epa, buena esa mionsita 😎"
+		return fmt.Sprintf(templateSuccessMessagePipi, "mionsita")
 	}
 
-	return "Epa, buena esa mionsito 😎"
+	return fmt.Sprintf(templateSuccessMessagePipi, "mionsito")
 }
