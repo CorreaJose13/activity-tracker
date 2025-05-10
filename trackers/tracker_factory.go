@@ -67,7 +67,7 @@ func NewTracker(activityType shared.Activity, source SourceType) (Tracker, error
 }
 
 func GetErrorMessageByTracker(err error, source SourceType, messages ErrorMessages) string {
-	messageBySource, ok := mapGymMessagesBySource[err]
+	messageBySource, ok := messages[err]
 	if !ok {
 		return fmt.Sprintf(shared.ErrSendMessage, err.Error())
 	}
