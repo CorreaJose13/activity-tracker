@@ -5,16 +5,6 @@ import (
 	"activity-tracker/telegram/commands/gemini"
 	goals "activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
-	reportGomita "activity-tracker/telegram/commands/report/gomita"
-	reportKeratine "activity-tracker/telegram/commands/report/keratine"
-	reportPipi "activity-tracker/telegram/commands/report/pipi"
-	reportPoop "activity-tracker/telegram/commands/report/poop"
-	reportRead "activity-tracker/telegram/commands/report/read"
-	reportRun "activity-tracker/telegram/commands/report/run"
-	reportShower "activity-tracker/telegram/commands/report/shower"
-	reportSleep "activity-tracker/telegram/commands/report/sleep"
-	reportTooth "activity-tracker/telegram/commands/report/tooth"
-	reportWater "activity-tracker/telegram/commands/report/water"
 	shoulddeploy "activity-tracker/telegram/commands/shoulddeploy"
 	"activity-tracker/telegram/commands/track"
 
@@ -46,19 +36,19 @@ var (
 		"/shoulddeploytoday": shoulddeploy.ShouldDeploy,
 	}
 
-	suffixReportMap = map[string]func(ctx context.Context, client *shared.Client, userName, content string, chatID int64) error{
-		"water":    reportWater.SendWaterReport,
-		"poop":     reportPoop.SendPoopReport,
-		"keratine": reportKeratine.SendKeratineReport,
-		"pipi":     reportPipi.SendPipiReport,
-		"shower":   reportShower.SendShowerReport,
-		"run":      reportRun.SendRunReport,
-		"tooth":    reportTooth.SendToothReport,
-		"sleep":    reportSleep.SendSleepReport,
-		"read":     reportRead.SendReadReport,
-		"gomita":   reportGomita.SendGomitaReport,
-		"all":      report.GenerateAllReports,
-		"monthly":  report.GenerateMonthlyReport,
+	suffixReportMap = map[string]bool{
+		"water":    true,
+		"poop":     true,
+		"keratine": true,
+		"pipi":     true,
+		"shower":   true,
+		"run":      true,
+		"tooth":    true,
+		"sleep":    true,
+		"read":     true,
+		"gomita":   true,
+		"all":      false,
+		"monthly":  false,
 	}
 
 	suffixTrackMap = map[shared.Activity]bool{
@@ -163,8 +153,8 @@ func handleTrack(ctx context.Context, client *shared.Client, chatID int64, userN
 func handleReport(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
-	if fn, ok := suffixReportMap[before]; ok {
-		return fn(ctx, client, userName, after, chatID)
+	if _, ok := suffixReportMap[before]; ok {
+		return report.SendReportActicvity(ctx, client, shared.Activity(before), userName, after, chatID)
 	}
 
 	return sendUnknownCommand(client, chatID)
