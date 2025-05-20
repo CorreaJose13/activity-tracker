@@ -1,10 +1,15 @@
-variable "api_gateway_id" {
-  description = "Id of the api gateway"
+variable "rest_api_id" {
+  description = "Name of the api gateway"
   type        = string
 }
 
-variable "root_resource_id" {
-  description = "Root resource id"
+variable "rest_api_exec_arn" {
+  description = "Execution ARN of the api gateway"
+  type        = string
+}
+
+variable "parent_id" {
+  description = "ID of the parent resource"
   type        = string
 }
 
@@ -18,13 +23,8 @@ variable "method" {
   type        = string
 }
 
-variable "stage_name" {
+variable "stage" {
   description = "Name of the stage"
-  type        = string
-}
-
-variable "lambda_invoke_arn" {
-  description = "ARN of the lambda function to be invoked"
   type        = string
 }
 
@@ -33,9 +33,7 @@ variable "lambda_name" {
   type        = string
 }
 
-variable "api_execution_arn" {
-  description = "ARN of the api gateway execution"
+variable "lambda_invoke_arn" {
+  description = "Lambda function ARN"
   type        = string
 }
-
-
