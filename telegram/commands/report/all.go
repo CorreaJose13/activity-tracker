@@ -3,15 +3,6 @@ package report
 import (
 	"activity-tracker/shared"
 	"activity-tracker/storage"
-	"activity-tracker/telegram/commands/report/keratine"
-	"activity-tracker/telegram/commands/report/pipi"
-	"activity-tracker/telegram/commands/report/poop"
-	"activity-tracker/telegram/commands/report/read"
-	"activity-tracker/telegram/commands/report/run"
-	"activity-tracker/telegram/commands/report/shower"
-	"activity-tracker/telegram/commands/report/sleep"
-	"activity-tracker/telegram/commands/report/tooth"
-	"activity-tracker/telegram/commands/report/water"
 	"context"
 	"fmt"
 	"os"
@@ -21,15 +12,15 @@ import (
 
 var (
 	reportsFunctions = []func(ctx context.Context, bot *shared.Client, userName string, chatID int64) (string, error){
-		keratine.GenerateKeratineReport,
-		pipi.GeneratePipiReport,
-		poop.GeneratePoopReport,
-		read.GenerateReadReport,
-		run.GenerateRunReport,
-		shower.GenerateShowerReport,
-		sleep.GenerateSleepReport,
-		tooth.GenerateToothReport,
-		water.GenerateWaterReport,
+		// keratine.GenerateKeratineReport,
+		// pipi.GeneratePipiReport,
+		// poop.GeneratePoopReport,
+		// read.GenerateReadReport,
+		// run.GenerateRunReport,
+		// shower.GenerateShowerReport,
+		// sleep.GenerateSleepReport,
+		// tooth.GenerateToothReport,
+		// water.GenerateWaterReport,
 	}
 
 	generateReportErrorMessage = "Error generando reporte"
