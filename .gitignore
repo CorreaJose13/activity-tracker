@@ -10,6 +10,7 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+state.config
 
 # Crash log files
 crash.log
