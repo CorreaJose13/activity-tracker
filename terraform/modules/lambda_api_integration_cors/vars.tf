@@ -1,35 +1,4 @@
-variable "scheduler_name" {
-  description = "The name of the scheduler"
-  type        = string
-}
-
-variable "schedule_expression" {
-  description = "The cron expression that defines when the scheduler should run"
-  type        = string
-}
-
-variable "message" {
-  description = "The message to be sent by the scheduler"
-  type        = string
-  default     = ""
-}
-
-variable "lambda_scheduler_role" {
-  description = "The name of the IAM role for the Lambda scheduler"
-  type        = string
-}
-
-variable "lambda_scheduler_policy" {
-  description = "The name of the IAM policy for the Lambda scheduler"
-  type        = string
-}
-
 #Lambda variables
-variable "function_name" {
-  description = "The name of the Lambda function"
-  type        = string
-}
-
 variable "lambda_source_path" {
   description = "The path to the source code of the Lambda function"
   type        = string
@@ -76,4 +45,40 @@ variable "env_vars" {
   description = "Environment variables for the Lambda function"
   type        = map(string)
   default     = {}
+}
+
+#API Gateway variables
+variable "endpoint_name" {
+  description = "The name of the endpoint"
+  type        = string
+}
+
+variable "rest_api_id" {
+  description = "The name of the API Gateway"
+  type        = string
+}
+
+variable "rest_api_exec_arn" {
+  description = "The execution ARN of the API Gateway"
+  type        = string
+}
+
+variable "parent_id" {
+  description = "The ID of the parent resource in the API Gateway"
+  type        = string
+}
+
+variable "http_method" {
+  description = "The HTTP method for the API Gateway endpoint"
+  type        = string
+}
+
+variable "endpoint_path" {
+  description = "The path for the API Gateway endpoint"
+  type        = string
+}
+
+variable "stage" {
+  description = "The stage for the API Gateway"
+  type        = string
 }

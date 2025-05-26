@@ -6,6 +6,7 @@ variable "name" {
 variable "description" {
   description = "The description of the IAM policy"
   type        = string
+  default     = ""
 }
 
 variable "action" {

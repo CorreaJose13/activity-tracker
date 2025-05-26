@@ -39,7 +39,7 @@ module "lambda_function" {
 }
 
 module "api_endpoint" {
-  source            = "../network/api_gateway_endpoint/"
+  source            = "../network/api_gateway_endpoint_cors/"
   rest_api_id       = var.rest_api_id
   rest_api_exec_arn = var.rest_api_exec_arn
   parent_id         = var.parent_id

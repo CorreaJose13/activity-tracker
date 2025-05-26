@@ -6,6 +6,7 @@ resource "terraform_data" "this" {
   triggers_replace = {
     always_run = "${timestamp()}"
   }
+
   provisioner "local-exec" {
     working_dir = dirname(var.lambda_source_path)
     command     = "make publish"
@@ -24,7 +25,7 @@ module "lambda_function" {
   s3_bucket = var.s3_bucket
   s3_key    = local.zip_file
 
-  function_name = "stock-api-${var.function_name}"
+  function_name = "activity-tracker-${var.function_name}"
   description   = "Lambda function for ${var.function_name}"
   role          = var.lambda_role
 
@@ -55,7 +56,6 @@ module "lambda_logs_policy" {
   role_name   = module.lambda_scheduler_role.name
 }
 
-
 resource "aws_scheduler_schedule" "this" {
   name = var.scheduler_name
 
@@ -74,7 +74,7 @@ resource "aws_scheduler_schedule" "this" {
       FunctionName   = module.lambda_function.name
       InvocationType = "Event"
       Payload = jsonencode({
-        message = "Hello from AWS Scheduler!"
+        message = var.message
       })
     })
   }
