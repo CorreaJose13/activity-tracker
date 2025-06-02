@@ -32,7 +32,7 @@ var (
 		water.GenerateWaterReport,
 	}
 
-	generateReportErrorMessage = "Error generando reporte"
+	generateReportErrorMessage = "Error generando reporte. Error: %s"
 	currentMonthReportMsg      = "Lista de actividades del mes %s - %s - %s\n\n%s"
 	invalidActivityMsg         = "kejesa mondá"
 	noActivitiesMsg            = "ni una perra actividad este mes 😐"
@@ -46,7 +46,7 @@ func GenerateAllReports(ctx context.Context, client *shared.Client, userName, co
 	for _, fn := range reportsFunctions {
 		report, err := fn(ctx, client, userName, chatID)
 		if err != nil {
-			_ = client.SendMessage(chatID, generateReportErrorMessage)
+			_ = client.SendMessage(chatID, fmt.Sprintf(generateReportErrorMessage, err.Error()))
 
 			continue
 		}
