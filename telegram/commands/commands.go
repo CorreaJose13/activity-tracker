@@ -2,10 +2,8 @@ package commands
 
 import (
 	"activity-tracker/shared"
-	"activity-tracker/telegram/commands/gemini"
 	goals "activity-tracker/telegram/commands/goals"
 	"activity-tracker/telegram/commands/report"
-	shoulddeploy "activity-tracker/telegram/commands/shoulddeploy"
 	"activity-tracker/telegram/commands/track"
 
 	"activity-tracker/telegram/commands/wishlist"
@@ -21,89 +19,6 @@ const (
 )
 
 var (
-	commandMap = map[string]func(client *shared.Client, userName string, chatID int64) error{
-		"/hello":             sendHello,
-		"/help":              sendHelp,
-		"/commands":          sendCommands,
-		"/track":             sendTrackHelp,
-		"/report":            sendReportHelp,
-		"/goal":              sendGoalHelp,
-		"/wishlist":          sendWishlist,
-		"/hatriki":           sendHatriki,
-		"/tengohambre":       sendHambre,
-		"/pinkipiensa":       sendPinki,
-		"/chatID":            sendChatID,
-		"/shoulddeploytoday": shoulddeploy.ShouldDeploy,
-	}
-
-	suffixReportMap = map[string]bool{
-		"water":    true,
-		"poop":     true,
-		"keratine": true,
-		"pipi":     true,
-		"shower":   true,
-		"run":      true,
-		"tooth":    true,
-		"sleep":    true,
-		"read":     true,
-		"gomita":   true,
-		"all":      false,
-		"monthly":  false,
-	}
-
-	suffixTrackMap = map[shared.Activity]bool{
-		shared.Water:      true,
-		shared.ToothBrush: true,
-		shared.Read:       true,
-		shared.Shower:     true,
-		shared.Sleep:      true,
-		shared.Gym:        true,
-		shared.Poop:       true,
-		shared.Run:        true,
-		shared.Keratine:   true,
-		shared.Pipi:       true,
-		shared.Swimming:   true,
-		shared.Cycling:    true,
-		shared.Gomita:     true,
-	}
-
-	suffixGoalMap = map[string]func(client *shared.Client, userName, content string, chatID int64) error{
-		"create": goals.SendCreateGoal,
-		"delete": goals.SendDeleteGoal,
-		"update": goals.SendUpdateGoal,
-		"all":    goals.SendAllGoals,
-	}
-
-	prefixHandlers = map[string]func(ctx context.Context, client *shared.Client, chatID int64, userName, content string) error{
-		"/track":    handleTrack,
-		"/report":   handleReport,
-		"/goal":     handleGoal,
-		"/wishlist": wishlist.HandleWishlist,
-		"/gemini":   gemini.HandleGemini,
-	}
-
-	msgHelp = `Quieres pene?`
-
-	msgCommands = `Here's a list of commands you can send me:
-
-	/hello
-	/help
-	/commands
-	/track
-	/report`
-
-	msgTrack = `papi y entonces? qué te trackeo? las veces que te engañó tu ex o q, mandame info sapa.
-	hint:
-	-/track water
-	-/track toothbrush
-	-/track read
-	-/track shower
-	-/track sleep
-	-/track gym
-	-/track cycling
-	-/track run
-	-/track poop`
-
 	msgHello = "Hola precioso \n\n" + msgHelp
 
 	msgUnknownCommand = "q mondá es eso? 🤔"
@@ -153,8 +68,13 @@ func handleTrack(ctx context.Context, client *shared.Client, chatID int64, userN
 func handleReport(ctx context.Context, client *shared.Client, chatID int64, userName, suffix string) error {
 	before, after, _ := strings.Cut(suffix, " ")
 
+	// 'all' its not a valid activity, however we use it to generate the report of all activities
+	if before == "all" {
+		return report.SendReportAllActivities(ctx, client, userName, GetAvailableActivitiesToReport(), after, chatID)
+	}
+
 	if _, ok := suffixReportMap[before]; ok {
-		return report.SendReportActicvity(ctx, client, shared.Activity(before), userName, after, chatID)
+		return report.SendReportActivity(ctx, client, shared.Activity(before), userName, after, chatID, true)
 	}
 
 	return sendUnknownCommand(client, chatID)
